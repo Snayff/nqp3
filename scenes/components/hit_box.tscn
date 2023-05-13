@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://nju7fg7qutd2"]
+
+[ext_resource type="Script" path="res://scenes/components/hit_box.gd" id="1_aqrkh"]
+
+[sub_resource type="ShaderMaterial" id="2"]
+
+[sub_resource type="CircleShape2D" id="1"]
+radius = 2.0
+
+[node name="HitBox" type="Area2D"]
+collision_layer = 0
+collision_mask = 4
+monitoring = false
+script = ExtResource("1_aqrkh")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+self_modulate = Color(0.690196, 0.188235, 0.360784, 1)
+material = SubResource("2")
+shape = SubResource("1")

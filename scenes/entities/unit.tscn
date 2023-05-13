@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://dwpdgpkx1pao1"]
+
+[ext_resource type="Script" path="res://scenes/entities/unit.gd" id="1_054a8"]
+
+[node name="Unit" type="Node2D"]
+script = ExtResource("1_054a8")
+
+[node name="TargetRefresh" type="Timer" parent="."]
+autostart = true
+
+[connection signal="timeout" from="TargetRefresh" to="." method="_on_timer_target_refresh_timeout"]
