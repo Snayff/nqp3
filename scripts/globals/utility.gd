@@ -51,3 +51,49 @@ func get_action_type_script_path(action_type: Constants.ActionType) -> String:
 			path = Constants.PATH_REACTIONS
 
 	return path
+
+## find all targets in area
+func get_targets_in_area(pos: Vector2, radius: int) -> Array[Actor]:
+	# create hitbox
+	var area : HitBox = HitBox.new()
+	area._collision_shape.radius = radius
+	# FIXME: coll shape doesnt exist:  Invalid set index 'radius' (on base: 'Nil') with value of type 'int'.
+	#  should we create an area checker scene and "explode" after a frame, returning results via signal?
+	area.global_position = pos
+	add_child(area)
+
+	# wait 1 frame to give physics chance to update
+	await get_tree().physics_frame
+
+	# find actors in area
+	var poss_targets : Array = area.get_overlapping_bodies()
+	var valid_targets: Array[Actor] = []
+	for poss_target in poss_targets:
+		if poss_target is Actor:
+			valid_targets.append(poss_target)
+
+	# del area
+	area.queue_free()
+
+	return valid_targets
+
+## get nearest actor from position. Can return null.
+func get_nearest_actor(pos: Vector2, actors: Array[Actor]) -> Actor:
+	# check there are any actors at all
+	if actors.size() ==  0:
+		return null
+
+	# assume the first node is closest
+	var nearest = actors[0]
+	var current_closest = nearest.global_position.distance_to(pos)
+
+	# look through nodes to see if any are closer
+	for actor in actors:
+		var distance = actor.global_position.distance_to(pos)
+		var is_alive = actor.is_in_group("alive")
+
+		if distance < current_closest and is_alive:
+			nearest = actor
+			current_closest = nearest.global_position.distance_to(pos)
+
+	return nearest

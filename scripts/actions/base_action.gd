@@ -91,6 +91,8 @@ func get_description() -> String:
 
 ########## EFFECTS ##############
 
+
+
 ## get new target
 func _effect_new_target(preference: Constants.TargetPreference = Constants.TargetPreference.ANY) -> void:
 	pass
@@ -113,4 +115,8 @@ func _effect_summon(summon) -> void:
 
 ## create terrain
 func _effect_terrain(terrain) -> void:
+	pass
+
+## visual, such as animation
+func _effect_visual(visual) -> void:
 	pass

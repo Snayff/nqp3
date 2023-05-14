@@ -14,5 +14,5 @@ func use(initial_target: Actor) -> void:
 	_effect_damage(_base_damage + (_creator.stats.mundane_defence * 0.1) , Constants.DamageType.MUNDANE)
 
 func get_description() -> String:
-	return "So unfriendly that engaging them genuinely hurts."
+	return "So unfriendly that engaging with them genuinely hurts."
 

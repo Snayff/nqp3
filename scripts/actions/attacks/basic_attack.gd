@@ -9,6 +9,8 @@ func _configure() -> void:
 func use(initial_target: Actor) -> void:
 	super(initial_target)
 
+	var list = await Utility.get_targets_in_area(initial_target.global_position, 10)
+
 	var apply_damage = true
 
 	if not _creator.is_melee:
