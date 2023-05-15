@@ -1,6 +1,8 @@
 extends Node
 ## Misc. utility functions.
 
+const _HitBox : PackedScene = preload("res://scenes/components/hit_box.tscn")
+
 var _last_id : int = 0
 
 ## get the normalised direction to target
@@ -52,30 +54,34 @@ func get_action_type_script_path(action_type: Constants.ActionType) -> String:
 
 	return path
 
-## find all targets in area
-func get_targets_in_area(pos: Vector2, radius: int) -> Array[Actor]:
-	# create hitbox
-	var area : HitBox = HitBox.new()
-	area._collision_shape.radius = radius
-	# FIXME: coll shape doesnt exist:  Invalid set index 'radius' (on base: 'Nil') with value of type 'int'.
-	#  should we create an area checker scene and "explode" after a frame, returning results via signal?
-	area.global_position = pos
-	add_child(area)
+## find all actors in area
+func get_actors_in_area(pos: Vector2, radius: int) -> Array[Actor]:
+	var actors: Array[Actor] = []
 
-	# wait 1 frame to give physics chance to update
-	await get_tree().physics_frame
+	# configure shape cast
+	var shape_cast = ShapeCast2D.new()
+	add_child(shape_cast)
+	shape_cast.collision_mask = 2  # entity mask
+	shape_cast.max_results = 100
+	shape_cast.target_position = Vector2.ZERO
+	shape_cast.global_position = pos
 
-	# find actors in area
-	var poss_targets : Array = area.get_overlapping_bodies()
-	var valid_targets: Array[Actor] = []
-	for poss_target in poss_targets:
-		if poss_target is Actor:
-			valid_targets.append(poss_target)
+	# configure shape
+	shape_cast.shape = CircleShape2D.new()
+	shape_cast.shape.radius = radius
 
-	# del area
-	area.queue_free()
+	# get info right away
+	shape_cast.force_shapecast_update()
 
-	return valid_targets
+	# filter results
+	if shape_cast.is_colliding():
+		for result in shape_cast.collision_result:
+			actors.append(result["collider"])
+
+	# clean up
+	shape_cast.queue_free()
+
+	return actors
 
 ## get nearest actor from position. Can return null.
 func get_nearest_actor(pos: Vector2, actors: Array[Actor]) -> Actor:

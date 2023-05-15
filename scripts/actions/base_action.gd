@@ -91,8 +91,6 @@ func get_description() -> String:
 
 ########## EFFECTS ##############
 
-
-
 ## get new target
 func _effect_new_target(preference: Constants.TargetPreference = Constants.TargetPreference.ANY) -> void:
 	pass
