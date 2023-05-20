@@ -114,3 +114,7 @@ func _effect_summon(summon) -> void:
 ## create terrain
 func _effect_terrain(terrain) -> void:
 	pass
+
+## visual, such as animation
+func _effect_visual(visual) -> void:
+	pass

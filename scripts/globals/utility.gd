@@ -1,6 +1,8 @@
 extends Node
 ## Misc. utility functions.
 
+const _HitBox : PackedScene = preload("res://scenes/components/hit_box.tscn")
+
 var _last_id : int = 0
 
 ## get the normalised direction to target
@@ -51,3 +53,53 @@ func get_action_type_script_path(action_type: Constants.ActionType) -> String:
 			path = Constants.PATH_REACTIONS
 
 	return path
+
+## find all actors in area
+func get_actors_in_area(pos: Vector2, radius: int) -> Array[Actor]:
+	var actors: Array[Actor] = []
+
+	# configure shape cast
+	var shape_cast = ShapeCast2D.new()
+	add_child(shape_cast)
+	shape_cast.collision_mask = 2  # entity mask
+	shape_cast.max_results = 100
+	shape_cast.target_position = Vector2.ZERO
+	shape_cast.global_position = pos
+
+	# configure shape
+	shape_cast.shape = CircleShape2D.new()
+	shape_cast.shape.radius = radius
+
+	# get info right away
+	shape_cast.force_shapecast_update()
+
+	# filter results
+	if shape_cast.is_colliding():
+		for result in shape_cast.collision_result:
+			actors.append(result["collider"])
+
+	# clean up
+	shape_cast.queue_free()
+
+	return actors
+
+## get nearest actor from position. Can return null.
+func get_nearest_actor(pos: Vector2, actors: Array[Actor]) -> Actor:
+	# check there are any actors at all
+	if actors.size() ==  0:
+		return null
+
+	# assume the first node is closest
+	var nearest = actors[0]
+	var current_closest = nearest.global_position.distance_to(pos)
+
+	# look through nodes to see if any are closer
+	for actor in actors:
+		var distance = actor.global_position.distance_to(pos)
+		var is_alive = actor.is_in_group("alive")
+
+		if distance < current_closest and is_alive:
+			nearest = actor
+			current_closest = nearest.global_position.distance_to(pos)
+
+	return nearest
