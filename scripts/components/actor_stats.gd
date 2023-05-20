@@ -29,6 +29,9 @@ signal stamina_depleted
 
 ######### ATTRIBUTES ###########
 
+## effects modifying stats.
+##
+## Dict[String, Dict[int, Dict[string, int | float]]
 var _modifiers : Dictionary = {}
 
 # resource stats
@@ -119,9 +122,6 @@ var _modifiers : Dictionary = {}
 		_recalculate("num_units")
 @export var num_units : int
 
-
-
-
 # non-combat
 @export_group("Non Combat")
 @export var base_gold_cost : int:
@@ -147,6 +147,15 @@ func reinit() -> void:
 func _recalculate(stat_name: String) -> void:
 	var value: float = get("base_" + stat_name)
 
+	# _modifiers = {
+	# 	"def" : {
+	#		id : {
+	#			"type": mod_type,
+	#			"value": value
+	#		}
+	#	}
+	#}
+
 	# get the array of modifiers corresponding to a stat.
 	var modifiers: Array = _modifiers[stat_name].values()
 	var mod_multiplier : float = 1.0
@@ -164,16 +173,14 @@ func _recalculate(stat_name: String) -> void:
 
 	set(stat_name, value)
 
-## Adds a modifier to a stat and returns id.
-func add_modifier(stat_name: String, mod_type: Constants.StatModType, value: float) -> int:
+## Adds a modifier to a stat.
+func add_modifier(stat_name: String, mod_id: int, mod_type: Constants.StatModType, value: float) -> void:
 	assert(stat_name in MODIFIABLE_STATS, "Trying to add a modifier to a nonexistent stat.")
 
-	var id := Utility.generate_id()
-	_modifiers[stat_name][id] = {"type": mod_type, "value": value}
+	_modifiers[stat_name][mod_id] = {"type": mod_type, "value": value}
 
 	_recalculate(stat_name)
 
-	return id
 
 ## Removes a modifier from stat.
 func remove_modifier(stat_name: String, id: int) -> void:
