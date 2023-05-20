@@ -18,17 +18,21 @@ const MODIFIABLE_STATS : Array[String] = [
 
 ####### SIGNALS #########
 
-## Emitted when a character has no `health` left.
+## Emitted when `health` = 0.
 signal health_depleted
 ## Emitted every time the value of `health` changes.
 signal health_changed(old_value, new_value)
+## Emitted every time the value of `stamina` changes.
+signal stamina_changed(old_value, new_value)
+## Emitted when  `stamina` = 0.
+signal stamina_depleted
 
 ######### ATTRIBUTES ###########
 
 var _modifiers : Dictionary = {}
 
-# defence stats
-@export_group("Defence")
+# resource stats
+@export_group("Resource")
 @export var max_health : int
 @export var health : int:
 	set(value):
@@ -39,6 +43,19 @@ var _modifiers : Dictionary = {}
 		# inform of death
 		if health == 0:
 			emit_signal("health_depleted")
+@export var max_stamina : int
+@export var stamina : int:
+	set(value):
+		var previous_stamina : int = stamina
+		stamina = clamp(value, 0, max_stamina)
+		emit_signal("stamina_changed", previous_stamina, stamina)
+
+		# inform of death
+		if stamina == 0:
+			emit_signal("stamina_depleted")
+
+# defence stats
+@export_group("Defence")
 @export var base_regen : int:
 	set(value):
 		base_regen = value
@@ -101,11 +118,7 @@ var _modifiers : Dictionary = {}
 		base_num_units = value
 		_recalculate("num_units")
 @export var num_units : int
-@export var base_stamina : int :
-	set(value):
-		base_stamina = value
-		_recalculate("stamina")
-@export var stamina : int
+
 
 
 

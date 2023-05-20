@@ -80,7 +80,7 @@ func use(initial_target: Actor) -> void:
 
 func set_cooldown(cooldown_time: float) -> void:
 	# ignore if wait time == 0
-	if cooldown > 0:
+	if cooldown_time > 0:
 		_cooldown_timer.wait_time = cooldown_time
 		_cooldown_timer.start()
 
