@@ -18,6 +18,7 @@ signal hit_received(attacker: Actor)
 ## emitted when died
 signal died
 
+
 ############## NODES ##################
 
 @onready var _navigation_agent : NavigationAgent2D = $NavigationAgent2D
@@ -110,6 +111,7 @@ func actor_setup() -> void:
 
 	# conect to signals
 	stats.health_depleted.connect(_on_health_depleted)
+	stats.stamina_depleted.connect(_on_stamina_depleted)
 	died.connect(_on_death)
 	attacked.connect(_on_attack)
 	hit_received.connect(_on_hit_received)
@@ -283,6 +285,10 @@ func _on_death() -> void:
 
 func _on_attack() -> void:
 	_use_actions(Constants.ActionType.ON_ATTACK, self)
+
+func _on_stamina_depleted() -> void:
+	# TODO: apply exhausted status effect
+	pass
 
 ########### REFRESHES #############
 
