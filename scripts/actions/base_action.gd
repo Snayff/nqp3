@@ -16,9 +16,10 @@ class_name BaseAction extends Node
 
 ######### ATTRIBUTES ##########
 
-var _cooldown_timer : Timer
+var _id : int
 var _creator : Actor
 var _target : Actor
+var _cooldown_timer : Timer
 ## length of cooldown of action
 var cooldown : float:
 	get:
@@ -26,19 +27,18 @@ var cooldown : float:
 		return _base_cooldown
 	set(value):
 		push_warning("Tried to set cooldown directly. Not allowed.")
-## check if action is ready to use
-var is_ready : bool = true:
-	get:
-		return _cooldown_timer.is_stopped()
-	set(value):
-		push_warning("Tried to set is_ready directly. Not allowed.")
 ## amount of time left on cooldown
 var cooldown_remaining : float:
 	get:
 		return _cooldown_timer.time_left
 	set(value):
 		push_warning("Tried to set cooldown_remaining directly. Not allowed.")
-
+## check if action is ready to use
+var is_ready : bool = true:
+	get:
+		return _cooldown_timer.is_stopped()
+	set(value):
+		push_warning("Tried to set is_ready directly. Not allowed.")
 var is_targeting_self : bool = false
 var is_targeting_all : bool = false
 
@@ -50,6 +50,8 @@ var icon : Texture
 
 func _init(creator: Actor) -> void:
 	_creator = creator
+
+	_id = Utility.generate_id()
 
 	_cooldown_timer = Timer.new()
 	_cooldown_timer.set_one_shot(true)
@@ -107,9 +109,11 @@ func _effect_new_target(preference: Constants.TargetPreference = Constants.Targe
 func _effect_damage(amount: int, damage_type: Constants.DamageType) -> void:
 	Combat.deal_damage(_creator, _target, amount, damage_type)
 
+
 ## apply amount of damage to current target
 func _effect_heal(amount: int) -> void:
 	push_warning("heal: effect not created")
+
 
 ## apply a status effect to current target
 func _effect_status(status_effect: BaseStatusEffect) -> void:
