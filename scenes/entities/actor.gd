@@ -17,6 +17,13 @@ signal attacked
 signal hit_received(attacker: Actor)
 ## emitted when died
 signal died
+## status effect logged on actor
+signal status_effect_added
+## status effect affected actor
+signal status_effect_applied
+## status effect removed
+signal status_effect_removed
+
 
 
 ############## NODES ##################
@@ -245,6 +252,22 @@ func attack() -> void:
 		print(name + " used " + attack_to_use.friendly_name + ".")
 		attack_to_use.use(_target)
 		emit_signal("attacked")
+
+## add status effect to actor
+func add_status_effect(creator: Actor, status_effect_name: String) -> void:
+	var action_type = Constants.ActionType.STATUS_EFFECT
+	var script_path : String = Utility.get_action_type_script_path(action_type) + status_effect_name + ".gd"
+	var status_effect = load(script_path).new(creator)
+	actions[action_type].append(status_effect)
+
+	emit_signal("status_effect_added")
+
+
+## remove a status effect by its index
+func remove_status_effect(status_effect_index: int) -> void:
+	var action_type = Constants.ActionType.STATUS_EFFECT
+	if actions[action_type].size() >= status_effect_index:
+		actions[action_type].pop(status_effect_index)
 
 ############ REACTIONS ###########
 

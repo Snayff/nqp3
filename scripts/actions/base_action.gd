@@ -8,9 +8,10 @@ class_name BaseAction extends Node
 @export var friendly_name : String
 @export var tags : Array[Constants.ActionTag] = []
 @export var valid_target_types : Array[Constants.TargetType] = []
+@export var _base_stamina_cost : int = 0
 @export var _base_cooldown : float
 @export var _base_damage : int
-@export var _base_stamina_cost : int
+@export var _base_damage_type : Constants.DamageType
 
 @export_group("", "")  # end grouping
 
@@ -116,8 +117,10 @@ func _effect_heal(amount: int) -> void:
 
 
 ## apply a status effect to current target
-func _effect_status(status_effect: BaseStatusEffect) -> void:
-	push_warning("status: effect not created")
+func _effect_status(status_effect_name: String) -> void:
+	var action_type = Constants.ActionType.STATUS_EFFECT
+	var script_path : String = Utility.get_action_type_script_path(action_type) + status_effect_name + ".gd"
+	var status_effect = load(script_path).new(_target)
 
 
 ## create a projectile. returns created projectile

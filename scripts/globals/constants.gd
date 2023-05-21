@@ -47,11 +47,12 @@ enum TargetPreference {
 
 ## different types of target
 enum TargetType {
-	SELF,
+	SELF,  ## actor using the skill
 	ALLY,  ## actor on same team
 	ENEMY,  ## actor on other team
 	ATTACKER,  ## actor attacking self
 	DEFENDER,  ## actor being attacked by self
+	ANY,  ## anyone, we dont care
 
 }
 
@@ -70,13 +71,14 @@ enum ActionType {
 	ON_HIT,
 	ON_DEATH,
 	ON_ATTACK,
-	ON_TICK,
+	STATUS_EFFECT,
 }
 
 ############# PATHS ##############
 
 const PATH_ATTACKS : String = "res://scripts/actions/attacks/"  ## the path attack scripts are stored in
 const PATH_REACTIONS : String = "res://scripts/actions/reactions/" ## the path reaction scripts are stored in
+const PATH_STATUS_EFFECTS : String = "res://scripts/actions/status_effects/" ## the path reaction scripts are stored in
 
 ############ VALUES ############
 
