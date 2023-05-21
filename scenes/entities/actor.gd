@@ -43,8 +43,8 @@ var actions : Dictionary
 
 ######### FUNCTIONAL ATTRIBUTES ###############
 
-var _previous_state := Constants.EntityState.IDLE
-var _state := Constants.EntityState.IDLE
+var _previous_state := Constants.ActorState.IDLE
+var _state := Constants.ActorState.IDLE
 var _target : Actor
 var _facing := Constants.Direction.LEFT
 var is_active: bool:
@@ -139,52 +139,52 @@ func update_state() -> void:
 		var in_attack_range : bool = _navigation_agent.distance_to_target() <= stats.attack_range
 		if in_attack_range and has_ready_attack:
 			_navigation_agent.target_position = global_position
-			if _state != Constants.EntityState.ATTACKING:
-				change_state(Constants.EntityState.ATTACKING)
+			if _state != Constants.ActorState.ATTACKING:
+				change_state(Constants.ActorState.ATTACKING)
 
 		# has target but not in range, move towards target
 		else:
-			if _state != Constants.EntityState.MOVING:
-				change_state(Constants.EntityState.MOVING)
+			if _state != Constants.ActorState.MOVING:
+				change_state(Constants.ActorState.MOVING)
 
 	# has no target, go idle
 	else:
-		if _state != Constants.EntityState.MOVING:
-			change_state(Constants.EntityState.IDLE)
+		if _state != Constants.ActorState.MOVING:
+			change_state(Constants.ActorState.IDLE)
 
 ## change to new state, trigger transition action
 ## actions will trigger after animation
-func change_state(new_state: Constants.EntityState) -> void:
+func change_state(new_state: Constants.ActorState) -> void:
 	_previous_state = _state
 	_state = new_state
 
 	match _state:
-		Constants.EntityState.IDLE:
+		Constants.ActorState.IDLE:
 			animated_sprite.play("idle")
 
-		Constants.EntityState.ATTACKING:
+		Constants.ActorState.ATTACKING:
 			animated_sprite.play("attack")
 
-		Constants.EntityState.MOVING:
+		Constants.ActorState.MOVING:
 			animated_sprite.play("walk")
 
-		Constants.EntityState.DEAD:
+		Constants.ActorState.DEAD:
 			animated_sprite.play("death")
 
 ## process the current state, e.g. moving if in MOVING
 func process_current_state() -> void:
 	match _state:
-		Constants.EntityState.IDLE:
+		Constants.ActorState.IDLE:
 			refresh_target()
 
-		Constants.EntityState.ATTACKING:
+		Constants.ActorState.ATTACKING:
 			pass
 
-		Constants.EntityState.MOVING:
+		Constants.ActorState.MOVING:
 			move_towards_target()
 			_refresh_facing()
 
-		Constants.EntityState.DEAD:
+		Constants.ActorState.DEAD:
 			pass
 
 ######### ACTIONS ############
@@ -251,18 +251,18 @@ func attack() -> void:
 ## act out result of animations completion
 func process_animation_completion() -> void:
 	match _state:
-		Constants.EntityState.IDLE:
+		Constants.ActorState.IDLE:
 			# just keep idling
 			pass
 
-		Constants.EntityState.ATTACKING:
+		Constants.ActorState.ATTACKING:
 			attack()
 
-		Constants.EntityState.MOVING:
+		Constants.ActorState.MOVING:
 			# walking not dependant on anim completion
 			pass
 
-		Constants.EntityState.DEAD:
+		Constants.ActorState.DEAD:
 			die()
 
 ## trigger death
@@ -271,7 +271,7 @@ func _on_health_depleted() -> void:
 	# immediately remove targetable, dont wait for animation to finish
 	is_active = false
 	is_targetable = false
-	change_state(Constants.EntityState.DEAD)
+	change_state(Constants.ActorState.DEAD)
 
 func _on_hit_received(attacker: Actor) -> void:
 	# flash damage indicator

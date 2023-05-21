@@ -59,7 +59,7 @@ func _build_actor_stats(unit_data: Dictionary) -> ActorStats:
 	return stats
 
 func _build_sprite_frame(unit_name: String) -> SpriteFrames:
-	var anim_names : Array = Constants.AnimationType.keys()
+	var anim_names : Array = Constants.ActorAnimationType.keys()
 	var path_prefix : String = "res://sprites/units/"
 
 	var sprite_frames = SpriteFrames.new()

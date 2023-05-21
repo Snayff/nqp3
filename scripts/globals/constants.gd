@@ -3,7 +3,8 @@ extends Node
 
 ################ ENUMS ##################
 
-enum EntityState {
+## different states an actor can be in
+enum ActorState {
 	IDLE,
 	ATTACKING,
 	MOVING,
@@ -15,7 +16,8 @@ enum Direction {
 	RIGHT = 1
 }
 
-enum AnimationType {
+## different animation types for an actor
+enum ActorAnimationType {
 	ATTACK,
 	DEATH,
 	HIT,
@@ -23,16 +25,19 @@ enum AnimationType {
 	WALK
 }
 
+## different actor stat modifiers
 enum StatModType {
 	MULTIPLY,
 	ADD
 }
 
+## different types of damage
 enum DamageType {
 	MUNDANE,
 	MAGIC
 }
 
+## defined types of target preference
 enum TargetPreference {
 	ANY,
 	LOWEST_HEALTH,
@@ -40,6 +45,7 @@ enum TargetPreference {
 	HIGHEST_HEALTH
 }
 
+## different types of target
 enum TargetType {
 	SELF,
 	ALLY,  ## actor on same team
@@ -49,25 +55,29 @@ enum TargetType {
 
 }
 
+## different properties of an action
 enum ActionTag {
 	DAMAGE,
 	SUMMON,
 	TERRAIN,
 	STATUS_EFFECT,
+	STAT_MOD
 }
 
+## different action types
 enum ActionType {
 	ATTACK,
 	ON_HIT,
 	ON_DEATH,
-	ON_ATTACK
+	ON_ATTACK,
+	ON_TICK,
 }
 
 ############# PATHS ##############
 
-const PATH_ATTACKS : String = "res://scripts/actions/attacks/"
-const PATH_REACTIONS : String = "res://scripts/actions/reactions/"
+const PATH_ATTACKS : String = "res://scripts/actions/attacks/"  ## the path attack scripts are stored in
+const PATH_REACTIONS : String = "res://scripts/actions/reactions/" ## the path reaction scripts are stored in
 
 ############ VALUES ############
 
-const MELEE_RANGE : int = 10
+const MELEE_RANGE : int = 10  ## the range at which a unit is determined to be melee.

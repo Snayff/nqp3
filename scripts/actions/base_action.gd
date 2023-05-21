@@ -16,7 +16,7 @@ class_name BaseAction extends Node
 
 ######### ATTRIBUTES ##########
 
-var _id : int
+var _uid : int
 var _creator : Actor
 var _target : Actor
 var _cooldown_timer : Timer
@@ -51,7 +51,7 @@ var icon : Texture
 func _init(creator: Actor) -> void:
 	_creator = creator
 
-	_id = Utility.generate_id()
+	_uid = Utility.generate_id()
 
 	_cooldown_timer = Timer.new()
 	_cooldown_timer.set_one_shot(true)
