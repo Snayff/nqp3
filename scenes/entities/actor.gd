@@ -105,6 +105,7 @@ var is_selectable: bool = true:
 func _ready() -> void:
 	pass
 
+
 ## post _ready setup
 func actor_setup() -> void:
 	# Wait for the first physics frame so the NavigationServer can sync.
@@ -159,6 +160,7 @@ func update_state() -> void:
 		if _state != Constants.ActorState.MOVING:
 			change_state(Constants.ActorState.IDLE)
 
+
 ## change to new state, trigger transition action
 ## actions will trigger after animation
 func change_state(new_state: Constants.ActorState) -> void:
@@ -177,6 +179,7 @@ func change_state(new_state: Constants.ActorState) -> void:
 
 		Constants.ActorState.DEAD:
 			animated_sprite.play("death")
+
 
 ## process the current state, e.g. moving if in MOVING
 func process_current_state() -> void:
@@ -203,6 +206,7 @@ func _reset_actions() -> void:
 		for action in action_array:
 			action.reset_cooldown()
 
+
 ## move towards next target using the nav path
 func move_towards_target() -> void:
 	# get next destination
@@ -211,13 +215,14 @@ func move_towards_target() -> void:
 	# determine route
 	var direction : Vector2 = global_position.direction_to(target_pos)
 	var desired_velocity : Vector2 = direction * stats.move_speed
-	var steering := (desired_velocity - velocity)
+	var steering : Vector2 = (desired_velocity - velocity)
 
 	# update velocity
 	velocity += steering
 	_navigation_agent.set_velocity(velocity)
 
 	move_and_slide()
+
 
 ## enact actor's death
 func die() -> void:
@@ -232,6 +237,7 @@ func die() -> void:
 	emit_signal("died")
 
 	print(name + " died.")
+
 
 ## execute actor's attack
 func attack() -> void:
@@ -252,6 +258,7 @@ func attack() -> void:
 		print(name + " used " + attack_to_use.friendly_name + ".")
 		attack_to_use.use(_target)
 		emit_signal("attacked")
+
 
 ## add status effect to actor
 func add_status_effect(creator: Actor, status_effect_name: String) -> void:
@@ -288,6 +295,7 @@ func process_animation_completion() -> void:
 		Constants.ActorState.DEAD:
 			die()
 
+
 ## trigger death
 ## signal emitted by stats
 func _on_health_depleted() -> void:
@@ -296,6 +304,7 @@ func _on_health_depleted() -> void:
 	is_targetable = false
 	change_state(Constants.ActorState.DEAD)
 
+
 func _on_hit_received(attacker: Actor) -> void:
 	# flash damage indicator
 	var tween = get_tree().create_tween()
@@ -303,11 +312,14 @@ func _on_hit_received(attacker: Actor) -> void:
 
 	_use_actions(Constants.ActionType.ON_HIT, attacker)
 
+
 func _on_death() -> void:
 	_use_actions(Constants.ActionType.ON_DEATH, self)
 
+
 func _on_attack() -> void:
 	_use_actions(Constants.ActionType.ON_ATTACK, self)
+
 
 func _on_stamina_depleted() -> void:
 	# TODO: apply exhausted status effect

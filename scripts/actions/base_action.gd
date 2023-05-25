@@ -141,3 +141,13 @@ func _effect_terrain(terrain) -> void:
 ## visual, such as animation
 func _effect_visual(visual) -> void:
 	push_warning("visual: effect not created")
+
+
+## apply force as a vector
+func _effect_apply_force(velocity) -> void:
+	push_warning("apply_force: effect not created")
+
+
+## teleport to new location
+func _effect_teleport(direction, distance) -> void:
+	push_warning("teleport: effect not created")
