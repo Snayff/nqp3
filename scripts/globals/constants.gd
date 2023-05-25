@@ -62,16 +62,28 @@ enum ActionTag {
 	SUMMON,
 	TERRAIN,
 	STATUS_EFFECT,
-	STAT_MOD
+	STAT_MOD,
 }
 
 ## different action types
 enum ActionType {
 	ATTACK,
-	ON_HIT,
+	STATUS_EFFECT,
+	REACTION,
+}
+
+## different ways an action can be triggered
+enum ActionTriggerType {
+	ATTACK,  ## the trigger is choosing to use the attack
 	ON_DEATH,
 	ON_ATTACK,
-	STATUS_EFFECT,
+	ON_HEAL,
+	ON_SUMMON,
+	ON_KILL,
+	ON_MOVE,
+	ON_DEAL_DAMAGE,
+	ON_RECEIVE_DAMAGE
+
 }
 
 ############# PATHS ##############

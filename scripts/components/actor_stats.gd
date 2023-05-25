@@ -1,4 +1,5 @@
 class_name ActorStats extends Resource
+## The stats that define an actor, such as attack and defence
 
 const MODIFIABLE_STATS : Array[String] = [
 	"max_health",

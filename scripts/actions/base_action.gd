@@ -5,19 +5,21 @@ class_name BaseAction extends Node
 ########### CONFIG #############
 
 @export_group("config")
-@export var friendly_name : String
+@export var friendly_name : String = ""
 @export var tags : Array[Constants.ActionTag] = []
 @export var valid_target_types : Array[Constants.TargetType] = []
+@export var trigger : Constants.ActionTriggerType = Constants.ActionTriggerType.ATTACK
+@export var action_type : Constants.ActionType = Constants.ActionType.ATTACK
 @export var _base_stamina_cost : int = 0
-@export var _base_cooldown : float
-@export var _base_damage : int
-@export var _base_damage_type : Constants.DamageType
+@export var _base_cooldown : float = 0.0
+@export var _base_damage : int = 0
+@export var _base_damage_type : Constants.DamageType = Constants.DamageType.MUNDANE
 
 @export_group("", "")  # end grouping
 
 ######### ATTRIBUTES ##########
 
-var _uid : int
+var uid : int
 var _creator : Actor
 var _target : Actor
 var _cooldown_timer : Timer
@@ -52,7 +54,7 @@ var icon : Texture
 func _init(creator: Actor) -> void:
 	_creator = creator
 
-	_uid = Utility.generate_id()
+	uid = Utility.generate_id()
 
 	_cooldown_timer = Timer.new()
 	_cooldown_timer.set_one_shot(true)

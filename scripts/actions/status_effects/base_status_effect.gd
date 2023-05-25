@@ -64,5 +64,5 @@ func on_duration_expiry() -> void:
 ########## EFFECTS FOR STATUS EFFECTS #########
 
 func _effect_stat_mod(stat_name: String, amount: int, mod_type: Constants.StatModType) -> void:
-	_target.stats.add_modifier(stat_name, _uid, mod_type, amount)
+	_target.stats.add_modifier(stat_name, uid, mod_type, amount)
 
