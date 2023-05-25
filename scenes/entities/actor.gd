@@ -11,8 +11,6 @@ signal no_longer_targetable
 signal dealt_damage(amount: int, damage_type: Constants.DamageType)
 ## emitted when received damage
 signal took_damage(amount: int, damage_type: Constants.DamageType)
-## emitted when completed attack
-signal attacked
 ## took a hit, includes actor attacking us
 signal hit_received(attacker: Actor)
 ## emitted when died
@@ -39,14 +37,14 @@ signal status_effect_removed
 ##
 ## added to combatant on init by Unit
 var stats : ActorStats
-
 ## decision making
 var _ai: BaseAI
-
 ## Each action's data stored in this array represents an action the actor can perform.
 ##
 ## Dict of Array of Actions; Dictionary[ActionType, Array[BaseAction]]
-var actions : Dictionary
+var actions : Dictionary  # FIXME: remove
+var actions_ : ActorActions
+var status_effects : ActorStatusEffects
 
 ######### FUNCTIONAL ATTRIBUTES ###############
 
@@ -111,18 +109,20 @@ func actor_setup() -> void:
 	# Wait for the first physics frame so the NavigationServer can sync.
 	await get_tree().physics_frame
 
-	_ai = BaseAI.new()
+	_ai = BaseAI.new()  # TODO: should be added in factory based on unit data
 	add_child(_ai)
 
 	# Now that the navigation map is no longer empty, set the movement target.
 	refresh_target()
 
 	# conect to signals
+	died.connect(_on_death)
+	hit_received.connect(_on_hit_received)
+
 	stats.health_depleted.connect(_on_health_depleted)
 	stats.stamina_depleted.connect(_on_stamina_depleted)
-	died.connect(_on_death)
-	attacked.connect(_on_attack)
-	hit_received.connect(_on_hit_received)
+
+	actions_.attacked.connect(_on_attack)
 
 ########## MAIN LOOP ##########
 

@@ -1,6 +1,8 @@
 class_name ActorActions extends Node
 ## data and functionality for an actors actions
 
+signal attacked  ## emitted when completed attack
+
 var attacks : Dictionary = {}  ## {uid, BaseAction}
 var reactions: Dictionary = {}  ## {ReactionTriggerType, {uid, BaseAction}}
 
@@ -46,6 +48,8 @@ func use_attack(uid: int, target: Actor) -> void:
 	attack.use(target)
 	attack.reset_cooldown()
 
+	emit_signal("attacked")
+
 ## use a random, ready attack. resets cooldown.
 ##
 ## preference given to non basic attacks
@@ -67,4 +71,5 @@ func use_random_attack(target: Actor) -> void:
 		print(name + " used " + attack_to_use.friendly_name + ".")
 		attack_to_use.use(target)
 		attack_to_use.reset_cooldown()
+
 		emit_signal("attacked")
