@@ -31,9 +31,9 @@ signal died
 ## resource that manages both the base and final stats for the actor.
 ##
 ## added to combatant on init by Unit
-var stats : ActorStats
+var stats : ActorStats  # cant be private due to needing access to all its attributes
 ## decision making
-var _ai: BaseAI
+var _ai : BaseAI
 ## Each action's data stored in this array represents an action the actor can perform.
 ##
 ## Dict of Array of Actions; Dictionary[ActionType, Array[BaseAction]]
@@ -42,24 +42,25 @@ var _status_effects : ActorStatusEffects
 
 ######### FUNCTIONAL ATTRIBUTES ###############
 
-var _previous_state := Constants.ActorState.IDLE
-var _state := Constants.ActorState.IDLE
+var uid : int
+var _previous_state : Constants.ActorState = Constants.ActorState.IDLE
+var _state : Constants.ActorState = Constants.ActorState.IDLE
 var _target : Actor
-var _facing := Constants.Direction.LEFT
-var is_active: bool:
+var _facing : Constants.Direction = Constants.Direction.LEFT
+var is_active : bool:
 	get:
 		return is_active
 	set(value):
 		is_active = value
 		set_process(is_active)
-var is_targetable: bool:
+var is_targetable : bool:
 	get:
 		return is_targetable
 	set(value):
 		is_targetable = value
 		if not value:
 			no_longer_targetable.emit()
-var has_ready_attack: bool:
+var has_ready_attack : bool:
 	get:
 		return _actions.has_ready_attack
 	set(value):
@@ -74,14 +75,14 @@ var is_melee : bool:
 
 ######### UI ATTRIBUTES ###############
 
-var is_selected: bool = false:
+var is_selected : bool = false:
 	get:
 		return is_selected
 	set(value):
 		if value and is_selectable:
 			is_selected = value
 			emit_signal("selected_unit", self)
-var is_selectable: bool = true:
+var is_selectable : bool = true:
 	get:
 		return is_selectable
 	set(value):
@@ -92,19 +93,10 @@ var is_selectable: bool = true:
 ######### SETUP #############
 
 func _ready() -> void:
-	pass
-
-
-## post _ready setup
-func actor_setup() -> void:
-	# Wait for the first physics frame so the NavigationServer can sync.
-	await get_tree().physics_frame
+	uid = Utility.generate_id()
 
 	_ai = BaseAI.new()  # TODO: should be added in factory based on unit data
 	add_child(_ai)
-
-	# Now that the navigation map is no longer empty, set the movement target.
-	refresh_target()
 
 	# conect to signals
 	died.connect(_on_death)
@@ -114,6 +106,16 @@ func actor_setup() -> void:
 	stats.stamina_depleted.connect(_on_stamina_depleted)
 
 	_actions.attacked.connect(_on_attack)
+
+
+## post _ready setup
+func actor_setup() -> void:
+	# Wait for the first physics frame so the NavigationServer can sync.
+	await get_tree().physics_frame
+
+	# Now that the navigation map is no longer empty, set the movement target.
+	refresh_target()
+
 
 ########## MAIN LOOP ##########
 
@@ -234,8 +236,8 @@ func add_status_effect(status_effect: BaseStatusEffect) -> void:
 
 
 ## remove a status effect by its uid
-func remove_status_effect(uid: int) -> void:
-	_status_effects.remove_status_effect(uid)
+func remove_status_effect(uid_: int) -> void:
+	_status_effects.remove_status_effect(uid_)
 
 ############ REACTIONS ###########
 

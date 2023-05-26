@@ -78,6 +78,8 @@ func _add_actor_groups(instance: Actor, team: String) -> Actor:
 	return instance
 
 func _add_actions(instance: Actor, unit_data: Dictionary) -> Actor:
+	var actions_ : ActorActions = ActorActions.new()
+
 	var actions : Dictionary = {}
 
 	# init array for all action types
