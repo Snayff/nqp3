@@ -15,12 +15,7 @@ signal took_damage(amount: int, damage_type: Constants.DamageType)
 signal hit_received(attacker: Actor)
 ## emitted when died
 signal died
-## status effect logged on actor
-signal status_effect_added
-## status effect affected actor
-signal status_effect_applied
-## status effect removed
-signal status_effect_removed
+
 
 
 
@@ -42,9 +37,8 @@ var _ai: BaseAI
 ## Each action's data stored in this array represents an action the actor can perform.
 ##
 ## Dict of Array of Actions; Dictionary[ActionType, Array[BaseAction]]
-var actions : Dictionary  # FIXME: remove
-var actions_ : ActorActions
-var status_effects : ActorStatusEffects
+var _actions : ActorActions
+var _status_effects : ActorStatusEffects
 
 ######### FUNCTIONAL ATTRIBUTES ###############
 
@@ -67,10 +61,7 @@ var is_targetable: bool:
 			no_longer_targetable.emit()
 var has_ready_attack: bool:
 	get:
-		for action in actions[Constants.ActionType.ATTACK]:
-			if action.is_ready:
-				return true
-		return false
+		return _actions.has_ready_attack
 	set(value):
 		push_warning("Tried to set has_ready_attack directly. Not allowed.")
 var is_melee : bool:
@@ -122,7 +113,7 @@ func actor_setup() -> void:
 	stats.health_depleted.connect(_on_health_depleted)
 	stats.stamina_depleted.connect(_on_stamina_depleted)
 
-	actions_.attacked.connect(_on_attack)
+	_actions.attacked.connect(_on_attack)
 
 ########## MAIN LOOP ##########
 
@@ -199,13 +190,6 @@ func process_current_state() -> void:
 
 ######### ACTIONS ############
 
-## put all actions on cooldown
-func _reset_actions() -> void:
-	# loop dict then array
-	for action_array in actions.values():
-		for action in action_array:
-			action.reset_cooldown()
-
 
 ## move towards next target using the nav path
 func move_towards_target() -> void:
@@ -241,40 +225,17 @@ func die() -> void:
 
 ## execute actor's attack
 func attack() -> void:
-	var attack_to_use : BaseAction
-	for action in actions[Constants.ActionType.ATTACK]:
-		if action.is_ready:
-			# we want to use other attacks before basic attack, if we have found one, use it.
-			if not action is BasicAttack:
-				attack_to_use = action
-				break
-			else:
-				attack_to_use = action
-
-	# check we have an attack
-	if attack_to_use == null:
-		push_warning("Tried to use attack, but no attack ready.")
-	else:
-		print(name + " used " + attack_to_use.friendly_name + ".")
-		attack_to_use.use(_target)
-		emit_signal("attacked")
+	_actions.use_random_attack(_target)  # signal emitted in func
 
 
 ## add status effect to actor
-func add_status_effect(creator: Actor, status_effect_name: String) -> void:
-	var action_type = Constants.ActionType.STATUS_EFFECT
-	var script_path : String = Utility.get_action_type_script_path(action_type) + status_effect_name + ".gd"
-	var status_effect = load(script_path).new(creator)
-	actions[action_type].append(status_effect)
-
-	emit_signal("status_effect_added")
+func add_status_effect(status_effect: BaseStatusEffect) -> void:
+	_status_effects.add_status_effect(status_effect)  # signal emitted in func
 
 
-## remove a status effect by its index
-func remove_status_effect(status_effect_index: int) -> void:
-	var action_type = Constants.ActionType.STATUS_EFFECT
-	if actions[action_type].size() >= status_effect_index:
-		actions[action_type].pop(status_effect_index)
+## remove a status effect by its uid
+func remove_status_effect(uid: int) -> void:
+	_status_effects.remove_status_effect(uid)
 
 ############ REACTIONS ###########
 
@@ -310,15 +271,15 @@ func _on_hit_received(attacker: Actor) -> void:
 	var tween = get_tree().create_tween()
 	tween.tween_property(animated_sprite, "modulate", Color.RED, 1)
 
-	_use_actions(Constants.ActionType.ON_HIT, attacker)
+	_actions.trigger_reactions(Constants.ActionTriggerType.ON_RECEIVE_DAMAGE, attacker)
 
 
 func _on_death() -> void:
-	_use_actions(Constants.ActionType.ON_DEATH, self)
+	_actions.trigger_reactions(Constants.ActionTriggerType.ON_DEATH, self)
 
 
 func _on_attack() -> void:
-	_use_actions(Constants.ActionType.ON_ATTACK, self)
+	_actions.trigger_reactions(Constants.ActionTriggerType.ON_ATTACK, self)
 
 
 func _on_stamina_depleted() -> void:
@@ -349,12 +310,3 @@ func _refresh_facing() -> void:
 	else:
 		self._facing = Constants.Direction.RIGHT
 		animated_sprite.flip_h = false
-
-## use all actions of given type, reset cooldown after use
-func _use_actions(action_type: Constants.ActionType, target_: Actor) -> void:
-	for action in actions[action_type]:
-		if action.is_ready:
-			print(name + " used " + action.friendly_name + ".")
-			action.use(target_)
-			action.reset_cooldown()
-

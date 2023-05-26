@@ -5,6 +5,14 @@ signal attacked  ## emitted when completed attack
 
 var attacks : Dictionary = {}  ## {uid, BaseAction}
 var reactions: Dictionary = {}  ## {ReactionTriggerType, {uid, BaseAction}}
+var has_ready_attack: bool:
+	get:
+		for action in attacks:
+			if action.is_ready:
+				return true
+		return false
+	set(value):
+		push_warning("Tried to set has_ready_attack directly. Not allowed.")
 
 func _ready() -> void:
 	# init dict for all reactions
@@ -73,3 +81,13 @@ func use_random_attack(target: Actor) -> void:
 		attack_to_use.reset_cooldown()
 
 		emit_signal("attacked")
+
+
+## put all actions on cooldown
+func reset_actions() -> void:
+	for attack in attacks.values():
+		attack.reset_cooldown()
+
+	for trigger in reactions.keys():
+		for reaction in reactions[trigger].values():
+			reaction.reset_cooldown()
