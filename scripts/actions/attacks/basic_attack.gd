@@ -1,11 +1,13 @@
 class_name BasicAttack extends BaseAction
 
+
 func _configure() -> void:
 	friendly_name = "Attack"
 	tags = [Constants.ActionTag.DAMAGE]
 	valid_target_types = [Constants.TargetType.ENEMY]
 	_base_cooldown = 5
 	_base_stamina_cost = 5
+	_base_damage = 10
 
 
 func use(initial_target: Actor) -> void:
@@ -26,7 +28,7 @@ func use(initial_target: Actor) -> void:
 			apply_damage = false
 
 	if apply_damage:
-		_effect_damage(_creator.stats.attack, _creator.stats.damage_type)
+		_effect_damage(_base_damage + _creator.stats.attack, _creator.stats.damage_type)
 
 
 func get_description() -> String:

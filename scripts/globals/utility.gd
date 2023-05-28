@@ -49,6 +49,8 @@ func get_action_type_script_path(action_type: Constants.ActionType) -> String:
 	match action_type:
 		Constants.ActionType.ATTACK:
 			path = Constants.PATH_ATTACKS
+		Constants.ActionType.STATUS_EFFECT:
+			path = Constants.PATH_STATUS_EFFECTS
 		_:
 			path = Constants.PATH_REACTIONS
 

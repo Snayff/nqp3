@@ -4,16 +4,14 @@ class_name Actor extends CharacterBody2D
 ########## SIGNALS ##################
 
 ## emitted when unit selected
-signal selected_unit(actor: Actor)  # TODO: I dont think this is right, we select unit but get actor?
+signal selected_unit(actor: Actor)  # FIXME: I dont think this is right, we select unit but get actor?
 ## emitted when is_targetable changed to false
 signal no_longer_targetable
 ## emitted when successfully dealt damage
 signal dealt_damage(amount: int, damage_type: Constants.DamageType)
 ## emitted when received damage
 signal took_damage(amount: int, damage_type: Constants.DamageType)
-## emitted when completed attack
-signal attacked
-## took a hit, includes actor attacking us
+## took a hit, includes the actor attacking us
 signal hit_received(attacker: Actor)
 ## emitted when died
 signal died
@@ -31,41 +29,38 @@ signal died
 ## resource that manages both the base and final stats for the actor.
 ##
 ## added to combatant on init by Unit
-var stats : ActorStats
-
+var stats : ActorStats  # cant be private due to needing access to all its attributes
 ## decision making
-var _ai: BaseAI
-
+var _ai : BaseAI
 ## Each action's data stored in this array represents an action the actor can perform.
 ##
 ## Dict of Array of Actions; Dictionary[ActionType, Array[BaseAction]]
-var actions : Dictionary
+var _actions : ActorActions
+var _status_effects : ActorStatusEffects
 
 ######### FUNCTIONAL ATTRIBUTES ###############
 
-var _previous_state := Constants.EntityState.IDLE
-var _state := Constants.EntityState.IDLE
+var uid : int
+var _previous_state : Constants.ActorState = Constants.ActorState.IDLE
+var _state : Constants.ActorState = Constants.ActorState.IDLE
 var _target : Actor
-var _facing := Constants.Direction.LEFT
-var is_active: bool:
+var _facing : Constants.Direction = Constants.Direction.LEFT
+var is_active : bool:
 	get:
 		return is_active
 	set(value):
 		is_active = value
 		set_process(is_active)
-var is_targetable: bool:
+var is_targetable : bool:
 	get:
 		return is_targetable
 	set(value):
 		is_targetable = value
 		if not value:
 			no_longer_targetable.emit()
-var has_ready_attack: bool:
+var has_ready_attack : bool:
 	get:
-		for action in actions[Constants.ActionType.ATTACK]:
-			if action.is_ready:
-				return true
-		return false
+		return _actions.has_ready_attack
 	set(value):
 		push_warning("Tried to set has_ready_attack directly. Not allowed.")
 var is_melee : bool:
@@ -78,14 +73,14 @@ var is_melee : bool:
 
 ######### UI ATTRIBUTES ###############
 
-var is_selected: bool = false:
+var is_selected : bool = false:
 	get:
 		return is_selected
 	set(value):
 		if value and is_selectable:
 			is_selected = value
 			emit_signal("selected_unit", self)
-var is_selectable: bool = true:
+var is_selectable : bool = true:
 	get:
 		return is_selectable
 	set(value):
@@ -96,25 +91,41 @@ var is_selectable: bool = true:
 ######### SETUP #############
 
 func _ready() -> void:
-	pass
+	uid = Utility.generate_id()
+
+	_ai = BaseAI.new()  # TODO: should be added in factory based on unit data
+	add_child(_ai)
+
 
 ## post _ready setup
 func actor_setup() -> void:
+
+	_connect_signals()
+
 	# Wait for the first physics frame so the NavigationServer can sync.
 	await get_tree().physics_frame
-
-	_ai = BaseAI.new()
-	add_child(_ai)
 
 	# Now that the navigation map is no longer empty, set the movement target.
 	refresh_target()
 
+
+## connect up all relevant signals for actor
+##
+## must be called after ready due to being created in Factory and components not being available
+func _connect_signals() -> void:
 	# conect to signals
+	died.connect(_on_death)
+	hit_received.connect(_on_hit_received)
+
+	# connect to component signals
 	stats.health_depleted.connect(_on_health_depleted)
 	stats.stamina_depleted.connect(_on_stamina_depleted)
-	died.connect(_on_death)
-	attacked.connect(_on_attack)
-	hit_received.connect(_on_hit_received)
+
+	# link component signals
+	_status_effects.stat_modifier_added.connect(stats.add_modifier)
+	_status_effects.stat_modifier_removed.connect(stats.remove_modifier)
+
+	_actions.attacked.connect(_on_attack)
 
 ########## MAIN LOOP ##########
 
@@ -139,62 +150,58 @@ func update_state() -> void:
 		var in_attack_range : bool = _navigation_agent.distance_to_target() <= stats.attack_range
 		if in_attack_range and has_ready_attack:
 			_navigation_agent.target_position = global_position
-			if _state != Constants.EntityState.ATTACKING:
-				change_state(Constants.EntityState.ATTACKING)
+			if _state != Constants.ActorState.ATTACKING:
+				change_state(Constants.ActorState.ATTACKING)
 
 		# has target but not in range, move towards target
 		else:
-			if _state != Constants.EntityState.MOVING:
-				change_state(Constants.EntityState.MOVING)
+			if _state != Constants.ActorState.MOVING:
+				change_state(Constants.ActorState.MOVING)
 
 	# has no target, go idle
 	else:
-		if _state != Constants.EntityState.MOVING:
-			change_state(Constants.EntityState.IDLE)
+		if _state != Constants.ActorState.MOVING:
+			change_state(Constants.ActorState.IDLE)
+
 
 ## change to new state, trigger transition action
 ## actions will trigger after animation
-func change_state(new_state: Constants.EntityState) -> void:
+func change_state(new_state: Constants.ActorState) -> void:
 	_previous_state = _state
 	_state = new_state
 
 	match _state:
-		Constants.EntityState.IDLE:
+		Constants.ActorState.IDLE:
 			animated_sprite.play("idle")
 
-		Constants.EntityState.ATTACKING:
+		Constants.ActorState.ATTACKING:
 			animated_sprite.play("attack")
 
-		Constants.EntityState.MOVING:
+		Constants.ActorState.MOVING:
 			animated_sprite.play("walk")
 
-		Constants.EntityState.DEAD:
+		Constants.ActorState.DEAD:
 			animated_sprite.play("death")
+
 
 ## process the current state, e.g. moving if in MOVING
 func process_current_state() -> void:
 	match _state:
-		Constants.EntityState.IDLE:
+		Constants.ActorState.IDLE:
 			refresh_target()
 
-		Constants.EntityState.ATTACKING:
+		Constants.ActorState.ATTACKING:
 			pass
 
-		Constants.EntityState.MOVING:
+		Constants.ActorState.MOVING:
 			move_towards_target()
 			_refresh_facing()
 
-		Constants.EntityState.DEAD:
+		Constants.ActorState.DEAD:
 			pass
 
 ######### ACTIONS ############
 
-## put all actions on cooldown
-func _reset_actions() -> void:
-	# loop dict then array
-	for action_array in actions.values():
-		for action in action_array:
-			action.reset_cooldown()
 
 ## move towards next target using the nav path
 func move_towards_target() -> void:
@@ -204,13 +211,14 @@ func move_towards_target() -> void:
 	# determine route
 	var direction : Vector2 = global_position.direction_to(target_pos)
 	var desired_velocity : Vector2 = direction * stats.move_speed
-	var steering := (desired_velocity - velocity)
+	var steering : Vector2 = (desired_velocity - velocity)
 
 	# update velocity
 	velocity += steering
 	_navigation_agent.set_velocity(velocity)
 
 	move_and_slide()
+
 
 ## enact actor's death
 func die() -> void:
@@ -226,44 +234,40 @@ func die() -> void:
 
 	print(name + " died.")
 
+
 ## execute actor's attack
 func attack() -> void:
-	var attack_to_use : BaseAction
-	for action in actions[Constants.ActionType.ATTACK]:
-		if action.is_ready:
-			# we want to use other attacks before basic attack, if we have found one, use it.
-			if not action is BasicAttack:
-				attack_to_use = action
-				break
-			else:
-				attack_to_use = action
+	_actions.use_random_attack(_target)  # signal emitted in func
 
-	# check we have an attack
-	if attack_to_use == null:
-		push_warning("Tried to use attack, but no attack ready.")
-	else:
-		print(name + " used " + attack_to_use.friendly_name + ".")
-		attack_to_use.use(_target)
-		emit_signal("attacked")
+
+## add status effect to actor
+func add_status_effect(status_effect: BaseStatusEffect) -> void:
+	_status_effects.add_status_effect(status_effect)  # signal emitted in func
+
+
+## remove a status effect by its uid
+func remove_status_effect(uid_: int) -> void:
+	_status_effects.remove_status_effect(uid_)
 
 ############ REACTIONS ###########
 
 ## act out result of animations completion
 func process_animation_completion() -> void:
 	match _state:
-		Constants.EntityState.IDLE:
+		Constants.ActorState.IDLE:
 			# just keep idling
 			pass
 
-		Constants.EntityState.ATTACKING:
+		Constants.ActorState.ATTACKING:
 			attack()
 
-		Constants.EntityState.MOVING:
+		Constants.ActorState.MOVING:
 			# walking not dependant on anim completion
 			pass
 
-		Constants.EntityState.DEAD:
+		Constants.ActorState.DEAD:
 			die()
+
 
 ## trigger death
 ## signal emitted by stats
@@ -271,20 +275,24 @@ func _on_health_depleted() -> void:
 	# immediately remove targetable, dont wait for animation to finish
 	is_active = false
 	is_targetable = false
-	change_state(Constants.EntityState.DEAD)
+	change_state(Constants.ActorState.DEAD)
+
 
 func _on_hit_received(attacker: Actor) -> void:
 	# flash damage indicator
 	var tween = get_tree().create_tween()
 	tween.tween_property(animated_sprite, "modulate", Color.RED, 1)
 
-	_use_actions(Constants.ActionType.ON_HIT, attacker)
+	_actions.trigger_reactions(Constants.ActionTriggerType.ON_RECEIVE_DAMAGE, attacker)
+
 
 func _on_death() -> void:
-	_use_actions(Constants.ActionType.ON_DEATH, self)
+	_actions.trigger_reactions(Constants.ActionTriggerType.ON_DEATH, self)
+
 
 func _on_attack() -> void:
-	_use_actions(Constants.ActionType.ON_ATTACK, self)
+	_actions.trigger_reactions(Constants.ActionTriggerType.ON_ATTACK, self)
+
 
 func _on_stamina_depleted() -> void:
 	# TODO: apply exhausted status effect
@@ -314,12 +322,3 @@ func _refresh_facing() -> void:
 	else:
 		self._facing = Constants.Direction.RIGHT
 		animated_sprite.flip_h = false
-
-## use all actions of given type, reset cooldown after use
-func _use_actions(action_type: Constants.ActionType, target_: Actor) -> void:
-	for action in actions[action_type]:
-		if action.is_ready:
-			print(name + " used " + action.friendly_name + ".")
-			action.use(target_)
-			action.reset_cooldown()
-

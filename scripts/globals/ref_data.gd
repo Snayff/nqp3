@@ -25,7 +25,8 @@ const unit_data: Dictionary = {
 		"actions": {  ## must use {Action Type, script name} (NOT class name)
 			Constants.ActionType.ATTACK : [
 				"basic_attack"
-			]
+			],
+			Constants.ActionType.REACTION : { },
 		}
 	},
 	"conjurer": {
@@ -50,9 +51,11 @@ const unit_data: Dictionary = {
 			Constants.ActionType.ATTACK : [
 				"basic_attack"
 			],
-			Constants.ActionType.ON_HIT : [
-				"spiky_shell"
-			]
+			Constants.ActionType.REACTION : {
+				Constants.ActionTriggerType.ON_DEAL_DAMAGE : [
+					"spiky_shell"
+				]
+			}
 		}
 	},
 

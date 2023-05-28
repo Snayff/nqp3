@@ -1,4 +1,5 @@
 class_name ActorStats extends Resource
+## The stats that define an actor, such as attack and defence
 
 const MODIFIABLE_STATS : Array[String] = [
 	"max_health",
@@ -29,6 +30,9 @@ signal stamina_depleted
 
 ######### ATTRIBUTES ###########
 
+## effects modifying stats.
+##
+## Dict[String, Dict[int, Dict[string, StatModType | int | float]]
 var _modifiers : Dictionary = {}
 
 # resource stats
@@ -119,9 +123,6 @@ var _modifiers : Dictionary = {}
 		_recalculate("num_units")
 @export var num_units : int
 
-
-
-
 # non-combat
 @export_group("Non Combat")
 @export var base_gold_cost : int:
@@ -138,14 +139,26 @@ func _init() -> void:
 	for stat in MODIFIABLE_STATS:
 		_modifiers[stat] = {}
 
+
 ## rerun _init() and reset to base values
 func reinit() -> void:
 	_init()
 	health = max_health
+	stamina = max_stamina
+
 
 ## recalculate a given stat, using the base value and any modifiers
 func _recalculate(stat_name: String) -> void:
 	var value: float = get("base_" + stat_name)
+
+	# _modifiers = {
+	# 	"def" : {
+	#		id : {
+	#			"type": mod_type,
+	#			"value": value
+	#		}
+	#	}
+	#}
 
 	# get the array of modifiers corresponding to a stat.
 	var modifiers: Array = _modifiers[stat_name].values()
@@ -164,16 +177,15 @@ func _recalculate(stat_name: String) -> void:
 
 	set(stat_name, value)
 
-## Adds a modifier to a stat and returns id.
-func add_modifier(stat_name: String, mod_type: Constants.StatModType, value: float) -> int:
-	assert(stat_name in MODIFIABLE_STATS, "Trying to add a modifier to a nonexistent stat.")
 
-	var id := Utility.generate_id()
-	_modifiers[stat_name][id] = {"type": mod_type, "value": value}
+## Adds a modifier to a stat.
+func add_modifier(stat_mod: StatModifier) -> void:
+	assert(stat_mod.stat_name in MODIFIABLE_STATS, "Trying to add a modifier to a nonexistent stat.")
 
-	_recalculate(stat_name)
+	_modifiers[stat_mod.stat_name][stat_mod.uid] = {"type": stat_mod.mod_type, "value": stat_mod.amount}
 
-	return id
+	_recalculate(stat_mod.stat_name)
+
 
 ## Removes a modifier from stat.
 func remove_modifier(stat_name: String, id: int) -> void:
@@ -181,3 +193,4 @@ func remove_modifier(stat_name: String, id: int) -> void:
 
 	_modifiers[stat_name].erase(id)
 	_recalculate(stat_name)
+
