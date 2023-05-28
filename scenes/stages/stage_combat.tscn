@@ -1,23 +1,23 @@
 [gd_scene load_steps=3 format=3 uid="uid://betah64gift5a"]
 
-[ext_resource type="PackedScene" uid="uid://dwpdgpkx1pao1" path="res://scenes/entities/unit.tscn" id="1_um7j3"]
+[ext_resource type="PackedScene" uid="uid://dwpdgpkx1pao1" path="res://scenes/entities/unit.tscn" id="1_cniwu"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_qkf04"]
 vertices = PackedVector2Array(1, 21, -2, -3, 1151, -1, 690, 210, 451, 210, 1144, 650, 680, 648, 0, 646, 451, 647)
 polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3, 4), PackedInt32Array(5, 6, 3, 2), PackedInt32Array(7, 0, 4, 8)])
 outlines = Array[PackedVector2Array]([PackedVector2Array(1, 21, 0, 646, 451, 647, 451, 210, 690, 210, 680, 648, 1144, 650, 1151, -1, -2, -3)])
 
-[node name="TestBed" type="Node2D"]
+[node name="StageCombat" type="Node2D"]
 
 [node name="NavigationRegion2D" type="NavigationRegion2D" parent="."]
 navigation_polygon = SubResource("NavigationPolygon_qkf04")
 
-[node name="UnitCollective" parent="." instance=ExtResource("1_um7j3")]
+[node name="UnitCollective" parent="." instance=ExtResource("1_cniwu")]
 position = Vector2(946, 362)
 team = "enemy"
 unit_name = "copper_golem"
 
-[node name="UnitCollective2" parent="." instance=ExtResource("1_um7j3")]
+[node name="UnitCollective2" parent="." instance=ExtResource("1_cniwu")]
 position = Vector2(211, 515)
 team = "ally"
 unit_name = "conjurer"
