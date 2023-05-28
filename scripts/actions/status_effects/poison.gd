@@ -5,9 +5,11 @@ func _configure() -> void:
 	tags = [Constants.ActionTag.DAMAGE]
 	valid_target_types = [Constants.TargetType.ANY]
 	_base_cooldown = 1
-	_base_duration = 10
+	_base_duration = 2
 	_base_damage = 1
 	_base_damage_type = Constants.DamageType.MUNDANE
+	var weaken = StatModifier.new("attack", Constants.StatModType.ADD, -10)
+	stat_modifiers.append(weaken)
 
 
 func use(initial_target: Actor) -> void:

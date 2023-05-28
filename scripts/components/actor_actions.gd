@@ -81,7 +81,6 @@ func use_random_attack(target: Actor) -> void:
 	if attack_to_use == null:
 		push_warning("Tried to use attack, but no attack ready.")
 	else:
-		print(name + " used " + attack_to_use.friendly_name + ".")
 		attack_to_use.use(target)
 		attack_to_use.reset_cooldown()
 

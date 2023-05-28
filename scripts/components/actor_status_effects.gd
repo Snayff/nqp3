@@ -16,6 +16,10 @@ var _effects : Dictionary = {}  ## Dict[int, BaseStatusEffect]   {uid, BaseStatu
 
 ## add status effect to actor
 func add_status_effect(status_effect: BaseStatusEffect) -> void:
+	# dont add more than 1 of same status effect
+	if _has_effect_already(status_effect):
+		return
+
 	_effects[status_effect.uid] = status_effect
 
 	# signal for  all stat mods, to be picked up in Actor
@@ -40,3 +44,11 @@ func remove_status_effect(uid: int) -> void:
 
 	# inform of removal
 	emit_signal("status_effect_removed")
+
+
+## confirm if a status effect of same type already exists on actor
+func _has_effect_already(status_effect: BaseStatusEffect) -> bool:
+	for effect in _effects.values():
+		if status_effect.friendly_name == effect.friendly_name:
+			return true
+	return false

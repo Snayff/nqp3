@@ -89,7 +89,7 @@ func set_cooldown(cooldown_time: float) -> void:
 		_cooldown_timer.wait_time = cooldown_time
 		_cooldown_timer.start()
 
-
+## reset cooldown timer to cooldown time
 func reset_cooldown() -> void:
 	set_cooldown(cooldown)
 
@@ -123,6 +123,7 @@ func _effect_status(status_effect_name: String) -> void:
 	var action_type = Constants.ActionType.STATUS_EFFECT
 	var script_path : String = Utility.get_action_type_script_path(action_type) + status_effect_name + ".gd"
 	var status_effect = load(script_path).new(_target)
+	_target.add_status_effect(status_effect)
 
 
 ## create a projectile. returns created projectile

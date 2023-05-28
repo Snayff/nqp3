@@ -193,3 +193,4 @@ func remove_modifier(stat_name: String, id: int) -> void:
 
 	_modifiers[stat_name].erase(id)
 	_recalculate(stat_name)
+

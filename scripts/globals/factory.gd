@@ -90,9 +90,7 @@ func _add_actor_groups(instance: Actor, team: String) -> Actor:
 func _add_actions(instance: Actor, unit_data: Dictionary) -> Actor:
 	var actions : ActorActions = ActorActions.new()
 
-
 	for action_type in Constants.ActionType.values():
-		print(str(action_type))
 
 		# attacks are Dictionary[ActionType, Array[String]]
 		if action_type == Constants.ActionType.ATTACK:
