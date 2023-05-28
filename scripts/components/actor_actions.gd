@@ -7,7 +7,7 @@ var attacks : Dictionary = {}  ## {uid, BaseAction}
 var reactions: Dictionary = {}  ## {ReactionTriggerType, {uid, BaseAction}}
 var has_ready_attack: bool:
 	get:
-		for action in attacks:
+		for action in attacks.values():
 			if action.is_ready:
 				return true
 		return false
@@ -15,9 +15,8 @@ var has_ready_attack: bool:
 		push_warning("Tried to set has_ready_attack directly. Not allowed.")
 
 func _ready() -> void:
-	# init dict for all reactions
-	for trigger in Constants.ReactionTriggerType.values():
-		reactions[trigger] = {}
+	pass
+	# N.B. _ready called too late to init triggers
 
 func add_attack(attack: BaseAction) -> void:
 	attacks[attack.uid] = attack
@@ -28,6 +27,9 @@ func remove_attack(uid: int) -> void:
 
 
 func add_reaction(reaction: BaseAction, trigger: Constants.ActionTriggerType) -> void:
+	if not trigger in reactions:
+		reactions[trigger] = {}
+
 	reactions[trigger][reaction.uid] = reaction
 
 
@@ -37,7 +39,10 @@ func remove_reaction(trigger: Constants.ActionTriggerType, uid: int) -> void:
 
 ## use all actions of given type, reset cooldown after use
 func trigger_reactions(trigger: Constants.ActionTriggerType, target: Actor) -> void:
-	for reaction in reactions[trigger]:
+	if not trigger in reactions:
+		return
+
+	for reaction in reactions[trigger].values():
 		if reaction.is_ready():
 			print(name + " used " + reaction.friendly_name + ".")
 			reaction.use(target)
@@ -63,7 +68,7 @@ func use_attack(uid: int, target: Actor) -> void:
 ## preference given to non basic attacks
 func use_random_attack(target: Actor) -> void:
 	var attack_to_use : BaseAction
-	for action in attacks:
+	for action in attacks.values():
 		if action.is_ready:
 			# we want to use other attacks before basic attack, if we have found one, use it.
 			if not action is BasicAttack:

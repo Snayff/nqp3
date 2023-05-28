@@ -19,12 +19,14 @@ func create_actor(creator: Unit, name_: String, team: String) -> Actor:
 
 	instance.stats = _build_actor_stats(unit_data)
 	instance.animated_sprite.sprite_frames = _build_sprite_frame(name_)
+	instance._status_effects = _build_status_effects()
 	instance = _add_actions(instance, unit_data)
 
 	# shuffle starting pos so they dont start on top of one another
 	var pos_offset := Vector2(randf_range(-5, 5), randf_range(-5, 5))
 	var pos := Vector2(creator.global_position.x + pos_offset.x, creator.global_position.y + pos_offset.y)
 	instance.global_position = pos
+	# TODO: ensure shuffling to empty spot
 
 	instance.actor_setup()
 
@@ -34,6 +36,7 @@ func create_actor(creator: Unit, name_: String, team: String) -> Actor:
 	instance.set_physics_process(true)
 
 	return instance
+
 
 func _build_actor_stats(unit_data: Dictionary) -> ActorStats:
 	var stats = ActorStats.new()
@@ -58,6 +61,7 @@ func _build_actor_stats(unit_data: Dictionary) -> ActorStats:
 
 	return stats
 
+
 func _build_sprite_frame(unit_name: String) -> SpriteFrames:
 	var anim_names : Array = Constants.ActorAnimationType.keys()
 	var path_prefix : String = "res://sprites/units/"
@@ -70,6 +74,11 @@ func _build_sprite_frame(unit_name: String) -> SpriteFrames:
 
 	return sprite_frames
 
+
+func _build_status_effects() -> ActorStatusEffects:
+	var status_effects = ActorStatusEffects.new()
+	return status_effects
+
 func _add_actor_groups(instance: Actor, team: String) -> Actor:
 	instance.add_to_group(team)
 	instance.add_to_group("actor")
@@ -77,11 +86,13 @@ func _add_actor_groups(instance: Actor, team: String) -> Actor:
 
 	return instance
 
+
 func _add_actions(instance: Actor, unit_data: Dictionary) -> Actor:
 	var actions : ActorActions = ActorActions.new()
 
 
 	for action_type in Constants.ActionType.values():
+		print(str(action_type))
 
 		# attacks are Dictionary[ActionType, Array[String]]
 		if action_type == Constants.ActionType.ATTACK:
@@ -100,12 +111,14 @@ func _add_actions(instance: Actor, unit_data: Dictionary) -> Actor:
 
 		else:
 			# we only add attacks and reactions, ignore everything else
-			break
+			continue
 
 	# add actions to instance
-	instance.actions = actions
+	instance._actions = actions
 
 	return instance
+
+
 
 ############ PROJECTILES ################
 

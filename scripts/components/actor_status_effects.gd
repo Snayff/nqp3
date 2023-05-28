@@ -7,13 +7,22 @@ signal status_effect_added
 signal status_effect_applied
 ## status effect removed
 signal status_effect_removed
+## an actors stat is to be modified
+signal stat_modifier_added(stat_modifier: StatModifier)
+## a stat modifier is to be removed
+signal stat_modifier_removed(uid)
 
-var _effects : Dictionary = {}  ## {uid, BaseStatusEffect}
+var _effects : Dictionary = {}  ## Dict[int, BaseStatusEffect]   {uid, BaseStatusEffect}
 
 ## add status effect to actor
 func add_status_effect(status_effect: BaseStatusEffect) -> void:
 	_effects[status_effect.uid] = status_effect
 
+	# signal for  all stat mods, to be picked up in Actor
+	for stat_mod in status_effect.stat_modifiers:
+		emit_signal("stat_modifier_added", stat_mod)
+
+	# inform of addition
 	emit_signal("status_effect_added")
 
 
@@ -22,6 +31,12 @@ func remove_status_effect(uid: int) -> void:
 	if not uid in _effects:
 		push_warning("Tried to remove status effect (" + str(uid) + ") that doesnt exist.")
 
+	# signal for any stat mods to remove, picked up in actor
+	for stat_mod in _effects[uid].stats_modified:
+		emit_signal("stat_modifier_removed", stat_mod.stat_name, stat_mod.uid)
+
+	# del status effect
 	_effects.erase(uid)
 
+	# inform of removal
 	emit_signal("status_effect_removed")

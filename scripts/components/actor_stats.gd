@@ -32,7 +32,7 @@ signal stamina_depleted
 
 ## effects modifying stats.
 ##
-## Dict[String, Dict[int, Dict[string, int | float]]
+## Dict[String, Dict[int, Dict[string, StatModType | int | float]]
 var _modifiers : Dictionary = {}
 
 # resource stats
@@ -139,10 +139,13 @@ func _init() -> void:
 	for stat in MODIFIABLE_STATS:
 		_modifiers[stat] = {}
 
+
 ## rerun _init() and reset to base values
 func reinit() -> void:
 	_init()
 	health = max_health
+	stamina = max_stamina
+
 
 ## recalculate a given stat, using the base value and any modifiers
 func _recalculate(stat_name: String) -> void:
@@ -174,13 +177,14 @@ func _recalculate(stat_name: String) -> void:
 
 	set(stat_name, value)
 
+
 ## Adds a modifier to a stat.
-func add_modifier(stat_name: String, mod_id: int, mod_type: Constants.StatModType, value: float) -> void:
-	assert(stat_name in MODIFIABLE_STATS, "Trying to add a modifier to a nonexistent stat.")
+func add_modifier(stat_mod: StatModifier) -> void:
+	assert(stat_mod.stat_name in MODIFIABLE_STATS, "Trying to add a modifier to a nonexistent stat.")
 
-	_modifiers[stat_name][mod_id] = {"type": mod_type, "value": value}
+	_modifiers[stat_mod.stat_name][stat_mod.uid] = {"type": stat_mod.mod_type, "value": stat_mod.amount}
 
-	_recalculate(stat_name)
+	_recalculate(stat_mod.stat_name)
 
 
 ## Removes a modifier from stat.

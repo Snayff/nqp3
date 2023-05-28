@@ -25,8 +25,8 @@ var duration_remaining : float:
 		return _duration_timer.time_left
 	set(value):
 		push_warning("Tried to set duration_remaining directly. Not allowed.")
-## array of stat_names. Used if self modified a stat
-var _stats_modified: Array[String]
+## array of [StatModifier]s. Used if self modified a stat. Applied during application of self to Actor.
+var stat_modifiers: Array[StatModifier] = []
 
 func _init(creator: Actor) -> void:
 	super(creator)
@@ -61,8 +61,4 @@ func on_duration_expiry() -> void:
 	# TODO: remove stat mods and self
 
 
-########## EFFECTS FOR STATUS EFFECTS #########
-
-func _effect_stat_mod(stat_name: String, amount: int, mod_type: Constants.StatModType) -> void:
-	_target.stats.add_modifier(stat_name, uid, mod_type, amount)
 

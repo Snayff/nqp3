@@ -25,7 +25,8 @@ const unit_data: Dictionary = {
 		"actions": {  ## must use {Action Type, script name} (NOT class name)
 			Constants.ActionType.ATTACK : [
 				"basic_attack"
-			]
+			],
+			Constants.ActionType.REACTION : { },
 		}
 	},
 	"conjurer": {

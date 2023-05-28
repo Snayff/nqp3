@@ -4,19 +4,17 @@ class_name Actor extends CharacterBody2D
 ########## SIGNALS ##################
 
 ## emitted when unit selected
-signal selected_unit(actor: Actor)  # TODO: I dont think this is right, we select unit but get actor?
+signal selected_unit(actor: Actor)  # FIXME: I dont think this is right, we select unit but get actor?
 ## emitted when is_targetable changed to false
 signal no_longer_targetable
 ## emitted when successfully dealt damage
 signal dealt_damage(amount: int, damage_type: Constants.DamageType)
 ## emitted when received damage
 signal took_damage(amount: int, damage_type: Constants.DamageType)
-## took a hit, includes actor attacking us
+## took a hit, includes the actor attacking us
 signal hit_received(attacker: Actor)
 ## emitted when died
 signal died
-
-
 
 
 ############## NODES ##################
@@ -98,24 +96,36 @@ func _ready() -> void:
 	_ai = BaseAI.new()  # TODO: should be added in factory based on unit data
 	add_child(_ai)
 
-	# conect to signals
-	died.connect(_on_death)
-	hit_received.connect(_on_hit_received)
-
-	stats.health_depleted.connect(_on_health_depleted)
-	stats.stamina_depleted.connect(_on_stamina_depleted)
-
-	_actions.attacked.connect(_on_attack)
-
 
 ## post _ready setup
 func actor_setup() -> void:
+
+	_connect_signals()
+
 	# Wait for the first physics frame so the NavigationServer can sync.
 	await get_tree().physics_frame
 
 	# Now that the navigation map is no longer empty, set the movement target.
 	refresh_target()
 
+
+## connect up all relevant signals for actor
+##
+## must be called after ready due to being created in Factory and components not being available
+func _connect_signals() -> void:
+	# conect to signals
+	died.connect(_on_death)
+	hit_received.connect(_on_hit_received)
+
+	# connect to component signals
+	stats.health_depleted.connect(_on_health_depleted)
+	stats.stamina_depleted.connect(_on_stamina_depleted)
+
+	# link component signals
+	_status_effects.stat_modifier_added.connect(stats.add_modifier)
+	_status_effects.stat_modifier_removed.connect(stats.remove_modifier)
+
+	_actions.attacked.connect(_on_attack)
 
 ########## MAIN LOOP ##########
 
