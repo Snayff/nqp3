@@ -1,6 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://betah64gift5a"]
+[gd_scene load_steps=3 format=3 uid="uid://01qjv0fopxx0"]
 
-[ext_resource type="PackedScene" uid="uid://dwpdgpkx1pao1" path="res://scenes/entities/unit.tscn" id="1_cniwu"]
+[ext_resource type="PackedScene" uid="uid://c07u6gw5ur4l" path="res://scenes/entities/unit/unit.tscn" id="1_x055b"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_qkf04"]
 vertices = PackedVector2Array(1, 21, -2, -3, 1151, -1, 690, 210, 451, 210, 1144, 650, 680, 648, 0, 646, 451, 647)
@@ -12,12 +12,12 @@ outlines = Array[PackedVector2Array]([PackedVector2Array(1, 21, 0, 646, 451, 647
 [node name="NavigationRegion2D" type="NavigationRegion2D" parent="."]
 navigation_polygon = SubResource("NavigationPolygon_qkf04")
 
-[node name="UnitCollective" parent="." instance=ExtResource("1_cniwu")]
+[node name="UnitCollective" parent="." instance=ExtResource("1_x055b")]
 position = Vector2(946, 362)
 team = "enemy"
 unit_name = "copper_golem"
 
-[node name="UnitCollective2" parent="." instance=ExtResource("1_cniwu")]
+[node name="UnitCollective2" parent="." instance=ExtResource("1_x055b")]
 position = Vector2(211, 515)
 team = "ally"
 unit_name = "conjurer"

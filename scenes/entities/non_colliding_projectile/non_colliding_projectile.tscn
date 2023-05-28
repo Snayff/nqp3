@@ -1,8 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://dxx1ustujdx0m"]
+[gd_scene load_steps=6 format=3]
 
-[ext_resource type="Script" path="res://scenes/entities/non_colliding_projectile.gd" id="1_5dxft"]
+[ext_resource type="Script" path="res://scenes/entities/non_colliding_projectile/non_colliding_projectile.gd" id="1_5dxft"]
 [ext_resource type="Texture2D" uid="uid://dg554oxl15fs8" path="res://sprites/projectiles/chaos.png" id="2_174ax"]
-[ext_resource type="PackedScene" uid="uid://nju7fg7qutd2" path="res://scenes/components/hit_box.tscn" id="3_xgud1"]
+[ext_resource type="PackedScene" path="res://scenes/components/hit_box/hit_box.tscn" id="3_xgud1"]
 
 [sub_resource type="ShaderMaterial" id="3"]
 

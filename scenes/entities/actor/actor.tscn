@@ -1,7 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://bhf8qxmlttjpg"]
+[gd_scene load_steps=5 format=3]
 
-[ext_resource type="Script" path="res://scenes/entities/actor.gd" id="1_de4j8"]
-[ext_resource type="PackedScene" uid="uid://ysrm6dv3sld4" path="res://scenes/components/hurt_box.tscn" id="2_eofpl"]
+[ext_resource type="Script" path="res://scenes/entities/actor/actor.gd" id="1_de4j8"]
+[ext_resource type="PackedScene" path="res://scenes/components/hurt_box/hurt_box.tscn" id="2_eofpl"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_pdl0k"]
 radius = 4.0

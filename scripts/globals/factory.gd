@@ -1,8 +1,8 @@
 extends Node
 ## A factory for object creation.
 
-const _Actor : PackedScene = preload("res://scenes/entities/actor.tscn")
-const _Projectile: PackedScene = preload("res://scenes/entities/non_colliding_projectile.tscn")
+const _Actor : PackedScene = preload("res://scenes/entities/actor/actor.tscn")
+const _Projectile: PackedScene = preload("res://scenes/entities/non_colliding_projectile/non_colliding_projectile.tscn")
 
 ############ ACTOR ##############
 

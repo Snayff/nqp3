@@ -1,7 +1,7 @@
 extends Node
 ## Misc. utility functions.
 
-const _HitBox : PackedScene = preload("res://scenes/components/hit_box.tscn")
+const _HitBox : PackedScene = preload("res://scenes/components/hit_box/hit_box.tscn")
 
 var _last_id : int = 0
 
