@@ -20,19 +20,19 @@ func _ready() -> void:
 		reactions[trigger] = {}
 
 func add_attack(attack: BaseAction) -> void:
-	attacks[attack._uid] = attack
+	attacks[attack.uid] = attack
 
 
 func remove_attack(uid: int) -> void:
 	attacks.erase(uid)
 
 
-func add_reaction(attack: BaseAction) -> void:
-	attacks[attack._uid] = attack
+func add_reaction(reaction: BaseAction, trigger: Constants.ActionTriggerType) -> void:
+	reactions[trigger][reaction.uid] = reaction
 
 
 func remove_reaction(trigger: Constants.ActionTriggerType, uid: int) -> void:
-	attacks.erase(uid)
+	reactions[trigger].erase(uid)
 
 
 ## use all actions of given type, reset cooldown after use

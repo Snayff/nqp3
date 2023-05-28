@@ -50,9 +50,11 @@ const unit_data: Dictionary = {
 			Constants.ActionType.ATTACK : [
 				"basic_attack"
 			],
-			Constants.ActionType.ON_HIT : [
-				"spiky_shell"
-			]
+			Constants.ActionType.REACTION : {
+				Constants.ActionTriggerType.ON_DEAL_DAMAGE : [
+					"spiky_shell"
+				]
+			}
 		}
 	},
 

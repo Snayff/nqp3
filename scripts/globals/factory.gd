@@ -78,21 +78,29 @@ func _add_actor_groups(instance: Actor, team: String) -> Actor:
 	return instance
 
 func _add_actions(instance: Actor, unit_data: Dictionary) -> Actor:
-	var actions_ : ActorActions = ActorActions.new()
+	var actions : ActorActions = ActorActions.new()
 
-	var actions : Dictionary = {}
 
-	# init array for all action types
 	for action_type in Constants.ActionType.values():
-		actions[action_type] = []
 
-		# ensure key exists
-		if action_type in unit_data["actions"]:
-
-			# add all actions from path
+		# attacks are Dictionary[ActionType, Array[String]]
+		if action_type == Constants.ActionType.ATTACK:
 			for action_name in unit_data["actions"][action_type]:
 				var script_path : String = Utility.get_action_type_script_path(action_type) + action_name + ".gd"
-				actions[action_type].append(load(script_path).new(instance))
+				var script : BaseAction = load(script_path).new(instance)
+				actions.add_attack(script)
+
+		# reactions are Dictionary[ActionType, Dictionary[ActionTriggerType, Array[String]]
+		elif action_type == Constants.ActionType.REACTION:
+			for trigger in unit_data["actions"][action_type]:
+				for action_name in unit_data["actions"][action_type][trigger]:
+					var script_path : String = Utility.get_action_type_script_path(action_type) + action_name + ".gd"
+					var script : BaseAction = load(script_path).new(instance)
+					actions.add_reaction(script, trigger)
+
+		else:
+			# we only add attacks and reactions, ignore everything else
+			break
 
 	# add actions to instance
 	instance.actions = actions
