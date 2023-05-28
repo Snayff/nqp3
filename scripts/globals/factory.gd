@@ -3,10 +3,24 @@ extends Node
 
 const _Actor : PackedScene = preload("res://scenes/entities/actor/actor.tscn")
 const _Projectile: PackedScene = preload("res://scenes/entities/non_colliding_projectile/non_colliding_projectile.tscn")
+const _Unit : PackedScene = preload("res://scenes/entities/unit/unit.tscn")
+
+
+########### UNIT ###############
+
+## create unit, pulling base data from RefData
+func create_unit(creator, unit_name: String, team_name: String) -> Unit:
+	var unit = _Unit.instantiate()
+	creator.add_child(unit)
+
+	unit.unit_name = unit_name
+	unit.team = team_name
+
+	return unit
 
 ############ ACTOR ##############
 
-## create actor pulling base data from RefData
+## create actor, pulling base data from RefData
 func create_actor(creator: Unit, name_: String, team: String) -> Actor:
 
 	var instance = _Actor.instantiate()

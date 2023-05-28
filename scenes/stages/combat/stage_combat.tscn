@@ -1,23 +1,35 @@
-[gd_scene load_steps=3 format=3 uid="uid://01qjv0fopxx0"]
+[gd_scene load_steps=5 format=3 uid="uid://01qjv0fopxx0"]
 
-[ext_resource type="PackedScene" uid="uid://c07u6gw5ur4l" path="res://scenes/entities/unit/unit.tscn" id="1_x055b"]
+[ext_resource type="Script" path="res://scenes/stages/combat/stage_combat.gd" id="1_b58k1"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_qkf04"]
 vertices = PackedVector2Array(1, 21, -2, -3, 1151, -1, 690, 210, 451, 210, 1144, 650, 680, 648, 0, 646, 451, 647)
 polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3, 4), PackedInt32Array(5, 6, 3, 2), PackedInt32Array(7, 0, 4, 8)])
 outlines = Array[PackedVector2Array]([PackedVector2Array(1, 21, 0, 646, 451, 647, 451, 210, 690, 210, 680, 648, 1144, 650, 1151, -1, -2, -3)])
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_vjhue"]
+size = Vector2(267, 272)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_30vk6"]
+size = Vector2(394, 292)
+
 [node name="StageCombat" type="Node2D"]
+script = ExtResource("1_b58k1")
 
 [node name="NavigationRegion2D" type="NavigationRegion2D" parent="."]
 navigation_polygon = SubResource("NavigationPolygon_qkf04")
 
-[node name="UnitCollective" parent="." instance=ExtResource("1_x055b")]
-position = Vector2(946, 362)
-team = "enemy"
-unit_name = "copper_golem"
+[node name="AllySpawner" type="Area2D" parent="."]
+position = Vector2(95, 233)
 
-[node name="UnitCollective2" parent="." instance=ExtResource("1_x055b")]
-position = Vector2(211, 515)
-team = "ally"
-unit_name = "conjurer"
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AllySpawner"]
+position = Vector2(111, 225)
+shape = SubResource("RectangleShape2D_vjhue")
+debug_color = Color(0.192157, 0.627451, 0.411765, 0.419608)
+
+[node name="EnemySpawner" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="EnemySpawner"]
+position = Vector2(921, 474)
+shape = SubResource("RectangleShape2D_30vk6")
+debug_color = Color(0.835294, 0.372549, 0.313726, 0.419608)

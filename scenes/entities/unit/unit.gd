@@ -8,20 +8,22 @@ class_name Unit extends Node2D
 @export var unit_name: String
 
 # functional
-@onready var target_timer := $TargetRefresh
+@onready var target_timer : Timer = $TargetRefresh
 var base_target_timer_duration := 0.3
 
 var _actors : Array[Actor] = []
 
-# Called when the node enters the scene tree for the first time.
+
 func _ready():
 	# init timer
 	target_timer.wait_time = base_target_timer_duration
 
-	# create units entities
+## spawn actors onto the combat map
+func spawn_actors():
 	var unit_data = RefData.unit_data[unit_name]
 	for i in unit_data["num_units"]:
 		_actors.append(Factory.create_actor(self, unit_name, team))
+
 
 ## refresh targets and restart timer
 func _on_timer_target_refresh_timeout() -> void:
