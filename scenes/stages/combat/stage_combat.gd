@@ -40,16 +40,32 @@ func _place_units() -> void:
 		else:
 			spawner = _enemy_spawner_col_shape
 
-		var spawner_width : float = spawner.shape.get_rect().size.x
+		# get area info
+		var spawner_rect : Rect2 = spawner.shape.get_rect()
+		var spawner_width : float = spawner_rect.size.x
 		var width_margin : float = spawner_width * 0.1
-		var spawner_height : float = spawner.shape.get_rect().size.y
+		var spawner_height : float = spawner_rect.size.y
 		var height_margin : float = spawner_height * 0.1
+
+		# offset by pos relative to parent to get origin
+		var spawner_x : float = spawner.global_position.x - abs(spawner_rect.position.x)
+		var spawner_y : float = spawner.global_position.y  - abs(spawner_rect.position.y)
 
 		# get an offset amount that is within an inner margin of the edges
 		var x_offset = randi_range(width_margin, spawner_width - width_margin)
 		var y_offset = randi_range(height_margin, spawner_height - height_margin)
-		unit.position.x = spawner.position.x + x_offset
-		unit.position.y = spawner.position.y + y_offset
+
+		# determine min, max and placement
+		var x_pos = spawner_x + x_offset
+		var x_min = spawner_x + width_margin
+		var x_max = spawner_x + (spawner_width - width_margin)
+		var y_pos = spawner_y + y_offset
+		var y_min = spawner_y + height_margin
+		var y_max = spawner_y + (spawner_height - height_margin)
+
+		# set pos
+		unit.global_position.x = clamp(x_pos, x_min, x_max)
+		unit.global_position.y = clamp(y_pos, y_min, y_max)
 
 
 ## spawn all actors for all units

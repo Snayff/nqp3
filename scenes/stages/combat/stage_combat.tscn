@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://01qjv0fopxx0"]
+[gd_scene load_steps=6 format=3 uid="uid://01qjv0fopxx0"]
 
 [ext_resource type="Script" path="res://scenes/stages/combat/stage_combat.gd" id="1_b58k1"]
+[ext_resource type="Script" path="res://scenes/stages/combat/FPSCounter.gd" id="2_qukio"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_qkf04"]
 vertices = PackedVector2Array(1, 21, -2, -3, 1151, -1, 690, 210, 451, 210, 1144, 650, 680, 648, 0, 646, 451, 647)
@@ -20,16 +21,22 @@ script = ExtResource("1_b58k1")
 navigation_polygon = SubResource("NavigationPolygon_qkf04")
 
 [node name="AllySpawner" type="Area2D" parent="."]
-position = Vector2(95, 233)
+position = Vector2(220, 465)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AllySpawner"]
-position = Vector2(111, 225)
+position = Vector2(7, 5)
 shape = SubResource("RectangleShape2D_vjhue")
 debug_color = Color(0.192157, 0.627451, 0.411765, 0.419608)
 
 [node name="EnemySpawner" type="Area2D" parent="."]
+position = Vector2(913, 468)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="EnemySpawner"]
-position = Vector2(921, 474)
+position = Vector2(0, 1)
 shape = SubResource("RectangleShape2D_30vk6")
 debug_color = Color(0.835294, 0.372549, 0.313726, 0.419608)
+
+[node name="FPSCounter" type="Label" parent="."]
+offset_right = 40.0
+offset_bottom = 23.0
+script = ExtResource("2_qukio")
