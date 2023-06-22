@@ -208,14 +208,19 @@ func move_towards_target() -> void:
 	# get next destination
 	var target_pos : Vector2 = _navigation_agent.get_next_path_position()
 
+	var social_distancing_force : Vector2
+	for area in tracked_distancing_bubbles:
+		var direction = self.global_position.direction_to(area.global_position)
+		social_distancing_force -= direction * 50.0
+	
+
 	# determine route
 	var direction : Vector2 = global_position.direction_to(target_pos)
 	var desired_velocity : Vector2 = direction * stats.move_speed
 	var steering : Vector2 = (desired_velocity - velocity)
 
 	# update velocity
-	velocity += steering
-	_navigation_agent.set_velocity(velocity)
+	velocity += steering + social_distancing_force
 
 	move_and_slide()
 
@@ -322,3 +327,18 @@ func _refresh_facing() -> void:
 	else:
 		self._facing = Constants.Direction.RIGHT
 		animated_sprite.flip_h = false
+
+var tracked_distancing_bubbles : Array [Area2D]
+
+func _on_ally_push_area_entered(area : Area2D):
+	if not area.is_in_group("distancing bubble"):
+		return
+	assert(not tracked_distancing_bubbles.has(area))
+	tracked_distancing_bubbles.append(area)
+
+
+func _on_ally_push_area_exited(area : Area2D):
+	if not area.is_in_group("distancing bubble"):
+		return
+	tracked_distancing_bubbles.erase(area)
+	assert(not tracked_distancing_bubbles.has(area))
