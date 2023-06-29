@@ -1,0 +1,34 @@
+1. Make the entities push each other away (remember to cap vector length)
+
+For the pushing, make a demo scene in playground that does the thing correctly
+XDXD
+Visualization is always neat
+
+extends Node2D
+
+func _process(delta):
+	var p1 : Vector2 = $p1.position
+	var p2 : Vector2 = $p2.position
+	
+	var p3 : Vector2 = p1.direction_to(p2) * maxf((300 - p1.distance_to(p2) * 2), 0)
+	
+	$result.position = p2 + p3
+	
+
+^ Just run that for like every actor you have in your hashgrid "environment"?
+At least after testing if the other actor's distance is near enough XD
+
+Pushing could be optimized way more to use a "forcefield" thingy, where all nodes
+first write data about where they would push things, and then they read
+where they should be pushed
+
+The writing part is the expensive part, you will write to every grid cell you would push
+BUT it scales linearly with each added actor, instead of exponentially!!
+
+2. Make the targeting better
+
+Store the targeted node on the actor, and just update each frame/some small duration
+(updating the position didn't really seem to have much of a cost XD)
+
+3. ???
+4. Profit!

@@ -9,7 +9,7 @@ class_name Unit extends Node2D
 
 # functional
 @onready var target_timer : Timer = $TargetRefresh
-var base_target_timer_duration := 0.3
+var base_target_timer_duration := 3.3
 
 var _actors : Array[Actor] = []
 

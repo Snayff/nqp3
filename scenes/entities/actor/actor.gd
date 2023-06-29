@@ -88,9 +88,19 @@ var is_selectable : bool = true:
 		if not is_selectable:
 			is_selected = false
 
+var neighbours : Array
+
 ######### SETUP #############
 
+var the_chosen : bool = false
+
 func _ready() -> void:
+	
+	Xd.actual_count += 1
+	if Xd.yes:
+		the_chosen = true
+		Xd.yes = false
+	
 	uid = Utility.generate_id()
 
 	_ai = BaseAI.new()  # TODO: should be added in factory based on unit data
@@ -132,10 +142,12 @@ func _connect_signals() -> void:
 func _physics_process(delta) -> void:
 
 	if is_in_group("alive"):
-
+		if the_chosen:
+			print(neighbours.size())
 		# if we have reached the destination get a new target
 		if _navigation_agent.is_navigation_finished():
-				refresh_target()
+			pass
+#			refresh_target()
 
 		update_state()
 		process_current_state()
@@ -207,7 +219,7 @@ func process_current_state() -> void:
 func move_towards_target() -> void:
 	# get next destination
 	var target_pos : Vector2 = _navigation_agent.get_next_path_position()
-
+	
 	var social_distancing_force : Vector2
 	for area in tracked_distancing_bubbles:
 		var direction = self.global_position.direction_to(area.global_position)
@@ -307,6 +319,8 @@ func _on_stamina_depleted() -> void:
 
 ## get new target and update _ai and nav's target
 func refresh_target() -> void:
+	if the_chosen:
+		print("Refreshing is happening ", Time.get_ticks_msec())
 	# disconnect from current signals on target
 	if _target:
 		_target.no_longer_targetable.disconnect(refresh_target)
