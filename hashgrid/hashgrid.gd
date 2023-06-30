@@ -9,6 +9,9 @@ const offsets : Array [Vector2] = [
 	Vector2(-1,-1),Vector2(0,-1),Vector2(1,-1)
 ]
 
+func _ready():
+	self.process_priority = -4
+
 func _physics_process(delta):
 	hash_grid.clear()
 	for actor in get_tree().get_nodes_in_group("actor"):
@@ -16,6 +19,7 @@ func _physics_process(delta):
 		if not hash_grid.has(tile):
 			hash_grid[tile] = []
 		hash_grid[tile].append(actor)
+		actor.get_node("Label").text = str(tile)
 	
 	for tile in hash_grid.keys():
 		var supa_list : Array

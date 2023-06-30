@@ -142,8 +142,6 @@ func _connect_signals() -> void:
 func _physics_process(delta) -> void:
 
 	if is_in_group("alive"):
-		if the_chosen:
-			print(neighbours.size())
 		# if we have reached the destination get a new target
 		if _navigation_agent.is_navigation_finished():
 			pass
@@ -158,7 +156,9 @@ func _physics_process(delta) -> void:
 func update_state() -> void:
 	# if we have target, move towards them, else get new
 	if _target != null:
+		
 		# attack if in range, else move closer
+		_navigation_agent.target_position = _target.global_position
 		var in_attack_range : bool = _navigation_agent.distance_to_target() <= stats.attack_range
 		if in_attack_range and has_ready_attack:
 			_navigation_agent.target_position = global_position
@@ -221,11 +221,21 @@ func move_towards_target() -> void:
 	var target_pos : Vector2 = _navigation_agent.get_next_path_position()
 	
 	var social_distancing_force : Vector2
-	for area in tracked_distancing_bubbles:
-		var direction = self.global_position.direction_to(area.global_position)
-		social_distancing_force -= direction * 50.0
 	
-
+	var social_loop_limit : int = 7
+	
+	for i in mini(neighbours.size(), social_loop_limit):
+		var neighbour = neighbours[i]
+		var p1 : Vector2 = self.global_position
+		var p2 : Vector2 = neighbour.global_position
+		var p3 : Vector2 = p1.direction_to(p2) * maxf((100 - p1.distance_to(p2) * 2), 0)
+		social_distancing_force -= p3
+	
+	if neighbours.size() > social_loop_limit:
+		# Approximate the remaining social distancing force that we didn't
+		# bother calculating
+		social_distancing_force *= neighbours.size() / float(social_loop_limit)
+	
 	# determine route
 	var direction : Vector2 = global_position.direction_to(target_pos)
 	var desired_velocity : Vector2 = direction * stats.move_speed
@@ -341,18 +351,3 @@ func _refresh_facing() -> void:
 	else:
 		self._facing = Constants.Direction.RIGHT
 		animated_sprite.flip_h = false
-
-var tracked_distancing_bubbles : Array [Area2D]
-
-func _on_ally_push_area_entered(area : Area2D):
-	if not area.is_in_group("distancing bubble"):
-		return
-	assert(not tracked_distancing_bubbles.has(area))
-	tracked_distancing_bubbles.append(area)
-
-
-func _on_ally_push_area_exited(area : Area2D):
-	if not area.is_in_group("distancing bubble"):
-		return
-	tracked_distancing_bubbles.erase(area)
-	assert(not tracked_distancing_bubbles.has(area))
