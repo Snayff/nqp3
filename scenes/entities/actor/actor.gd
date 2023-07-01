@@ -105,6 +105,7 @@ func _ready() -> void:
 
 	_ai = BaseAI.new()  # TODO: should be added in factory based on unit data
 	add_child(_ai)
+	
 
 
 ## post _ready setup
@@ -142,11 +143,6 @@ func _connect_signals() -> void:
 func _physics_process(delta) -> void:
 
 	if is_in_group("alive"):
-		# if we have reached the destination get a new target
-		if _navigation_agent.is_navigation_finished():
-			pass
-#			refresh_target()
-
 		update_state()
 		process_current_state()
 
@@ -160,7 +156,7 @@ func update_state() -> void:
 		# attack if in range, else move closer
 		_navigation_agent.target_position = _target.global_position
 		var in_attack_range : bool = _navigation_agent.distance_to_target() <= stats.attack_range
-		if in_attack_range and has_ready_attack:
+		if in_attack_range and (has_ready_attack or true):
 			_navigation_agent.target_position = global_position
 			if _state != Constants.ActorState.ATTACKING:
 				change_state(Constants.ActorState.ATTACKING)
@@ -223,12 +219,17 @@ func move_towards_target() -> void:
 	var social_distancing_force : Vector2
 	
 	var social_loop_limit : int = 7
+	var distance_to_target : float = _target.global_position.distance_squared_to(self.global_position)
 	
 	for i in mini(neighbours.size(), social_loop_limit):
 		var neighbour = neighbours[i]
 		var p1 : Vector2 = self.global_position
 		var p2 : Vector2 = neighbour.global_position
-		var p3 : Vector2 = p1.direction_to(p2) * maxf((100 - p1.distance_to(p2) * 2), 0)
+		var distance : float = p1.distance_to(p2)
+		if distance < distance_to_target and _ai.is_enemy(neighbour):
+			_target = neighbour
+			distance_to_target = distance
+		var p3 : Vector2 = p1.direction_to(p2) * maxf((100 - distance * 2), 0)
 		social_distancing_force -= p3
 	
 	if neighbours.size() > social_loop_limit:
