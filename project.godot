@@ -23,13 +23,14 @@ Factory="*res://scripts/globals/factory.gd"
 RefData="*res://scripts/globals/ref_data.gd"
 SignalBus="*res://scripts/globals/signal_bus.gd"
 Utility="*res://scripts/globals/utility.gd"
+Hashgrid="*res://hashgrid/hashgrid.gd"
 
 [display]
 
 window/size/viewport_width=1280
 window/size/viewport_height=720
-window/dpi/allow_hidpi=false
 window/stretch/mode="viewport"
+window/dpi/allow_hidpi=false
 
 [editor]
 

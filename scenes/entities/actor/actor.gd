@@ -88,6 +88,8 @@ var is_selectable : bool = true:
 		if not is_selectable:
 			is_selected = false
 
+var neighbours : Array
+
 ######### SETUP #############
 
 func _ready() -> void:
@@ -132,11 +134,6 @@ func _connect_signals() -> void:
 func _physics_process(delta) -> void:
 
 	if is_in_group("alive"):
-
-		# if we have reached the destination get a new target
-		if _navigation_agent.is_navigation_finished():
-				refresh_target()
-
 		update_state()
 		process_current_state()
 
@@ -147,8 +144,9 @@ func update_state() -> void:
 	# if we have target, move towards them, else get new
 	if _target != null:
 		# attack if in range, else move closer
+		_navigation_agent.target_position = _target.global_position
 		var in_attack_range : bool = _navigation_agent.distance_to_target() <= stats.attack_range
-		if in_attack_range and has_ready_attack:
+		if in_attack_range and (has_ready_attack or true):
 			_navigation_agent.target_position = global_position
 			if _state != Constants.ActorState.ATTACKING:
 				change_state(Constants.ActorState.ATTACKING)
@@ -207,15 +205,35 @@ func process_current_state() -> void:
 func move_towards_target() -> void:
 	# get next destination
 	var target_pos : Vector2 = _navigation_agent.get_next_path_position()
-
+	
+	var social_distancing_force : Vector2
+	
+	var social_loop_limit : int = 7
+	var distance_to_target : float = _target.global_position.distance_to(self.global_position)
+	
+	for i in mini(neighbours.size(), social_loop_limit):
+		var neighbour = neighbours[i]
+		var p1 : Vector2 = self.global_position
+		var p2 : Vector2 = neighbour.global_position
+		var distance : float = p1.distance_to(p2)
+		if distance < distance_to_target and _ai.is_enemy(neighbour):
+			_target = neighbour
+			distance_to_target = distance
+		var p3 : Vector2 = p1.direction_to(p2) * maxf((100 - distance * 2), 0)
+		social_distancing_force -= p3
+	
+	if neighbours.size() > social_loop_limit:
+		# Approximate the remaining social distancing force that we didn't
+		# bother calculating
+		social_distancing_force *= neighbours.size() / float(social_loop_limit)
+	
 	# determine route
 	var direction : Vector2 = global_position.direction_to(target_pos)
 	var desired_velocity : Vector2 = direction * stats.move_speed
 	var steering : Vector2 = (desired_velocity - velocity)
 
 	# update velocity
-	velocity += steering
-	_navigation_agent.set_velocity(velocity)
+	velocity += steering + social_distancing_force
 
 	move_and_slide()
 
