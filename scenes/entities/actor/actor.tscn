@@ -43,13 +43,5 @@ collision_layer = 0
 collision_mask = 4
 monitoring = false
 
-[node name="Label" type="Label" parent="."]
-visible = false
-offset_left = -11.0
-offset_top = -10.0
-offset_right = 29.0
-offset_bottom = 16.0
-text = "XD"
-
 [connection signal="animation_finished" from="AnimatedSprite2D" to="." method="process_animation_completion"]
 [connection signal="animation_looped" from="AnimatedSprite2D" to="." method="process_animation_completion"]

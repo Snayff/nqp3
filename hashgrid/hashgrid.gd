@@ -19,7 +19,6 @@ func _physics_process(delta):
 		if not hash_grid.has(tile):
 			hash_grid[tile] = []
 		hash_grid[tile].append(actor)
-		actor.get_node("Label").text = str(tile)
 	
 	for tile in hash_grid.keys():
 		var supa_list : Array

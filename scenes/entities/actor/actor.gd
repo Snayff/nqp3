@@ -92,20 +92,11 @@ var neighbours : Array
 
 ######### SETUP #############
 
-var the_chosen : bool = false
-
 func _ready() -> void:
-	
-	Xd.actual_count += 1
-	if Xd.yes:
-		the_chosen = true
-		Xd.yes = false
-	
 	uid = Utility.generate_id()
 
 	_ai = BaseAI.new()  # TODO: should be added in factory based on unit data
 	add_child(_ai)
-	
 
 
 ## post _ready setup
@@ -152,7 +143,6 @@ func _physics_process(delta) -> void:
 func update_state() -> void:
 	# if we have target, move towards them, else get new
 	if _target != null:
-		
 		# attack if in range, else move closer
 		_navigation_agent.target_position = _target.global_position
 		var in_attack_range : bool = _navigation_agent.distance_to_target() <= stats.attack_range
@@ -219,7 +209,7 @@ func move_towards_target() -> void:
 	var social_distancing_force : Vector2
 	
 	var social_loop_limit : int = 7
-	var distance_to_target : float = _target.global_position.distance_squared_to(self.global_position)
+	var distance_to_target : float = _target.global_position.distance_to(self.global_position)
 	
 	for i in mini(neighbours.size(), social_loop_limit):
 		var neighbour = neighbours[i]
@@ -330,8 +320,6 @@ func _on_stamina_depleted() -> void:
 
 ## get new target and update _ai and nav's target
 func refresh_target() -> void:
-	if the_chosen:
-		print("Refreshing is happening ", Time.get_ticks_msec())
 	# disconnect from current signals on target
 	if _target:
 		_target.no_longer_targetable.disconnect(refresh_target)

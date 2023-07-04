@@ -23,7 +23,6 @@ Factory="*res://scripts/globals/factory.gd"
 RefData="*res://scripts/globals/ref_data.gd"
 SignalBus="*res://scripts/globals/signal_bus.gd"
 Utility="*res://scripts/globals/utility.gd"
-Xd="*res://XD.gd"
 Hashgrid="*res://hashgrid/hashgrid.gd"
 
 [display]
