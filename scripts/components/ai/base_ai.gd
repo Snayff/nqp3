@@ -6,6 +6,14 @@ func _ready() -> void:
 	owner = get_parent()
 	assert(owner is Actor)
 
+func is_enemy(target : Actor) -> bool:
+	if owner.is_in_group("ally"):
+		if target.is_in_group("enemy"):
+			return true
+	if owner.is_in_group("enemy"):
+		if target.is_in_group("ally"):
+			return true
+	return false
 
 ## get a new target on the opposing team.
 ## Can return null

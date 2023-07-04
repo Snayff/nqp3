@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Not Quite Paradise"
-run/main_scene="res://scenes/interactions/test_bed.tscn"
+run/main_scene="res://scenes/stages/combat/stage_combat.tscn"
 config/features=PackedStringArray("4.0", "Forward Plus")
 config/icon="res://icon.svg"
 
@@ -23,13 +23,14 @@ Factory="*res://scripts/globals/factory.gd"
 RefData="*res://scripts/globals/ref_data.gd"
 SignalBus="*res://scripts/globals/signal_bus.gd"
 Utility="*res://scripts/globals/utility.gd"
+Hashgrid="*res://hashgrid/hashgrid.gd"
 
 [display]
 
 window/size/viewport_width=1280
 window/size/viewport_height=720
-window/dpi/allow_hidpi=false
 window/stretch/mode="viewport"
+window/dpi/allow_hidpi=false
 
 [editor]
 

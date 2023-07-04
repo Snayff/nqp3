@@ -30,7 +30,7 @@ func deal_damage(attacker: Actor, defender: Actor, initial_damage: int, damage_t
 	else:
 		team2 = "enemy"
 
-	print(attacker.name + "(" + team  + ") dealt " + str(damage) + " to " + defender.name + "(" + team2 + ").")
+#	print(attacker.name + "(" + team  + ") dealt " + str(damage) + " to " + defender.name + "(" + team2 + ").")
 
 
 ## work out damage of an attack on a defender
