@@ -98,7 +98,6 @@ var _modifiers : Dictionary = {}
 		base_crit_chance = value
 		_recalculate("crit_chance")
 @export var crit_chance : int
-@export var damage_type : Constants.DamageType
 @export var base_penetration : int:
 	set(value):
 		base_penetration = value

@@ -205,12 +205,12 @@ func process_current_state() -> void:
 func move_towards_target() -> void:
 	# get next destination
 	var target_pos : Vector2 = _navigation_agent.get_next_path_position()
-	
+
 	var social_distancing_force : Vector2
-	
+
 	var social_loop_limit : int = 7
 	var distance_to_target : float = _target.global_position.distance_to(self.global_position)
-	
+
 	for i in mini(neighbours.size(), social_loop_limit):
 		var neighbour = neighbours[i]
 		var p1 : Vector2 = self.global_position
@@ -221,12 +221,12 @@ func move_towards_target() -> void:
 			distance_to_target = distance
 		var p3 : Vector2 = p1.direction_to(p2) * maxf((100 - distance * 2), 0)
 		social_distancing_force -= p3
-	
+
 	if neighbours.size() > social_loop_limit:
 		# Approximate the remaining social distancing force that we didn't
 		# bother calculating
 		social_distancing_force *= neighbours.size() / float(social_loop_limit)
-	
+
 	# determine route
 	var direction : Vector2 = global_position.direction_to(target_pos)
 	var desired_velocity : Vector2 = direction * stats.move_speed

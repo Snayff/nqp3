@@ -64,7 +64,6 @@ func _build_actor_stats(unit_data: Dictionary) -> ActorStats:
 	stats.attack = unit_data["attack"]
 	stats.attack_speed = unit_data["attack_speed"]
 	stats.crit_chance = unit_data["crit_chance"]
-	stats.damage_type = unit_data["damage_type"]
 	stats.penetration = unit_data["penetration"]
 	stats.attack_range = unit_data["attack_range"]
 	stats.move_speed = unit_data["move_speed"]

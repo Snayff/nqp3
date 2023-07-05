@@ -8,6 +8,7 @@ func _configure() -> void:
 	_base_cooldown = 5
 	_base_stamina_cost = 5
 	_base_damage = 10
+	_base_damage_type = Constants.DamageType.MUNDANE
 
 
 func use(initial_target: Actor) -> void:
@@ -28,7 +29,7 @@ func use(initial_target: Actor) -> void:
 			apply_damage = false
 
 	if apply_damage:
-		_effect_damage(_base_damage + _creator.stats.attack, _creator.stats.damage_type)
+		_effect_damage(_base_damage + _creator.stats.attack, _base_damage_type)
 
 
 func get_description() -> String:

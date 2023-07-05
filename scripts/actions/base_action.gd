@@ -28,19 +28,19 @@ var cooldown : float:
 	get:
 		# TODO: mod by creator stats
 		return _base_cooldown
-	set(value):
+	set(_value):
 		push_warning("Tried to set cooldown directly. Not allowed.")
 ## amount of time left on cooldown
 var cooldown_remaining : float:
 	get:
 		return _cooldown_timer.time_left
-	set(value):
+	set(_value):
 		push_warning("Tried to set cooldown_remaining directly. Not allowed.")
 ## check if action is ready to use
 var is_ready : bool = true:
 	get:
 		return _cooldown_timer.is_stopped()
-	set(value):
+	set(_value):
 		push_warning("Tried to set is_ready directly. Not allowed.")
 var is_targeting_self : bool = false
 var is_targeting_all : bool = false
@@ -121,8 +121,8 @@ func _effect_heal(amount: int) -> void:
 
 ## apply a status effect to current target
 func _effect_status(status_effect_name: String) -> void:
-	var action_type = Constants.ActionType.STATUS_EFFECT
-	var script_path : String = Utility.get_action_type_script_path(action_type) + status_effect_name + ".gd"
+	var action_type_ = Constants.ActionType.STATUS_EFFECT
+	var script_path : String = Utility.get_action_type_script_path(action_type_) + status_effect_name + ".gd"
 	var status_effect = load(script_path).new(_target)
 	_target.add_status_effect(status_effect)
 
