@@ -5,11 +5,13 @@ class_name BaseAction extends Node
 ########### CONFIG #############
 
 @export_group("config")
-@export var friendly_name : String = ""
-@export var tags : Array[Constants.ActionTag] = []
-@export var valid_target_types : Array[Constants.TargetType] = []
-@export var trigger : Constants.ActionTriggerType = Constants.ActionTriggerType.ATTACK
+@export var friendly_name : String = ""  ## name of the action, shown in the ui
+@export var tags : Array[Constants.ActionTag] = []  ## property tags describing the action
+@export var valid_target_types : Array[Constants.TargetType] = []  ## what targets the action can effect
+@export var trigger : Constants.ActionTrigger = Constants.ActionTrigger.ATTACK  ## what triggers the action
 @export var action_type : Constants.ActionType = Constants.ActionType.ATTACK
+@export var target_selection : Constants.ActionTargetSelection = Constants.ActionTargetSelection.ACTOR  ## what thing is selected to cast the action
+
 @export var _base_stamina_cost : int = 0
 @export var _base_cooldown : float = 0.0
 @export var _base_damage : int = 0
@@ -65,6 +67,8 @@ func _init(creator: Actor) -> void:
 
 
 ## configure the action's base data
+##
+## @tag: virtual method
 func _configure() -> void:
 	assert(false, "Virtual method not overriden.")
 
@@ -84,11 +88,15 @@ func use(initial_target: Actor) -> void:
 	Combat.reduce_stamina(_creator, _base_stamina_cost)
 
 
+## set the cooldown of the action and start the cooldown timer.
+##
+## value must be greater than 0, else ignored.
 func set_cooldown(cooldown_time: float) -> void:
 	# ignore if wait time == 0
 	if cooldown_time > 0:
 		_cooldown_timer.wait_time = cooldown_time
 		_cooldown_timer.start()
+
 
 ## reset cooldown timer to cooldown time
 func reset_cooldown() -> void:
@@ -104,8 +112,12 @@ func get_description() -> String:
 
 ########## EFFECTS ##############
 
-## get new target
-func _effect_new_target(preference: Constants.TargetPreference = Constants.TargetPreference.ANY) -> void:
+## get new target of a type, with a given preference, within a certain range
+func _effect_new_target(
+	target_type:Constants.TargetType,
+	preference: Constants.TargetPreference = Constants.TargetPreference.ANY,
+	range: float = INF
+	) -> void:
 	push_warning("new target: effect not created")
 
 

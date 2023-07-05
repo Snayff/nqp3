@@ -50,7 +50,7 @@ const unit_data: Dictionary = {
 				"basic_attack"
 			],
 			Constants.ActionType.REACTION : {
-				Constants.ActionTriggerType.ON_DEAL_DAMAGE : [
+				Constants.ActionTrigger.ON_DEAL_DAMAGE : [
 					"spiky_shell"
 				]
 			}

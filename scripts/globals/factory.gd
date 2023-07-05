@@ -112,7 +112,7 @@ func _add_actions(instance: Actor, unit_data: Dictionary) -> Actor:
 				var script : BaseAction = load(script_path).new(instance)
 				actions.add_attack(script)
 
-		# reactions are Dictionary[ActionType, Dictionary[ActionTriggerType, Array[String]]
+		# reactions are Dictionary[ActionType, Dictionary[ActionTrigger, Array[String]]
 		elif action_type == Constants.ActionType.REACTION:
 			for trigger in unit_data["actions"][action_type]:
 				for action_name in unit_data["actions"][action_type][trigger]:

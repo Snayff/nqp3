@@ -27,19 +27,19 @@ func remove_attack(uid: int) -> void:
 	attacks.erase(uid)
 
 
-func add_reaction(reaction: BaseAction, trigger: Constants.ActionTriggerType) -> void:
+func add_reaction(reaction: BaseAction, trigger: Constants.ActionTrigger) -> void:
 	if not trigger in reactions:
 		reactions[trigger] = {}
 
 	reactions[trigger][reaction.uid] = reaction
 
 
-func remove_reaction(trigger: Constants.ActionTriggerType, uid: int) -> void:
+func remove_reaction(trigger: Constants.ActionTrigger, uid: int) -> void:
 	reactions[trigger].erase(uid)
 
 
 ## use all actions of given type, reset cooldown after use
-func trigger_reactions(trigger: Constants.ActionTriggerType, target: Actor) -> void:
+func trigger_reactions(trigger: Constants.ActionTrigger, target: Actor) -> void:
 	if not trigger in reactions:
 		return
 

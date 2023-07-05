@@ -301,15 +301,15 @@ func _on_hit_received(attacker: Actor) -> void:
 	var tween = get_tree().create_tween()
 	tween.tween_property(animated_sprite, "modulate", Color.RED, 1)
 
-	_actions.trigger_reactions(Constants.ActionTriggerType.ON_RECEIVE_DAMAGE, attacker)
+	_actions.trigger_reactions(Constants.ActionTrigger.ON_RECEIVE_DAMAGE, attacker)
 
 
 func _on_death() -> void:
-	_actions.trigger_reactions(Constants.ActionTriggerType.ON_DEATH, self)
+	_actions.trigger_reactions(Constants.ActionTrigger.ON_DEATH, self)
 
 
 func _on_attack() -> void:
-	_actions.trigger_reactions(Constants.ActionTriggerType.ON_ATTACK, self)
+	_actions.trigger_reactions(Constants.ActionTrigger.ON_ATTACK, self)
 
 
 func _on_stamina_depleted() -> void:
