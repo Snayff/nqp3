@@ -11,12 +11,13 @@ var has_ready_attack: bool:
 			if action.is_ready:
 				return true
 		return false
-	set(value):
+	set(_value):
 		push_warning("Tried to set has_ready_attack directly. Not allowed.")
 
 func _ready() -> void:
 	pass
 	# N.B. _ready called too late to init triggers
+
 
 func add_attack(attack: BaseAction) -> void:
 	attacks[attack.uid] = attack

@@ -61,14 +61,14 @@ var is_targetable : bool:
 var has_ready_attack : bool:
 	get:
 		return _actions.has_ready_attack
-	set(value):
+	set(_value):
 		push_warning("Tried to set has_ready_attack directly. Not allowed.")
 var is_melee : bool:
 	get:
 		if stats.attack_range == Constants.MELEE_RANGE:
 			return true
 		return false
-	set(value):
+	set(_value):
 		push_warning("Tried to set is_melee directly. Not allowed.")
 
 ######### UI ATTRIBUTES ###############
@@ -146,7 +146,7 @@ func update_state() -> void:
 		# attack if in range, else move closer
 		_navigation_agent.target_position = _target.global_position
 		var in_attack_range : bool = _navigation_agent.distance_to_target() <= stats.attack_range
-		if in_attack_range and (has_ready_attack or true):
+		if in_attack_range and has_ready_attack:
 			_navigation_agent.target_position = global_position
 			if _state != Constants.ActorState.ATTACKING:
 				change_state(Constants.ActorState.ATTACKING)
@@ -255,12 +255,12 @@ func die() -> void:
 
 ## execute actor's attack
 func attack() -> void:
-	_actions.use_random_attack(_target)  # signal emitted in func
+	_actions.use_random_attack(_target)
 
 
 ## add status effect to actor
 func add_status_effect(status_effect: BaseStatusEffect) -> void:
-	_status_effects.add_status_effect(status_effect)  # signal emitted in func
+	_status_effects.add_status_effect(status_effect)
 
 
 ## remove a status effect by its uid
