@@ -16,6 +16,8 @@ class_name BaseAction extends Node
 @export var _base_cooldown : float = 0.0
 @export var _base_damage : int = 0
 @export var _base_damage_type : Constants.DamageType = Constants.DamageType.MUNDANE
+@export var _base_range : int = 0
+@export var _base_cast_time : float = 0.0
 
 @export_group("", "")  # end grouping
 
@@ -38,6 +40,18 @@ var cooldown_remaining : float:
 		return _cooldown_timer.time_left
 	set(_value):
 		push_warning("Tried to set cooldown_remaining directly. Not allowed.")
+var range : float:
+	get:
+		# TODO: mod by creator stats
+		return _base_range
+	set(_value):
+		push_warning("Tried to set range directly. Not allowed.")
+var cast_time : float:
+	get:
+		# TODO: mod by creator stats
+		return _base_cast_time
+	set(_value):
+		push_warning("Tried to set cast_time directly. Not allowed.")
 ## check if action is ready to use
 var is_ready : bool = true:
 	get:

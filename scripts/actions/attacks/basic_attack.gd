@@ -5,10 +5,12 @@ func _configure() -> void:
 	friendly_name = "Attack"
 	tags = [Constants.ActionTag.DAMAGE]
 	valid_target_types = [Constants.TargetType.ENEMY]
-	_base_cooldown = 5
+	_base_cooldown = 1
 	_base_stamina_cost = 5
 	_base_damage = 10
 	_base_damage_type = Constants.DamageType.MUNDANE
+	_base_cast_time = 1
+	_base_range = 100
 
 
 func use(initial_target: Actor) -> void:

@@ -35,9 +35,7 @@ func remove_status_effect(uid: int) -> void:
 	if not uid in _effects:
 		push_warning("Tried to remove status effect (" + str(uid) + ") that doesnt exist.")
 
-	# signal for any stat mods to remove, picked up in actor
-	for stat_mod in _effects[uid].stats_modified:
-		emit_signal("stat_modifier_removed", stat_mod.stat_name, stat_mod.uid)
+	_trigger_stat_mod_removal(uid)
 
 	# del status effect
 	_effects.erase(uid)

@@ -4,8 +4,17 @@ class_name ActorActions extends Node
 signal attacked  ## emitted when completed attack
 
 var attacks : Dictionary = {}  ## {uid, BaseAction}
-var reactions: Dictionary = {}  ## {ReactionTriggerType, {uid, BaseAction}}
-var has_ready_attack: bool:
+var reactions : Dictionary = {}  ## {ReactionTriggerType, {uid, BaseAction}}
+var lowest_attack_range : int :
+	get:
+		var lowest = 9999
+		for attack in attacks.values():
+			if attack.range < lowest:
+				lowest = attack.range
+		return lowest
+	set(_value):
+		push_warning("Tried to set lowest_attack_range directly. Not allowed.")
+var has_ready_attack : bool:
 	get:
 		for action in attacks.values():
 			if action.is_ready:
@@ -56,7 +65,7 @@ func use_attack(uid: int, target: Actor) -> void:
 		push_warning("Tried to use attack that doesnt exist.")
 
 	var attack = attacks[uid]
-	if not attack.is_ready():
+	if not attack.is_ready:
 		push_warning("Tried to use attack, (" + attack.friendly_name + ") that isnt.")
 
 	attack.use(target)
@@ -87,6 +96,19 @@ func use_random_attack(target: Actor) -> void:
 
 		emit_signal("attacked")
 
+## get a random attack, from those available
+func get_random_attack() -> BaseAction:
+	var attack_to_use : BaseAction
+	for action in attacks.values():
+		if action.is_ready:
+			# we want to use other attacks before basic attack, if we have found one, use it.
+			if not action is BasicAttack:
+				attack_to_use = action
+				break
+			else:
+				attack_to_use = action
+
+	return attack_to_use
 
 ## put all actions on cooldown
 func reset_actions() -> void:

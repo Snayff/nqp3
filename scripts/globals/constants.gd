@@ -5,7 +5,8 @@ extends Node
 
 ## different states an actor can be in
 enum ActorState {
-	IDLE,
+	IDLING,
+	CASTING,
 	ATTACKING,
 	MOVING,
 	DEAD
@@ -18,6 +19,7 @@ enum Direction {
 
 ## different animation types for an actor
 enum ActorAnimationType {
+	CAST,
 	ATTACK,
 	DEATH,
 	HIT,
