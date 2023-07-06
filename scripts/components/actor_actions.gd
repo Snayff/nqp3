@@ -5,7 +5,7 @@ signal attacked  ## emitted when completed attack
 
 var attacks : Dictionary = {}  ## {uid, BaseAction}
 var reactions : Dictionary = {}  ## {ReactionTriggerType, {uid, BaseAction}}
-var lowest_attack_range : int :
+var lowest_attack_range : int :  ## TODO: add memoization as getting called a lot
 	get:
 		var lowest = 9999
 		for attack in attacks.values():

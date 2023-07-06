@@ -105,4 +105,4 @@ const PATH_STATUS_EFFECTS : String = "res://scripts/actions/status_effects/" ## 
 
 ############ VALUES ############
 
-const MELEE_RANGE : int = 10  ## the range at which a unit is determined to be melee.
+const MELEE_RANGE : int = 20  ## the range at which a unit is determined to be melee.

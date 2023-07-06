@@ -1,10 +1,24 @@
 extends Node
 ## A factory for object creation.
 
+############ SCENES #########
 const _Actor : PackedScene = preload("res://scenes/entities/actor/actor.tscn")
 const _Projectile: PackedScene = preload("res://scenes/entities/non_colliding_projectile/non_colliding_projectile.tscn")
 const _Unit : PackedScene = preload("res://scenes/entities/unit/unit.tscn")
 
+######### PROJECTILE POOL #############
+
+const _PROJECTILE_POOL_SIZE : int = 100
+var _projectile_pool : Array[NonCollidingProjectile] = []
+var _last_projectile_pool_index : int = -1
+
+
+func _ready() -> void:
+	_init_pools()
+
+func _init_pools() -> void:
+	for i in _PROJECTILE_POOL_SIZE:
+		_projectile_pool.append(_Projectile.instantiate())
 
 ########### UNIT ###############
 
@@ -134,8 +148,18 @@ func _add_actions(instance: Actor, unit_data: Dictionary) -> Actor:
 
 ## create projectile and fire towards target
 func create_projectile(creator: Actor, target: Actor) -> NonCollidingProjectile:
-	var projectile = _Projectile.instantiate()
+
+	# Cycle the pool index between .
+	_last_projectile_pool_index = wrapi(_last_projectile_pool_index + 1, 0, _PROJECTILE_POOL_SIZE)
+	var projectile = _projectile_pool[_last_projectile_pool_index]
+
+	# remove projectile from old creator
+	if projectile.creator != null:
+		projectile.creator.remove_child(projectile)
+
+	# re-setup
 	creator.add_child(projectile)
+	projectile.reset()
 	projectile.launch(creator, target)
 
 	return projectile
