@@ -376,7 +376,8 @@ func _on_cast_completed() -> void:
 func refresh_target() -> void:
 	# disconnect from current signals on target
 	if _target:
-		_target.no_longer_targetable.disconnect(refresh_target)
+		if _target.is_connected("no_longer_targetable", refresh_target):
+			_target.no_longer_targetable.disconnect(refresh_target)
 
 	# get new target
 	_target = _ai.get_target()

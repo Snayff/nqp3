@@ -14,34 +14,50 @@ signal expired(hit_target: bool, actor_hit: Actor)
 @onready var sprite : Sprite2D = $Sprite
 
 ######## ATTRIBUTES #########
-var speed : float = 1000.0  # FIXME: only works at high speeds
+var speed : float = 200.0  # FIXME: only works at high speeds
 var lifetime : float = 2.0
 var creator: Actor
 var target: Actor
 var has_hit_target : bool = false
 
-# functional
-var direction := Vector2.ZERO  # set by creator
+####### FUNCTIONALITY ############
+var direction := Vector2.ZERO  # set on launch
+
 
 func _ready() -> void:
-	top_level = true
 	timer.connect("timeout", _on_timeout)
-	timer.start(lifetime)
 	impact_detector.connect("body_entered", _on_impact)
+
+	reset()
+
+
+## reset for use in the object pool
+##
+## assumes assigned to new creator before being called
+func reset() -> void:
+	# move back to the top of the tree, to avoid being impacted by parent's movement
+	top_level = true
+
+	# get ready for processing
+	set_process(true)
+	show()
+	visible = true
+
+	has_hit_target = false
+
 
 func _physics_process(delta: float) -> void:
 	position += direction * speed * delta
 
-func _on_impact(_body: Node) -> void:
-	if _body == target:
-		# hide straight away to avoid delays
-		sprite.visible = false
 
+func _on_impact(_body: Node) -> void:
+	# did we hit the target?
+	if _body == target:
 		has_hit_target = true
 
 		# we hit target, pretend time ended
 		timer.stop()
-		timer.timeout.emit()
+		timer.timeout.emit()  # this will trigger disable
 
 
 ## launch the projectile towards the target
@@ -51,6 +67,17 @@ func launch(creator_: Actor, target_: Actor) -> void:
 	position = creator_.global_position
 	direction = global_position.direction_to(target.global_position)
 
+	timer.start(lifetime)
+
+
 func _on_timeout() -> void:
+	# N.B. dont queue_free() as used in pool
+
 	emit_signal("expired", [has_hit_target, target])
-	queue_free()
+	_disable()
+
+
+func _disable() -> void:
+		hide()
+		visible = false
+		set_process(false)

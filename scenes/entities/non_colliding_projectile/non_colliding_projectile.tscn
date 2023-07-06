@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=6 format=3 uid="uid://ctod81p1jm1xk"]
 
 [ext_resource type="Script" path="res://scenes/entities/non_colliding_projectile/non_colliding_projectile.gd" id="1_5dxft"]
 [ext_resource type="Texture2D" uid="uid://dg554oxl15fs8" path="res://sprites/projectiles/chaos.png" id="2_174ax"]
