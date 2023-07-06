@@ -184,3 +184,8 @@ func _effect_apply_force(velocity) -> void:
 ## teleport to new location
 func _effect_teleport(direction, distance) -> void:
 	push_warning("teleport: effect not created")
+
+
+## instantly kill target
+func _effect_kill() -> void:
+	push_warning("_effect_kill: effect not created")
