@@ -22,7 +22,7 @@ const unit_data: Dictionary = {
 		"tier": 1,
 		"actions": {  ## must use {Action Type, script name} (NOT class name)
 			Constants.ActionType.ATTACK : [
-				"basic_attack"
+				"smash"
 			],
 			Constants.ActionType.REACTION : { },
 		}
@@ -45,7 +45,7 @@ const unit_data: Dictionary = {
 		"tier": 1,
 		"actions": {  ## must use Action Type, script name (NOT class name)
 			Constants.ActionType.ATTACK : [
-				"basic_attack"
+				"wand_blast"
 			],
 			Constants.ActionType.REACTION : {
 				Constants.ActionTrigger.ON_DEAL_DAMAGE : [

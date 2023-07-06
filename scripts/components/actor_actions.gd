@@ -73,6 +73,7 @@ func use_attack(uid: int, target: Actor) -> void:
 
 	emit_signal("attacked")
 
+
 ## use a random, ready attack. resets cooldown.
 ##
 ## preference given to non basic attacks
@@ -80,12 +81,7 @@ func use_random_attack(target: Actor) -> void:
 	var attack_to_use : BaseAction
 	for action in attacks.values():
 		if action.is_ready:
-			# we want to use other attacks before basic attack, if we have found one, use it.
-			if not action is BasicAttack:
-				attack_to_use = action
-				break
-			else:
-				attack_to_use = action
+			attack_to_use = action
 
 	# check we have an attack
 	if attack_to_use == null:
@@ -101,12 +97,7 @@ func get_random_attack() -> BaseAction:
 	var attack_to_use : BaseAction
 	for action in attacks.values():
 		if action.is_ready:
-			# we want to use other attacks before basic attack, if we have found one, use it.
-			if not action is BasicAttack:
-				attack_to_use = action
-				break
-			else:
-				attack_to_use = action
+			attack_to_use = action
 
 	return attack_to_use
 

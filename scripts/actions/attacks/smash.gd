@@ -1,8 +1,8 @@
-class_name BasicAttack extends BaseAction
+class_name Smash extends BaseAction
 
 
 func _configure() -> void:
-	friendly_name = "Attack"
+	friendly_name = "smash"
 	tags = [Constants.ActionTag.DAMAGE]
 	valid_target_types = [Constants.TargetType.ENEMY]
 	_base_cooldown = 1
@@ -10,7 +10,7 @@ func _configure() -> void:
 	_base_damage = 10
 	_base_damage_type = Constants.DamageType.MUNDANE
 	_base_cast_time = 1
-	_base_range = 100
+	_base_range = Constants.MELEE_RANGE
 
 
 func use(initial_target: Actor) -> void:
