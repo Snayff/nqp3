@@ -1,7 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://bhf8qxmlttjpg"]
+[gd_scene load_steps=5 format=3 uid="uid://cq56hcu2wn2y7"]
 
-[ext_resource type="Script" path="res://scenes/entities/actor.gd" id="1_de4j8"]
-[ext_resource type="PackedScene" uid="uid://ysrm6dv3sld4" path="res://scenes/components/hurt_box.tscn" id="2_eofpl"]
+[ext_resource type="Script" path="res://scenes/entities/actor/actor.gd" id="1_de4j8"]
+[ext_resource type="PackedScene" path="res://scenes/components/hurt_box/hurt_box.tscn" id="2_eofpl"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_pdl0k"]
 radius = 4.0
@@ -9,7 +9,7 @@ height = 12.0
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_rlvhe"]
 
-[node name="Actor" type="CharacterBody2D"]
+[node name="Actor" type="CharacterBody2D" groups=["actor"]]
 position = Vector2(1, -3)
 collision_layer = 2
 collision_mask = 3
@@ -23,16 +23,15 @@ metadata/_edit_lock_ = true
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, 2)
 shape = SubResource("CapsuleShape2D_pdl0k")
+disabled = true
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
 path_desired_distance = 8.0
 target_desired_distance = 8.0
 path_max_distance = 16.0
-avoidance_enabled = true
 neighbor_distance = 8.0
 max_neighbors = 50
 max_speed = 8.0
-debug_enabled = true
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_rlvhe")
@@ -42,6 +41,7 @@ position = Vector2(-1.90735e-06, 2)
 scale = Vector2(-0.194719, 0.263765)
 collision_layer = 0
 collision_mask = 4
+monitoring = false
 
-[connection signal="animation_finished" from="AnimatedSprite2D" to="." method="process_animation_completion"]
-[connection signal="animation_looped" from="AnimatedSprite2D" to="." method="process_animation_completion"]
+[connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animation_completed"]
+[connection signal="animation_looped" from="AnimatedSprite2D" to="." method="_on_animation_completed"]

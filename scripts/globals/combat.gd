@@ -30,13 +30,15 @@ func deal_damage(attacker: Actor, defender: Actor, initial_damage: int, damage_t
 	else:
 		team2 = "enemy"
 
-	print(attacker.name + "(" + team  + ") dealt " + str(damage) + " to " + defender.name + "(" + team2 + ").")
+#	print(attacker.name + "(" + team  + ") dealt " + str(damage) + " to " + defender.name + "(" + team2 + ").")
+
 
 ## work out damage of an attack on a defender
 func calculate_damage(attacker: Actor, defender: Actor, damage: int, damage_type: Constants.DamageType) -> int:
 	var reduced_damage = _reduce_damage_by_defence(damage, defender, damage_type)
 
 	return reduced_damage
+
 
 ## offset base damage by defence stats
 ## min 1
@@ -49,3 +51,7 @@ func _reduce_damage_by_defence(base_damage: int, defender: Actor, damage_type: C
 
 	return max(base_damage - defence, 1)
 
+
+## reduce an actor's stamina
+func reduce_stamina(target: Actor, amount: int) -> void:
+	target.stats.stamina -= min(amount, 0)

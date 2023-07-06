@@ -1,7 +1,7 @@
 extends Node
 ## Misc. utility functions.
 
-const _HitBox : PackedScene = preload("res://scenes/components/hit_box.tscn")
+const _HitBox : PackedScene = preload("res://scenes/components/hit_box/hit_box.tscn")
 
 var _last_id : int = 0
 
@@ -49,6 +49,8 @@ func get_action_type_script_path(action_type: Constants.ActionType) -> String:
 	match action_type:
 		Constants.ActionType.ATTACK:
 			path = Constants.PATH_ATTACKS
+		Constants.ActionType.STATUS_EFFECT:
+			path = Constants.PATH_STATUS_EFFECTS
 		_:
 			path = Constants.PATH_REACTIONS
 
