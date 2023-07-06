@@ -1,5 +1,7 @@
 class_name Actor extends CharacterBody2D
 ## An individual combatant.
+##
+## Acts as an interface for inner components, such as [ActorActions].
 
 ########## SIGNALS ##################
 
@@ -20,7 +22,7 @@ signal died
 ############## NODES ##################
 
 @onready var _navigation_agent : NavigationAgent2D = $NavigationAgent2D
-@onready var animated_sprite : AnimatedSprite2D = $AnimatedSprite2D
+@onready var animated_sprite : AnimatedSprite2D = $AnimatedSprite2D  # TODO: can we make this private?
 @onready var _collision_shape : CollisionShape2D = $CollisionShape2D
 
 ############ COMPONENTS ###############
@@ -32,10 +34,9 @@ signal died
 var stats : ActorStats  # cant be private due to needing access to all its attributes
 ## decision making
 var _ai : BaseAI
-## Each action's data stored in this array represents an action the actor can perform.
-##
-## Dict of Array of Actions; Dictionary[ActionType, Array[BaseAction]]
+## all of an actor's actions
 var _actions : ActorActions
+## active status effects
 var _status_effects : ActorStatusEffects
 
 ######### FUNCTIONAL ATTRIBUTES ###############
@@ -267,6 +268,11 @@ func add_status_effect(status_effect: BaseStatusEffect) -> void:
 func remove_status_effect(uid_: int) -> void:
 	_status_effects.remove_status_effect(uid_)
 
+
+## remove all status effects by type
+func remove_status_effect_by_type(status_effect: BaseStatusEffect) -> void:
+	_status_effects.remove_status_effect_by_type(status_effect)
+
 ############ REACTIONS ###########
 
 ## act out result of animations completion
@@ -287,7 +293,8 @@ func process_animation_completion() -> void:
 			die()
 
 
-## trigger death
+## on health <= 0; trigger death
+##
 ## signal emitted by stats
 func _on_health_depleted() -> void:
 	# immediately remove targetable, dont wait for animation to finish
@@ -311,10 +318,12 @@ func _on_death() -> void:
 func _on_attack() -> void:
 	_actions.trigger_reactions(Constants.ActionTrigger.ON_ATTACK, self)
 
-
+## on stamina <= 0; apply exhausted status effect
+##
+## signal emitted by stats
 func _on_stamina_depleted() -> void:
-	# TODO: apply exhausted status effect
-	pass
+	var exhausted = Exhausted.new(self)
+	add_status_effect(exhausted)
 
 ########### REFRESHES #############
 
@@ -332,6 +341,7 @@ func refresh_target() -> void:
 
 	# update nav agent's target
 	_navigation_agent.set_target_position(_target.global_position)
+
 
 func _refresh_facing() -> void:
 	if velocity.x < 0:

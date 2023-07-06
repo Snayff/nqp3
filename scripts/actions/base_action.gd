@@ -104,6 +104,9 @@ func reset_cooldown() -> void:
 
 ########### ATTIBUTE GETTERS ###############
 
+## get the action's description
+##
+## description is held in function to make it easier to add dynamic data
 ## @tag: virtual method
 func get_description() -> String:
 	assert(false, "Virtual method not overriden.")
