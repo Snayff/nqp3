@@ -11,7 +11,6 @@ const MODIFIABLE_STATS : Array[String] = [
 	"crit_chance",
 	"attack_speed",
 	"penetration",
-	"attack_range",
 	"move_speed",
 	"count"
 
@@ -98,7 +97,6 @@ var _modifiers : Dictionary = {}
 		base_crit_chance = value
 		_recalculate("crit_chance")
 @export var crit_chance : int
-@export var damage_type : Constants.DamageType
 @export var base_penetration : int:
 	set(value):
 		base_penetration = value
@@ -107,11 +105,6 @@ var _modifiers : Dictionary = {}
 
 # misc stats
 @export_group("Misc Combat")
-@export var base_attack_range : int:
-	set(value):
-		base_attack_range = value
-		_recalculate("attack_range")
-@export var attack_range : int
 @export var base_move_speed : int:
 	set(value):
 		base_move_speed = value

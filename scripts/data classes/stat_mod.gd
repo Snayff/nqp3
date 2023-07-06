@@ -1,5 +1,5 @@
 class_name StatModifier extends Node
-## simple data class to hodl info for modifying [ActorStats]
+## simple data class to hold info for modifying [ActorStats]
 
 var stat_name : String
 var uid : int

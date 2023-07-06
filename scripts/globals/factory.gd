@@ -64,9 +64,7 @@ func _build_actor_stats(unit_data: Dictionary) -> ActorStats:
 	stats.attack = unit_data["attack"]
 	stats.attack_speed = unit_data["attack_speed"]
 	stats.crit_chance = unit_data["crit_chance"]
-	stats.damage_type = unit_data["damage_type"]
 	stats.penetration = unit_data["penetration"]
-	stats.attack_range = unit_data["attack_range"]
 	stats.move_speed = unit_data["move_speed"]
 	stats.num_units = unit_data["num_units"]
 	stats.faction = unit_data["faction"]
@@ -113,7 +111,7 @@ func _add_actions(instance: Actor, unit_data: Dictionary) -> Actor:
 				var script : BaseAction = load(script_path).new(instance)
 				actions.add_attack(script)
 
-		# reactions are Dictionary[ActionType, Dictionary[ActionTriggerType, Array[String]]
+		# reactions are Dictionary[ActionType, Dictionary[ActionTrigger, Array[String]]
 		elif action_type == Constants.ActionType.REACTION:
 			for trigger in unit_data["actions"][action_type]:
 				for action_name in unit_data["actions"][action_type][trigger]:

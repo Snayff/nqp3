@@ -1,8 +1,8 @@
 class_name Poison extends BaseStatusEffect
 
 func _configure() -> void:
-	friendly_name = "Attack"
-	tags = [Constants.ActionTag.DAMAGE]
+	friendly_name = "Poison"
+	tags = [Constants.ActionTag.STATUS_EFFECT, Constants.ActionTag.DAMAGE]
 	valid_target_types = [Constants.TargetType.ANY]
 	_base_cooldown = 1
 	_base_duration = 2
@@ -19,4 +19,4 @@ func use(initial_target: Actor) -> void:
 
 
 func get_description() -> String:
-	return "Blighted to the point of sickness."
+	return "Blighted to the point of sickness. Deals damage over time and reduces attack."

@@ -5,7 +5,8 @@ extends Node
 
 ## different states an actor can be in
 enum ActorState {
-	IDLE,
+	IDLING,
+	CASTING,
 	ATTACKING,
 	MOVING,
 	DEAD
@@ -18,6 +19,7 @@ enum Direction {
 
 ## different animation types for an actor
 enum ActorAnimationType {
+	CAST,
 	ATTACK,
 	DEATH,
 	HIT,
@@ -56,6 +58,14 @@ enum TargetType {
 
 }
 
+## what needs to be selected as the target for an action
+enum ActionTargetSelection {
+	GLOBAL,  ##  affects all valid units
+	UNIT,  ## specific Unit is chosen
+	ACTOR,  ## specific actor is chosen. Used by Actors.
+	GROUND  ## position on the ground is chosen.
+}
+
 ## different properties of an action
 enum ActionTag {
 	DAMAGE,
@@ -73,7 +83,7 @@ enum ActionType {
 }
 
 ## different ways an action can be triggered
-enum ActionTriggerType {
+enum ActionTrigger {
 	ATTACK,  ## the trigger is choosing to use the attack
 	ON_DEATH,
 	ON_ATTACK,
@@ -86,10 +96,11 @@ enum ActionTriggerType {
 
 }
 
+
 ############# PATHS ##############
 
 const PATH_ATTACKS : String = "res://scripts/actions/attacks/"  ## the path attack scripts are stored in
-const PATH_REACTIONS : String = "res://scripts/actions/reactions/" ## the path reaction scripts are stored in
+const PATH_REACTIONS : String = "res://scripts/actions/reactions/"  ## the path reaction scripts are stored in
 const PATH_STATUS_EFFECTS : String = "res://scripts/actions/status_effects/" ## the path reaction scripts are stored in
 
 ############ VALUES ############
