@@ -79,6 +79,7 @@ var is_melee : bool:
 	set(_value):
 		push_warning("Tried to set is_melee directly. Not allowed.")
 var attack_to_cast : BaseAction = null
+var neighbours : Array
 
 ######### UI ATTRIBUTES ###############
 
@@ -97,7 +98,6 @@ var is_selectable : bool = true:
 		if not is_selectable:
 			is_selected = false
 
-var neighbours : Array
 
 ######### SETUP #############
 
@@ -105,6 +105,7 @@ func _ready() -> void:
 	uid = Utility.generate_id()
 
 	_ai = BaseAI.new()  # TODO: should be added in factory based on unit data
+	# FIXME: shouldnt need add_child, init with creator or something
 	add_child(_ai)
 
 	# create timer to track cast time
@@ -145,6 +146,7 @@ func _connect_signals() -> void:
 
 	_cast_timer.timeout.connect(_on_cast_completed)
 
+
 ########## MAIN LOOP ##########
 
 func _physics_process(delta) -> void:
@@ -157,6 +159,10 @@ func _physics_process(delta) -> void:
 
 ## update the current state
 func update_state() -> void:
+	# dont change state if dead
+	if _state == Constants.ActorState.DEAD:
+		return
+
 	# if we have target, move towards them, else get new
 	if _target != null:
 		# cast if in range, else move closer
@@ -207,6 +213,8 @@ func change_state(new_state: Constants.ActorState) -> void:
 
 		Constants.ActorState.DEAD:
 			animated_sprite.play("death")
+
+	print(name + " currently playing " + animated_sprite.animation + " animation.")
 
 
 ## process the current state, e.g. moving if in MOVING
@@ -326,6 +334,7 @@ func _on_animation_completed() -> void:
 			pass
 
 		Constants.ActorState.DEAD:
+			# FIXME: we're never hitting this. dont seem to ever enter death anim
 			die()
 
 

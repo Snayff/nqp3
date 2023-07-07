@@ -57,7 +57,7 @@ func _on_impact(_body: Node) -> void:
 
 		# we hit target, pretend time ended
 		timer.stop()
-		timer.timeout.emit()  # this will trigger disable
+		timer.timeout.emit()  # this will trigger _disable()
 
 
 ## launch the projectile towards the target

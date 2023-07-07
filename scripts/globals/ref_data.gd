@@ -6,6 +6,7 @@ extends Node
 const unit_data: Dictionary = {
 	"copper_golem": {
 		"max_health": 100,
+		"max_stamina": 100,
 		"regen": 100,
 		"dodge": 100,
 		"magic_defence": 10,
@@ -29,6 +30,7 @@ const unit_data: Dictionary = {
 	},
 	"conjurer": {
 		"max_health": 70,
+		"max_stamina": 100,
 		"regen": 100,
 		"dodge": 100,
 		"magic_defence": 2,

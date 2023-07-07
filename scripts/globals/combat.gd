@@ -8,7 +8,7 @@ func deal_damage(attacker: Actor, defender: Actor, initial_damage: int, damage_t
 	# damage multiplier would be set by the attack in question
 	#
 	# linear example: (a + b - c) * e
-	# e.g. (attacker_attack * damage_multiplier - defender_defense) * weakness_multiplier
+	# e.g. (attacker_attack * damage_multiplier - defender_defence) * weakness_multiplier
 
 	var damage = calculate_damage(attacker, defender, initial_damage, damage_type)
 	attacker.emit_signal("dealt_damage", [damage, damage_type])
@@ -30,7 +30,7 @@ func deal_damage(attacker: Actor, defender: Actor, initial_damage: int, damage_t
 	else:
 		team2 = "enemy"
 
-#	print(attacker.name + "(" + team  + ") dealt " + str(damage) + " to " + defender.name + "(" + team2 + ").")
+	print(attacker.name + "(" + team  + ") dealt " + str(damage) + " to " + defender.name + "(" + team2 + "). Remaining health is " + str(defender.stats.health))
 
 
 ## work out damage of an attack on a defender
