@@ -1,14 +1,12 @@
 class_name ActorActions extends Node
 ## data and functionality for an actors actions
 
-signal attacked  ## emitted when completed attack
+signal attacked  ## emitted when completed an attack
+signal attack_range_updated(new_range: int)  ## emitted when attack range recalculated
 
 var attacks : Dictionary = {}  ## {uid, BaseAction}
 var reactions : Dictionary = {}  ## {ReactionTriggerType, {uid, BaseAction}}
-var _lowest_attack_range : int = 9999 : ## holds last caclulated value for lowest range of all attacks
-	get:
-		push_warning("Tried to set lowest_attack_range directly. Not allowed; use `lowest_attack_range` instead.")
-		return lowest_attack_range
+var _lowest_attack_range : int = 9999  ## holds last caclulated value for lowest range of all attacks
 var lowest_attack_range : int :  ## public interface for lowest attack range
 	## FIXME: never go below lowest attack range; current when all atatcks on cd we run at enemy
 	get:
@@ -129,3 +127,5 @@ func _recalculate_attack_range() -> void:
 	for attack in attacks.values():
 		if attack.range < _lowest_attack_range:
 			_lowest_attack_range = attack.range
+
+	emit_signal("attack_range_updated", lowest_attack_range)

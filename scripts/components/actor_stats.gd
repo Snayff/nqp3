@@ -1,4 +1,4 @@
-class_name ActorStats extends Resource
+class_name ActorStats extends Node
 ## The stats that define an actor, such as attack and defence
 
 const MODIFIABLE_STATS : Array[String] = [
