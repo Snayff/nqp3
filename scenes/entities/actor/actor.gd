@@ -79,6 +79,7 @@ var is_melee : bool:
 	set(_value):
 		push_warning("Tried to set is_melee directly. Not allowed.")
 var attack_to_cast : BaseAction = null
+var neighbours : Array
 
 ######### UI ATTRIBUTES ###############
 
@@ -97,7 +98,6 @@ var is_selectable : bool = true:
 		if not is_selectable:
 			is_selected = false
 
-var neighbours : Array
 
 ######### SETUP #############
 
@@ -105,6 +105,7 @@ func _ready() -> void:
 	uid = Utility.generate_id()
 
 	_ai = BaseAI.new()  # TODO: should be added in factory based on unit data
+	# FIXME: shouldnt need add_child, init with creator or something
 	add_child(_ai)
 
 	# create timer to track cast time
@@ -144,6 +145,7 @@ func _connect_signals() -> void:
 	_actions.attacked.connect(_on_attack)
 
 	_cast_timer.timeout.connect(_on_cast_completed)
+
 
 ########## MAIN LOOP ##########
 

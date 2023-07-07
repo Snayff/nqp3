@@ -71,15 +71,19 @@ func _build_actor_stats(unit_data: Dictionary) -> ActorStats:
 
 	stats.max_health = unit_data["max_health"]
 	stats.health = unit_data["max_health"]
-	stats.regen = unit_data["regen"]
-	stats.dodge = unit_data["dodge"]
-	stats.magic_defence = unit_data["magic_defence"]
-	stats.mundane_defence = unit_data["mundane_defence"]
-	stats.attack = unit_data["attack"]
-	stats.attack_speed = unit_data["attack_speed"]
-	stats.crit_chance = unit_data["crit_chance"]
-	stats.penetration = unit_data["penetration"]
-	stats.move_speed = unit_data["move_speed"]
+	stats.max_stamina = unit_data["max_stamina"]
+	stats.stamina = unit_data["max_stamina"]
+
+	stats.base_regen = unit_data["regen"]
+	stats.base_dodge = unit_data["dodge"]
+	stats.base_magic_defence = unit_data["magic_defence"]
+	stats.base_mundane_defence = unit_data["mundane_defence"]
+	stats.base_attack = unit_data["attack"]
+	stats.base_attack_speed = unit_data["attack_speed"]
+	stats.base_crit_chance = unit_data["crit_chance"]
+	stats.base_penetration = unit_data["penetration"]
+	stats.base_move_speed = unit_data["move_speed"]
+
 	stats.num_units = unit_data["num_units"]
 	stats.faction = unit_data["faction"]
 	stats.gold_cost = unit_data["gold_cost"]
@@ -104,6 +108,7 @@ func _build_sprite_frame(unit_name: String) -> SpriteFrames:
 func _build_status_effects() -> ActorStatusEffects:
 	var status_effects = ActorStatusEffects.new()
 	return status_effects
+
 
 func _add_actor_groups(instance: Actor, team: String) -> Actor:
 	instance.add_to_group(team)

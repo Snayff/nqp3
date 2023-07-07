@@ -77,7 +77,7 @@ var _modifiers : Dictionary = {}
 @export var base_mundane_defence : int:
 	set(value):
 		base_mundane_defence = value
-		_recalculate("mundane_defense")
+		_recalculate("mundane_defence")
 @export var mundane_defence : int
 
 # attack stats
@@ -142,8 +142,9 @@ func reinit() -> void:
 
 ## recalculate a given stat, using the base value and any modifiers
 func _recalculate(stat_name: String) -> void:
-	var value: float = get("base_" + stat_name)
+	var value : float = get("base_" + stat_name)
 
+	# example dict
 	# _modifiers = {
 	# 	"def" : {
 	#		id : {
@@ -154,7 +155,7 @@ func _recalculate(stat_name: String) -> void:
 	#}
 
 	# get the array of modifiers corresponding to a stat.
-	var modifiers: Array = _modifiers[stat_name].values()
+	var modifiers : Array = _modifiers[stat_name].values()
 	var mod_multiplier : float = 1.0
 	for modifier in modifiers:
 		if modifier["type"] == Constants.StatModType.ADD:
