@@ -48,14 +48,10 @@ var _target : Actor
 var _facing : Constants.Direction = Constants.Direction.LEFT
 var _cast_timer : Timer
 var is_active : bool:
-	get:
-		return is_active
 	set(value):
 		is_active = value
 		set_process(is_active)
 var is_targetable : bool:
-	get:
-		return is_targetable
 	set(value):
 		is_targetable = value
 		if not value:
@@ -84,15 +80,11 @@ var neighbours : Array
 ######### UI ATTRIBUTES ###############
 
 var is_selected : bool = false:
-	get:
-		return is_selected
 	set(value):
 		if value and is_selectable:
 			is_selected = value
 			emit_signal("selected_unit", self)
 var is_selectable : bool = true:
-	get:
-		return is_selectable
 	set(value):
 		is_selectable = value
 		if not is_selectable:
