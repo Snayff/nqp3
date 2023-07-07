@@ -17,7 +17,7 @@ const unit_data: Dictionary = {
 		"crit_chance": 100,
 		"move_speed": 150,
 		"stamina": 10,
-		"num_units": 5,
+		"num_units": 6,
 		"faction": "faction1",
 		"gold_cost": 100,
 		"tier": 1,

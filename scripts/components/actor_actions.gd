@@ -1,19 +1,17 @@
 class_name ActorActions extends Node
 ## data and functionality for an actors actions
 
-signal attacked  ## emitted when completed attack
+signal attacked  ## emitted when completed an attack
+signal attack_range_updated(new_range: int)  ## emitted when attack range recalculated
 
 var attacks : Dictionary = {}  ## {uid, BaseAction}
 var reactions : Dictionary = {}  ## {ReactionTriggerType, {uid, BaseAction}}
-var lowest_attack_range : int :
-	## TODO: add memoization as getting called a lot
+var _lowest_attack_range : int = 9999  ## holds last caclulated value for lowest range of all attacks
+var lowest_attack_range : int :  ## public interface for lowest attack range
 	## FIXME: never go below lowest attack range; current when all atatcks on cd we run at enemy
 	get:
-		var lowest = 9999
-		for attack in attacks.values():
-			if attack.range < lowest:
-				lowest = attack.range
-		return lowest
+		# return the calculated value. assumes recalculated elsewhere when dirty
+		return _lowest_attack_range
 	set(_value):
 		push_warning("Tried to set lowest_attack_range directly. Not allowed.")
 var has_ready_attack : bool:
@@ -25,41 +23,22 @@ var has_ready_attack : bool:
 	set(_value):
 		push_warning("Tried to set has_ready_attack directly. Not allowed.")
 
+
 func _ready() -> void:
 	# N.B. _ready called too late to init triggers
 	pass
 
 
+######## ATTACKS #############
+
 func add_attack(attack: BaseAction) -> void:
 	attacks[attack.uid] = attack
+	_recalculate_attack_range()
 
 
 func remove_attack(uid: int) -> void:
 	attacks.erase(uid)
-
-
-func add_reaction(reaction: BaseAction, trigger: Constants.ActionTrigger) -> void:
-	if not trigger in reactions:
-		reactions[trigger] = {}
-
-	reactions[trigger][reaction.uid] = reaction
-
-
-func remove_reaction(trigger: Constants.ActionTrigger, uid: int) -> void:
-	reactions[trigger].erase(uid)
-
-
-## use all actions of given type, reset cooldown after use
-func trigger_reactions(trigger: Constants.ActionTrigger, target: Actor) -> void:
-	if not trigger in reactions:
-		return
-
-	for reaction in reactions[trigger].values():
-		if reaction.is_ready():
-			print(name + " used " + reaction.friendly_name + ".")
-			reaction.use(target)
-			reaction.reset_cooldown()
-
+	_recalculate_attack_range()
 
 ## use a specific attack and reset cooldown
 func use_attack(uid: int, target: Actor) -> void:
@@ -94,6 +73,7 @@ func use_random_attack(target: Actor) -> void:
 
 		emit_signal("attacked")
 
+
 ## get a random attack, from those available
 func get_random_attack() -> BaseAction:
 	var attack_to_use : BaseAction
@@ -103,6 +83,34 @@ func get_random_attack() -> BaseAction:
 
 	return attack_to_use
 
+
+########### REACTIONS #############
+
+func add_reaction(reaction: BaseAction, trigger: Constants.ActionTrigger) -> void:
+	if not trigger in reactions:
+		reactions[trigger] = {}
+
+	reactions[trigger][reaction.uid] = reaction
+
+
+func remove_reaction(trigger: Constants.ActionTrigger, uid: int) -> void:
+	reactions[trigger].erase(uid)
+
+
+## use all actions of given type, reset cooldown after use
+func trigger_reactions(trigger: Constants.ActionTrigger, target: Actor) -> void:
+	if not trigger in reactions:
+		return
+
+	for reaction in reactions[trigger].values():
+		if reaction.is_ready():
+			print(name +  " used " + reaction.friendly_name + ".")
+			reaction.use(target)
+			reaction.reset_cooldown()
+
+
+######### STATE MANAGEMENT ###########
+
 ## put all actions on cooldown
 func reset_actions() -> void:
 	for attack in attacks.values():
@@ -111,3 +119,13 @@ func reset_actions() -> void:
 	for trigger in reactions.keys():
 		for reaction in reactions[trigger].values():
 			reaction.reset_cooldown()
+
+
+## updates lowest attack range
+func _recalculate_attack_range() -> void:
+	_lowest_attack_range = 9999
+	for attack in attacks.values():
+		if attack.range < _lowest_attack_range:
+			_lowest_attack_range = attack.range
+
+	emit_signal("attack_range_updated", lowest_attack_range)

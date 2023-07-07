@@ -24,6 +24,7 @@ signal died
 @onready var _navigation_agent : NavigationAgent2D = $NavigationAgent2D
 @onready var animated_sprite : AnimatedSprite2D = $AnimatedSprite2D  # TODO: can we make this private?
 @onready var _collision_shape : CollisionShape2D = $CollisionShape2D
+@onready var _target_finder : Area2D = $TargetFinder
 
 ############ COMPONENTS ###############
 # these are initialised on creation by Factory
@@ -33,7 +34,7 @@ signal died
 ## added to combatant on init by Unit
 var stats : ActorStats  # cant be private due to needing access to all its attributes
 ## decision making
-var _ai : BaseAI
+var _ai : ActorAI
 ## all of an actor's actions
 var _actions : ActorActions
 ## active status effects
@@ -48,14 +49,10 @@ var _target : Actor
 var _facing : Constants.Direction = Constants.Direction.LEFT
 var _cast_timer : Timer
 var is_active : bool:
-	get:
-		return is_active
 	set(value):
 		is_active = value
 		set_process(is_active)
 var is_targetable : bool:
-	get:
-		return is_targetable
 	set(value):
 		is_targetable = value
 		if not value:
@@ -84,15 +81,11 @@ var neighbours : Array
 ######### UI ATTRIBUTES ###############
 
 var is_selected : bool = false:
-	get:
-		return is_selected
 	set(value):
 		if value and is_selectable:
 			is_selected = value
 			emit_signal("selected_unit", self)
 var is_selectable : bool = true:
-	get:
-		return is_selectable
 	set(value):
 		is_selectable = value
 		if not is_selectable:
@@ -102,16 +95,7 @@ var is_selectable : bool = true:
 ######### SETUP #############
 
 func _ready() -> void:
-	uid = Utility.generate_id()
-
-	_ai = BaseAI.new()  # TODO: should be added in factory based on unit data
-	# FIXME: shouldnt need add_child, init with creator or something
-	add_child(_ai)
-
-	# create timer to track cast time
-	_cast_timer = Timer.new()
-	add_child(_cast_timer)
-	_cast_timer.set_one_shot(true)
+	pass
 
 
 ## post _ready setup
@@ -122,6 +106,9 @@ func actor_setup() -> void:
 	# Wait for the first physics frame so the NavigationServer can sync.
 	await get_tree().physics_frame
 
+	# with _actions fully initialised lets force the attack_range_updated signal to fire
+	_actions._recalculate_attack_range()
+
 	# Now that the navigation map is no longer empty, set the movement target.
 	refresh_target()
 
@@ -130,22 +117,26 @@ func actor_setup() -> void:
 ##
 ## must be called after ready due to being created in Factory and components not being available
 func _connect_signals() -> void:
-	# conect to signals
+	# conect to own signals
 	died.connect(_on_death)
 	hit_received.connect(_on_hit_received)
 
-	# connect to component signals
+	# connect to (script) component signals
 	stats.health_depleted.connect(_on_health_depleted)
 	stats.stamina_depleted.connect(_on_stamina_depleted)
+
+	_actions.attack_range_updated.connect(_update_target_finder_range)
+	_actions.attacked.connect(_on_attack)
+
+	_cast_timer.timeout.connect(_on_cast_completed)
 
 	# link component signals
 	_status_effects.stat_modifier_added.connect(stats.add_modifier)
 	_status_effects.stat_modifier_removed.connect(stats.remove_modifier)
 
-	_actions.attacked.connect(_on_attack)
-
-	_cast_timer.timeout.connect(_on_cast_completed)
-
+	# connect to node signals
+	animated_sprite.animation_finished.connect(_on_animation_completed)
+	animated_sprite.animation_looped.connect(_on_animation_completed)
 
 ########## MAIN LOOP ##########
 
@@ -214,7 +205,7 @@ func change_state(new_state: Constants.ActorState) -> void:
 		Constants.ActorState.DEAD:
 			animated_sprite.play("death")
 
-	print(name + " currently playing " + animated_sprite.animation + " animation.")
+	print(name + "(" + str(uid) + ") currently playing " + animated_sprite.animation + " animation.")
 
 
 ## process the current state, e.g. moving if in MOVING
@@ -287,7 +278,7 @@ func die() -> void:
 
 	emit_signal("died")
 
-	print(name + " died.")
+	print(name +  "(" + str(uid) + ") died.")
 
 
 ## execute actor's attack. this is a random attack if attack_to_cast is null.
@@ -391,6 +382,15 @@ func refresh_target() -> void:
 	# get new target
 	_target = _ai.get_target()
 
+	# FIXME: placeholder until Unit AI added
+	if _target == null:
+		var group_to_target : String
+		if is_in_group("ally"):
+			group_to_target = "enemy"
+		else:
+			group_to_target = "ally"
+		_target = get_tree().get_nodes_in_group(group_to_target)[0]   # just pick the first enemy node and move towards them, eventually will be in range
+
 	# relisten to target changes
 	_target.no_longer_targetable.connect(refresh_target)
 
@@ -405,3 +405,7 @@ func _refresh_facing() -> void:
 	else:
 		self._facing = Constants.Direction.RIGHT
 		animated_sprite.flip_h = false
+
+## update the size of the target finder
+func _update_target_finder_range(new_range: int) -> void:
+	_target_finder.get_node("CollisionShape2D").shape.radius =  new_range
