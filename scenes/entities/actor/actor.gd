@@ -205,7 +205,7 @@ func change_state(new_state: Constants.ActorState) -> void:
 		Constants.ActorState.DEAD:
 			animated_sprite.play("death")
 
-	print(name + " currently playing " + animated_sprite.animation + " animation.")
+	print(name + "(" + str(uid) + ") currently playing " + animated_sprite.animation + " animation.")
 
 
 ## process the current state, e.g. moving if in MOVING
@@ -278,7 +278,7 @@ func die() -> void:
 
 	emit_signal("died")
 
-	print(name + " died.")
+	print(name +  "(" + str(uid) + ") died.")
 
 
 ## execute actor's attack. this is a random attack if attack_to_cast is null.

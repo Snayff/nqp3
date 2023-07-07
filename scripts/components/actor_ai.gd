@@ -46,7 +46,8 @@ func get_target(preference: Constants.TargetPreference = Constants.TargetPrefere
 		var distance = _target.global_position.distance_to(_creator_pos)
 		var current_closest = nearest_target.global_position.distance_to(_creator_pos)
 		var is_alive = _target.is_in_group("alive")
-		if distance < current_closest and is_alive:
+		var is_enemy = _target.is_in_group(group_to_target)
+		if distance < current_closest and is_alive and is_enemy:
 			nearest_target = _target
 	# print("combatant nearest target in " + group_to_target + " is at " + str(nearest_target.global_position))
 	return nearest_target
