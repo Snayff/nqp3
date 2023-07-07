@@ -121,7 +121,7 @@ func _connect_signals() -> void:
 	died.connect(_on_death)
 	hit_received.connect(_on_hit_received)
 
-	# connect to component signals
+	# connect to (script) component signals
 	stats.health_depleted.connect(_on_health_depleted)
 	stats.stamina_depleted.connect(_on_stamina_depleted)
 
@@ -130,18 +130,13 @@ func _connect_signals() -> void:
 
 	_cast_timer.timeout.connect(_on_cast_completed)
 
-	animated_sprite.animation_finished.connect(_on_animation_completed)
-	animated_sprite.animation_looped.connect(_on_animation_completed)
-
 	# link component signals
 	_status_effects.stat_modifier_added.connect(stats.add_modifier)
 	_status_effects.stat_modifier_removed.connect(stats.remove_modifier)
 
 	# connect to node signals
-	_target_finder.body_entered.connect(test)
-
-func test(body) -> void:
-	print(_target_finder.get_overlapping_bodies())
+	animated_sprite.animation_finished.connect(_on_animation_completed)
+	animated_sprite.animation_looped.connect(_on_animation_completed)
 
 ########## MAIN LOOP ##########
 
@@ -150,8 +145,6 @@ func _physics_process(delta) -> void:
 	if is_in_group("alive"):
 		update_state()
 		process_current_state()
-
-	print(_target_finder.get_overlapping_bodies())
 
 ########## STATE #############
 

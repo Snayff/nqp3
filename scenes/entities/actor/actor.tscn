@@ -29,10 +29,8 @@ script = ExtResource("1_de4j8")
 metadata/_edit_lock_ = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-visible = false
 position = Vector2(0, 2)
 shape = SubResource("CapsuleShape2D_pdl0k")
-disabled = true
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
 path_desired_distance = 8.0
@@ -46,7 +44,6 @@ max_speed = 8.0
 sprite_frames = SubResource("SpriteFrames_rlvhe")
 
 [node name="HurtBox" parent="." instance=ExtResource("2_eofpl")]
-visible = false
 position = Vector2(-1.90735e-06, 2)
 scale = Vector2(-0.194719, 0.263765)
 collision_layer = 0
@@ -54,7 +51,6 @@ collision_mask = 4
 monitoring = false
 
 [node name="DebugInfo" type="Label" parent="."]
-visible = false
 offset_right = 40.0
 offset_bottom = 23.0
 label_settings = SubResource("LabelSettings_dcwuh")
