@@ -159,6 +159,10 @@ func _physics_process(delta) -> void:
 
 ## update the current state
 func update_state() -> void:
+	# dont change state if dead
+	if _state == Constants.ActorState.DEAD:
+		return
+
 	# if we have target, move towards them, else get new
 	if _target != null:
 		# cast if in range, else move closer
@@ -209,6 +213,8 @@ func change_state(new_state: Constants.ActorState) -> void:
 
 		Constants.ActorState.DEAD:
 			animated_sprite.play("death")
+
+	print(name + " currently playing " + animated_sprite.animation + " animation.")
 
 
 ## process the current state, e.g. moving if in MOVING
@@ -328,6 +334,7 @@ func _on_animation_completed() -> void:
 			pass
 
 		Constants.ActorState.DEAD:
+			# FIXME: we're never hitting this. dont seem to ever enter death anim
 			die()
 
 

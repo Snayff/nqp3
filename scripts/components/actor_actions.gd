@@ -5,7 +5,9 @@ signal attacked  ## emitted when completed attack
 
 var attacks : Dictionary = {}  ## {uid, BaseAction}
 var reactions : Dictionary = {}  ## {ReactionTriggerType, {uid, BaseAction}}
-var lowest_attack_range : int :  ## TODO: add memoization as getting called a lot
+var lowest_attack_range : int :
+	## TODO: add memoization as getting called a lot
+	## FIXME: never go below lowest attack range; current when all atatcks on cd we run at enemy
 	get:
 		var lowest = 9999
 		for attack in attacks.values():
@@ -24,8 +26,8 @@ var has_ready_attack : bool:
 		push_warning("Tried to set has_ready_attack directly. Not allowed.")
 
 func _ready() -> void:
-	pass
 	# N.B. _ready called too late to init triggers
+	pass
 
 
 func add_attack(attack: BaseAction) -> void:
