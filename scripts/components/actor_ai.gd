@@ -23,8 +23,6 @@ func is_enemy(target : Actor) -> bool:
 func get_target(preference: Constants.TargetPreference = Constants.TargetPreference.ANY) -> Actor:
 	# TODO: Use target preference
 
-	var _creator_pos : Vector2 = _creator.global_position
-
 	var group_to_target : String
 	if _creator.is_in_group("ally"):
 		group_to_target = "enemy"
@@ -39,15 +37,22 @@ func get_target(preference: Constants.TargetPreference = Constants.TargetPrefere
 		return null
 
 	# assume the first node is closest
-	var nearest_target = poss_targets[0]
+	var nearest_target = null
 
 	# look through nodes to see if any are closer
+	var _creator_pos : Vector2 = _creator.global_position
 	for _target in poss_targets:
 		var distance = _target.global_position.distance_to(_creator_pos)
-		var current_closest = nearest_target.global_position.distance_to(_creator_pos)
+
+		# get a closest distance from target, if we have 1
+		var nearest_distance = 9999
+		if nearest_target != null:
+			nearest_distance = nearest_target.global_position.distance_to(_creator_pos)
+
+
 		var is_alive = _target.is_in_group("alive")
 		var is_enemy = _target.is_in_group(group_to_target)
-		if distance < current_closest and is_alive and is_enemy:
+		if distance < nearest_distance and is_alive and is_enemy:
 			nearest_target = _target
 	# print("combatant nearest target in " + group_to_target + " is at " + str(nearest_target.global_position))
 	return nearest_target

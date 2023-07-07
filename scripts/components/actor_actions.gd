@@ -104,7 +104,7 @@ func trigger_reactions(trigger: Constants.ActionTrigger, target: Actor) -> void:
 
 	for reaction in reactions[trigger].values():
 		if reaction.is_ready():
-			print(name  " used " + reaction.friendly_name + ".")
+			print(name +  " used " + reaction.friendly_name + ".")
 			reaction.use(target)
 			reaction.reset_cooldown()
 
