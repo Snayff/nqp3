@@ -1,4 +1,4 @@
-@tool
+#@tool  # <- had this in demo but doesnt seem to be needed
 ## Draws a 2D trail using Godot's `Line2D`.
 ##
 ## Instantiate `Trail2D` as a child of a moving node to use it. To control the color, width curve,
@@ -42,13 +42,6 @@ func _ready() -> void:
 	_last_point = to_local(target.global_position) + calculate_offset()
 
 
-#func _get_configuration_warnings() -> PackedStringArray:
-#	var warning :=  "Missing Target node: assign a Node that extends Node2D in the Target Path3D or make the Trail a child of a parent that extends Node2D"
-#	if target:
-#		warning = ""
-#	return warning
-
-
 func _process(delta: float) -> void:
 	_clock += delta
 	remove_older()
@@ -74,13 +67,7 @@ func add_timed_point(point: Vector2, time: float) -> void:
 
 # Calculates the offset of the trail from its target.
 func calculate_offset() -> Vector2:
-	return - 1.0 * polar2cartesian(1.0, target.rotation).rotated(- PI / 2) * _offset
-
-
-func polar2cartesian(radius: float, theta: float) -> Vector2:
-	var x = radius * cos(theta)
-	var y = radius * sin(theta)
-	return Vector2(x, y)
+	return - 1.0 * Utility.convert_polar_to_cartesian(1.0, target.rotation).rotated(- PI / 2) * _offset
 
 
 # Removes the first point in the line and the corresponding time.

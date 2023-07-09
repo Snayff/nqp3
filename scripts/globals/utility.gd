@@ -1,13 +1,7 @@
 extends Node
 ## Misc. utility functions.
 
-const _HitBox : PackedScene = preload("res://scenes/components/hit_box/hit_box.tscn")
-
 var _last_id : int = 0
-
-## get the normalised direction to target
-func get_direction_to_target(start: Node2D, target: Node2D) -> Vector2:
-	return start.global_position.direction_to(target.global_position)
 
 ## add collection of sprites from a folder to a SpriteFrames
 ## overwrites existing animation of same name if one exists.
@@ -38,10 +32,12 @@ func add_animation_to_sprite_frames(
 
 	return sprite_frames
 
+
 ## generate a unique id
 func generate_id() -> int:
 	_last_id += 1
 	return _last_id
+
 
 func get_action_type_script_path(action_type: Constants.ActionType) -> String:
 	var path : String
@@ -55,6 +51,7 @@ func get_action_type_script_path(action_type: Constants.ActionType) -> String:
 			path = Constants.PATH_REACTIONS
 
 	return path
+
 
 ## find all actors in area
 func get_actors_in_area(pos: Vector2, radius: int) -> Array[Actor]:
@@ -85,6 +82,7 @@ func get_actors_in_area(pos: Vector2, radius: int) -> Array[Actor]:
 
 	return actors
 
+
 ## get nearest actor from position. Can return null.
 func get_nearest_actor(pos: Vector2, actors: Array[Actor]) -> Actor:
 	# check there are any actors at all
@@ -105,3 +103,10 @@ func get_nearest_actor(pos: Vector2, actors: Array[Actor]) -> Actor:
 			current_closest = nearest.global_position.distance_to(pos)
 
 	return nearest
+
+
+## convert a polar coord to a cartesian one
+func convert_polar_to_cartesian(radius: float, theta: float) -> Vector2:
+	var x = radius * cos(theta)
+	var y = radius * sin(theta)
+	return Vector2(x, y)

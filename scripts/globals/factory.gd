@@ -8,7 +8,7 @@ const _Unit : PackedScene = preload("res://scenes/entities/unit/unit.tscn")
 
 ######### PROJECTILE POOL #############
 
-const _PROJECTILE_POOL_SIZE : int = 100
+const _PROJECTILE_POOL_SIZE : int = 500
 var _projectile_pool : Array[Projectile] = []
 var _last_projectile_pool_index : int = -1
 

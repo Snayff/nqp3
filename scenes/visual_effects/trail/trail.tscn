@@ -17,3 +17,4 @@ gradient = SubResource("Gradient_r0mxm")
 joint_mode = 2
 script = ExtResource("1_ny7n7")
 is_emitting = true
+lifetime = 0.2
