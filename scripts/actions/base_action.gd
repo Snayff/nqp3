@@ -157,7 +157,7 @@ func _effect_status(status_effect_name: String) -> void:
 
 
 ## create a projectile. returns created projectile
-func _effect_projectile() -> NonCollidingProjectile:
+func _effect_projectile() -> Projectile:
 	return Factory.create_projectile(_creator, _target)
 
 

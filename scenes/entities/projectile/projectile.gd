@@ -1,5 +1,5 @@
-class_name NonCollidingProjectile extends Node2D
-## A projectile to move towards a target without colliding on the way.
+class_name Projectile extends Node2D
+## A projectile to move towards a target, delivering effects to a target or location
 ##
 ## Signals on expiry, allowing a process to carry on from there
 

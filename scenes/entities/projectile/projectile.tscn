@@ -1,23 +1,23 @@
 [gd_scene load_steps=7 format=3 uid="uid://ctod81p1jm1xk"]
 
-[ext_resource type="Script" path="res://scenes/entities/non_colliding_projectile/non_colliding_projectile.gd" id="1_5dxft"]
-[ext_resource type="Texture2D" uid="uid://dg554oxl15fs8" path="res://sprites/projectiles/chaos.png" id="2_174ax"]
-[ext_resource type="PackedScene" path="res://scenes/components/hit_box/hit_box.tscn" id="3_xgud1"]
-[ext_resource type="PackedScene" uid="uid://dpxk6n8wdywcx" path="res://scenes/visual_effects/trail/trail.tscn" id="4_ee1yl"]
+[ext_resource type="Script" path="res://scenes/entities/projectile/projectile.gd" id="1_7hkth"]
+[ext_resource type="Texture2D" uid="uid://dg554oxl15fs8" path="res://sprites/projectiles/chaos.png" id="2_563nw"]
+[ext_resource type="PackedScene" path="res://scenes/components/hit_box/hit_box.tscn" id="3_im6im"]
+[ext_resource type="PackedScene" uid="uid://dpxk6n8wdywcx" path="res://scenes/visual_effects/trail/trail.tscn" id="4_ghsii"]
 
 [sub_resource type="ShaderMaterial" id="3"]
 
 [sub_resource type="CircleShape2D" id="1"]
 radius = 2.0
 
-[node name="NonCollidingProjectile" type="Node2D"]
-script = ExtResource("1_5dxft")
+[node name="Projectile" type="Node2D"]
+script = ExtResource("1_7hkth")
 
 [node name="Sprite" type="Sprite2D" parent="."]
 scale = Vector2(0.5, 0.5)
-texture = ExtResource("2_174ax")
+texture = ExtResource("2_563nw")
 
-[node name="HitBox" parent="." instance=ExtResource("3_xgud1")]
+[node name="HitBox" parent="." instance=ExtResource("3_im6im")]
 visible = false
 collision_layer = 4
 collision_mask = 0
@@ -36,6 +36,6 @@ shape = SubResource("1")
 [node name="Lifetime" type="Timer" parent="."]
 one_shot = true
 
-[node name="Trail" parent="." instance=ExtResource("4_ee1yl")]
+[node name="Trail" parent="." instance=ExtResource("4_ghsii")]
 position = Vector2(-5, 0)
 scale = Vector2(0.140533, 0.1625)

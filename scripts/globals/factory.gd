@@ -3,13 +3,13 @@ extends Node
 
 ############ SCENES #########
 const _Actor : PackedScene = preload("res://scenes/entities/actor/actor.tscn")
-const _Projectile: PackedScene = preload("res://scenes/entities/non_colliding_projectile/non_colliding_projectile.tscn")
+const _Projectile: PackedScene = preload("res://scenes/entities/projectile/projectile.tscn")
 const _Unit : PackedScene = preload("res://scenes/entities/unit/unit.tscn")
 
 ######### PROJECTILE POOL #############
 
 const _PROJECTILE_POOL_SIZE : int = 100
-var _projectile_pool : Array[NonCollidingProjectile] = []
+var _projectile_pool : Array[Projectile] = []
 var _last_projectile_pool_index : int = -1
 
 
@@ -165,7 +165,7 @@ func _add_cast_timer(instance: Actor) -> Timer:
 ############ PROJECTILES ################
 
 ## create projectile and fire towards target
-func create_projectile(creator: Actor, target: Actor) -> NonCollidingProjectile:
+func create_projectile(creator: Actor, target: Actor) -> Projectile:
 
 	# Cycle the pool index between .
 	_last_projectile_pool_index = wrapi(_last_projectile_pool_index + 1, 0, _PROJECTILE_POOL_SIZE)
