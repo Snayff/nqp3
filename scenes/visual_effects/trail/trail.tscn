@@ -7,9 +7,9 @@ _data = [Vector2(0, 0), 0.0, 1.0, 0, 1, Vector2(1, 1), 1.0, 0.0, 1, 0]
 point_count = 2
 
 [sub_resource type="Gradient" id="Gradient_r0mxm"]
-colors = PackedColorArray(0.294118, 0.356863, 0.670588, 0, 0.294118, 0.356863, 0.670588, 1)
+colors = PackedColorArray(0.294118, 0.356863, 0.670588, 0, 0.670588, 0.0666667, 0.478431, 1)
 
-[node name="trail" type="Line2D"]
+[node name="Trail" type="Line2D"]
 z_index = -1
 points = PackedVector2Array(0, 0, 32, 0)
 width_curve = SubResource("Curve_lqtj3")
