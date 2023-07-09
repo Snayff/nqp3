@@ -47,10 +47,14 @@ func create_actor(creator: Unit, name_: String, team: String) -> Actor:
 
 	instance.uid = Utility.generate_id()
 	instance._ai = ActorAI.new(instance)
+	creator.add_child(instance._ai)
 	instance.stats = _build_actor_stats(unit_data)
+	creator.add_child(instance.stats)
 	instance.animated_sprite.sprite_frames = _build_sprite_frame(name_)
 	instance._status_effects = _build_status_effects()
+	creator.add_child(instance._status_effects)
 	instance = _add_actions(instance, unit_data)
+	creator.add_child(instance._actions)
 	instance._cast_timer = _add_cast_timer(instance)
 
 	# shuffle starting pos so they dont start on top of one another

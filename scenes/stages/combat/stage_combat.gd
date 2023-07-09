@@ -17,7 +17,7 @@ func _get_units_from_troupe() -> void:
 	# FIXME: when troupes exist update to use troupe. placeholder code for now.
 
 	for key in _units.keys():
-		var num_unit_per_team = 25
+		var num_unit_per_team = 10
 		var unit_name: String
 		if key == "ally":
 			unit_name = "conjurer"

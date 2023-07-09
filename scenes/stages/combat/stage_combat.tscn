@@ -19,6 +19,7 @@ script = ExtResource("1_b58k1")
 
 [node name="NavigationRegion2D" type="NavigationRegion2D" parent="."]
 navigation_polygon = SubResource("NavigationPolygon_qkf04")
+constrain_avoidance = true
 
 [node name="AllySpawner" type="Area2D" parent="."]
 position = Vector2(220, 465)

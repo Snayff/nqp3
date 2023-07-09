@@ -36,8 +36,8 @@ shape = SubResource("CapsuleShape2D_pdl0k")
 path_desired_distance = 8.0
 target_desired_distance = 8.0
 path_max_distance = 16.0
+avoidance_enabled = true
 neighbor_distance = 8.0
-max_neighbors = 50
 max_speed = 8.0
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
