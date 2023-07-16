@@ -160,9 +160,11 @@ func _add_actor_cast_timer(instance: Actor) -> Timer:
 
 ## create projectile and fire towards target
 func create_projectile(data: ProjectileData) -> Projectile:
-	var projectile = _Projectile.new(data.creator)
+	var projectile = _Projectile.instantiate()
+	projectile.creator = data.creator
 	data.creator.add_child(projectile)
 	projectile.uid = Utility.generate_id()
+	projectile.global_position = projectile.creator.global_position
 
 	projectile = _add_projectile_target(projectile, data)
 	projectile = _add_projectile_funcs(projectile, data)
@@ -212,6 +214,7 @@ func _add_projectile_sprite(projectile: Projectile, data: ProjectileData) -> Pro
 	if not data.sprite_name:
 		push_warning("No sprite set for projectile.")
 	else:
-		projectile.sprite.set_texture(Constants.PATH_SPRITES_PROJECTILES + "/" + data.sprite_name.to_lower())
+		var texture : Texture2D = load(Constants.PATH_SPRITES_PROJECTILES + "/" + data.sprite_name.to_lower() + ".png")
+		projectile.sprite.set_texture(texture)
 
 	return projectile

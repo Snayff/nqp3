@@ -38,7 +38,7 @@ func _ready() -> void:
 	timer.connect("timeout", _on_timeout)
 	impact_detector.connect("body_entered", _on_impact)
 
-	timer.lifetime = lifetime
+	timer.start(lifetime)
 
 
 func _physics_process(delta: float) -> void:
@@ -53,16 +53,13 @@ func _on_impact(_body: Node) -> void:
 		if on_hit_func:
 			on_hit_func.call()
 
-		# we hit target, pretend time ended
-		timer.stop()
-		timer.timeout.emit()  # this will trigger _disable()
+		_disable()
+		queue_free()
 
 
 ## launch the projectile towards the target
 func launch() -> void:
-	position = creator.global_position
 	direction = global_position.direction_to(target.global_position)
-
 	timer.start(lifetime)
 
 

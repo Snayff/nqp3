@@ -108,8 +108,7 @@ func use(initial_target: Actor) -> void:
 func set_cooldown(cooldown_time: float) -> void:
 	# ignore if wait time == 0
 	if cooldown_time > 0:
-		_cooldown_timer.wait_time = cooldown_time
-		_cooldown_timer.start()
+		_cooldown_timer.start(cooldown_time)
 
 
 ## reset cooldown timer to cooldown time
@@ -138,9 +137,12 @@ func _effect_new_target(
 	push_warning("new target: effect not created")
 
 
-## apply amount of damage to current target
-func _effect_damage(amount: int, damage_type: Constants.DamageType) -> void:
-	Combat.deal_damage(_creator, _target, amount, damage_type)
+## apply amount of damage to current target. returns damage dealth
+func _effect_damage(amount: int, damage_type: Constants.DamageType) -> int:
+	var damage = Combat.calculate_damage(_creator, _target, amount, damage_type)
+	Combat.deal_damage(_creator, _target, damage, damage_type)
+
+	return damage
 
 
 ## apply amount of damage to current target
@@ -186,7 +188,9 @@ func _effect_teleport(direction, distance) -> void:
 	push_warning("teleport: effect not created")
 
 
-## instantly kill target
-func _effect_kill() -> void:
+## instantly kill target. returns true if successfully killed.
+func _effect_kill() -> bool:
 	# TODO - check for immunity
 	Combat.kill(_creator, _target)
+
+	return true

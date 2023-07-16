@@ -1,16 +1,8 @@
 extends Node
 ## Combat functionality.
 
-## calculate and resolve damage allocation
-func deal_damage(attacker: Actor, defender: Actor, initial_damage: int, damage_type: Constants.DamageType) -> void:
-	# polynomial / exponential example:  ax^2 + bx + c, with a, b, and c being constants.
-	# e.g. (((strength) ^ 3 ÷ 32) + 32) x damage_multiplier
-	# damage multiplier would be set by the attack in question
-	#
-	# linear example: (a + b - c) * e
-	# e.g. (attacker_attack * damage_multiplier - defender_defence) * weakness_multiplier
-
-	var damage = calculate_damage(attacker, defender, initial_damage, damage_type)
+## allocate damage and signal interactions
+func deal_damage(attacker: Actor, defender: Actor, damage: int, damage_type: Constants.DamageType) -> void:
 	attacker.emit_signal("dealt_damage", [damage, damage_type])
 
 	defender.stats.health -= damage
@@ -35,6 +27,13 @@ func deal_damage(attacker: Actor, defender: Actor, initial_damage: int, damage_t
 
 ## work out damage of an attack on a defender
 func calculate_damage(attacker: Actor, defender: Actor, damage: int, damage_type: Constants.DamageType) -> int:
+	# polynomial / exponential example:  ax^2 + bx + c, with a, b, and c being constants.
+	# e.g. (((strength) ^ 3 ÷ 32) + 32) x damage_multiplier
+	# damage multiplier would be set by the attack in question
+	#
+	# linear example: (a + b - c) * e
+	# e.g. (attacker_attack * damage_multiplier - defender_defence) * weakness_multiplier
+
 	var reduced_damage = _reduce_damage_by_defence(damage, defender, damage_type)
 
 	return reduced_damage
