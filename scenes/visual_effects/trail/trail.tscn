@@ -10,11 +10,10 @@ point_count = 2
 colors = PackedColorArray(0.294118, 0.356863, 0.670588, 0, 0.670588, 0.0666667, 0.478431, 1)
 
 [node name="Trail" type="Line2D"]
+editor_description = "Added directly to scene, rather than instantiated in code,  as requires some config."
 z_index = -1
 points = PackedVector2Array(0, 0, 32, 0)
 width_curve = SubResource("Curve_lqtj3")
 gradient = SubResource("Gradient_r0mxm")
 joint_mode = 2
 script = ExtResource("1_ny7n7")
-is_emitting = true
-lifetime = 0.2

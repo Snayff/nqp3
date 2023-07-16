@@ -39,4 +39,3 @@ one_shot = true
 [node name="Trail" parent="." instance=ExtResource("4_ghsii")]
 position = Vector2(-5, 0)
 scale = Vector2(0.140533, 0.1625)
-is_emitting = false
