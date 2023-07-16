@@ -188,4 +188,5 @@ func _effect_teleport(direction, distance) -> void:
 
 ## instantly kill target
 func _effect_kill() -> void:
-	push_warning("_effect_kill: effect not created")
+	# TODO - check for immunity
+	Combat.kill(_creator, _target)

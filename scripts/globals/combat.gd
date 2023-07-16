@@ -55,3 +55,9 @@ func _reduce_damage_by_defence(base_damage: int, defender: Actor, damage_type: C
 ## reduce an actor's stamina
 func reduce_stamina(target: Actor, amount: int) -> void:
 	target.stats.stamina -= min(amount, 0)
+
+
+## instantly kill actor
+func kill(attacker: Actor, target: Actor) -> void:
+	print(attacker.name +  "(" + str(attacker.uid) + ") instantly killed " + target.name +  "(" + str(target.uid) + ")")
+	target.die()

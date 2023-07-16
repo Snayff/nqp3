@@ -31,7 +31,7 @@ signal died
 
 ## resource that manages both the base and final stats for the actor.
 ##
-## added to combatant on init by Unit
+## added to actor on init by Unit
 var stats : ActorStats  # cant be private due to needing access to all its attributes
 ## decision making
 var _ai : ActorAI
@@ -270,6 +270,8 @@ func move_towards_target() -> void:
 func die() -> void:
 	add_to_group("dead")
 	remove_from_group("alive")
+
+	stats.health = 0
 
 	_collision_shape.call_deferred("set_disabled", true)  # need to call deferred as otherwise locked
 
