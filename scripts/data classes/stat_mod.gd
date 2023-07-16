@@ -11,5 +11,6 @@ func _init(stat_name_: String, mod_type_: Constants.StatModType, amount_: float)
 	mod_type = mod_type_
 	amount = amount_
 
+	## needs uid as expected to persist
 	uid = Utility.generate_id()
 

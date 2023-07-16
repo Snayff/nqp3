@@ -14,14 +14,17 @@ signal expired(hit_target: bool, actor_hit: Actor)
 @onready var sprite : Sprite2D = $Sprite
 
 ######## ATTRIBUTES #########
+
 var speed : float = 200.0  # FIXME: only works at high speeds
 var lifetime : float = 2.0
 var creator: Actor
 var target: Actor
-var has_hit_target : bool = false
+
 
 ####### FUNCTIONALITY ############
+
 var direction := Vector2.ZERO  # set on launch
+var has_hit_target : bool = false
 
 
 func _ready() -> void:

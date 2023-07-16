@@ -165,7 +165,7 @@ func _add_cast_timer(instance: Actor) -> Timer:
 ############ PROJECTILES ################
 
 ## create projectile and fire towards target
-func create_projectile(creator: Actor, target: Actor) -> Projectile:
+func create_projectile(proj_data: ProjectileData) -> Projectile:
 
 	# Cycle the pool index between .
 	_last_projectile_pool_index = wrapi(_last_projectile_pool_index + 1, 0, _PROJECTILE_POOL_SIZE)

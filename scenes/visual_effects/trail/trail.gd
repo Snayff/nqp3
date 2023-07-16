@@ -9,12 +9,14 @@ class_name Trail extends Line2D
 
 @export var is_emitting := false: set = set_emitting
 
-# Distance in pixels between vertices. A higher resolution leads to more details.
+## Distance in pixels between vertices. A higher resolution leads to more details.
 @export var resolution := 5.0
-# Life of each point in seconds before it is deleted.
+## Life of each point in seconds before it is deleted.
 @export var lifetime := 0.5
-# Maximum number of points allowed on the curve.
+## Maximum number of points allowed on the curve.
 @export var max_points := 100
+## colour of trail
+@export var trail_colour : Color = Color(0.67, 0.06, 0.47, 1.0)  # starts as pink, same as chaos.png
 
 # Optional path to the target node to follow. If not set, the instance follows its parent.
 @export var target_path: NodePath
