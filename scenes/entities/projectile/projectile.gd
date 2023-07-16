@@ -15,6 +15,7 @@ signal expired(hit_target: bool, actor_hit: Actor)
 
 ######## ATTRIBUTES #########
 
+var uid : int
 var speed : float = 200.0  ## how fast projectile moves
 var lifetime : float = 2.0  ## how long  the projectile exists without contact before expiring
 var creator : Actor

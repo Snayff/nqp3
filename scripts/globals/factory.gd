@@ -34,16 +34,22 @@ func create_actor(creator: Unit, name_: String, team: String) -> Actor:
 	var unit_data = RefData.unit_data[name_]
 
 	instance.uid = Utility.generate_id()
+
 	instance._ai = ActorAI.new(instance)
 	creator.add_child(instance._ai)
+
 	instance.stats = _build_actor_stats(unit_data)
 	creator.add_child(instance.stats)
-	instance.animated_sprite.sprite_frames = _build_sprite_frame(name_)
-	instance._status_effects = _build_status_effects()
+
+	instance.animated_sprite.sprite_frames = _build_actor_sprite_frame(name_)
+
+	instance._status_effects = _build_actor_status_effects()
 	creator.add_child(instance._status_effects)
-	instance = _add_actions(instance, unit_data)
+
+	instance = _add_actor_actions(instance, unit_data)
 	creator.add_child(instance._actions)
-	instance._cast_timer = _add_cast_timer(instance)
+
+	instance._cast_timer = _add_actor_cast_timer(instance)
 
 	# shuffle starting pos so they dont start on top of one another
 	var pos_offset := Vector2(randf_range(-5, 5), randf_range(-5, 5))
@@ -87,7 +93,7 @@ func _build_actor_stats(unit_data: Dictionary) -> ActorStats:
 	return stats
 
 
-func _build_sprite_frame(unit_name: String) -> SpriteFrames:
+func _build_actor_sprite_frame(unit_name: String) -> SpriteFrames:
 	var anim_names : Array = Constants.ActorAnimationType.keys()
 	var path_prefix : String = "res://sprites/units/"
 
@@ -100,7 +106,7 @@ func _build_sprite_frame(unit_name: String) -> SpriteFrames:
 	return sprite_frames
 
 
-func _build_status_effects() -> ActorStatusEffects:
+func _build_actor_status_effects() -> ActorStatusEffects:
 	var status_effects = ActorStatusEffects.new()
 	return status_effects
 
@@ -113,7 +119,7 @@ func _add_actor_groups(instance: Actor, team: String) -> Actor:
 	return instance
 
 
-func _add_actions(instance: Actor, unit_data: Dictionary) -> Actor:
+func _add_actor_actions(instance: Actor, unit_data: Dictionary) -> Actor:
 	var actions : ActorActions = ActorActions.new()
 
 	for action_type in Constants.ActionType.values():
@@ -143,7 +149,7 @@ func _add_actions(instance: Actor, unit_data: Dictionary) -> Actor:
 	return instance
 
 
-func _add_cast_timer(instance: Actor) -> Timer:
+func _add_actor_cast_timer(instance: Actor) -> Timer:
 	# create timer to track cast time
 	var cast_timer = Timer.new()
 	instance.add_child(cast_timer)
@@ -157,19 +163,43 @@ func _add_cast_timer(instance: Actor) -> Timer:
 func create_projectile(proj_data: ProjectileData) -> Projectile:
 	var projectile = _Projectile.new(proj_data.creator)
 	proj_data.creator.add_child(projectile)
+	projectile.uid = Utility.generate_id()
+
+	projectile = _add_projectile_target(projectile, proj_data)
+	projectile = _add_projectile_funcs(projectile, proj_data)
 
 	projectile.speed = proj_data.speed
 
+	if proj_data.has_physicality:
+		projectile.has_physicality = proj_data.has_physicality
+	if proj_data.is_homing:
+		projectile.is_homing = proj_data.is_homing
+	if proj_data.hits_before_expiry:
+		projectile.hits_before_expiry = proj_data.hits_before_expiry
 
-#var speed : float = 200.0  ## how fast projectile moves
-#var lifetime : float = 2.0  ## how long  the projectile exists without contact before expiring
-#var creator : Actor
-#var target : Actor  ## actor to target. takes precedence over target_pos
-#var target_pos : Vector2  ## target position. ignored if there is a target actor.
-#var has_physicality : bool = false  ## applies physics, e.g. knockback
-#var is_homing : bool = false  ## whether projectile alters direction to track target. does nothing if moving to target_pos.
-#var hits_before_expiry : int = 1  ## expires after this many hits. INF to never expire from hits.
-#var on_hit_func : Callable  ## function to trigger on hit
-#var on_expiry_func : Callable  ## function to trigger on expiry
+
+	return projectile
+
+
+func _add_projectile_target(projectile: Projectile, proj_data: ProjectileData) -> Projectile:
+	if not proj_data.target or not proj_data.target_pos:
+		push_warning("Neither target nor target_pos given to projectile. Projectile wont go anywhere.")
+
+	if proj_data.target:
+		projectile.target = proj_data.target
+	if proj_data.target_pos:
+		projectile.target_pos = proj_data.target_pos
+
+	return projectile
+
+
+func _add_projectile_funcs(projectile: Projectile, proj_data: ProjectileData) -> Projectile:
+	if not proj_data.on_hit_func or not proj_data.on_expiry_func:
+		push_warning("Neither on_hit_func nor on_expiry_func given to projectile. Projectile wont do anything.")
+
+	if proj_data.on_hit_func:
+		projectile.on_hit_func = proj_data.on_hit_func
+	if proj_data.on_expiry_func:
+		projectile.on_expiry_func = proj_data.on_expiry_func
 
 	return projectile
