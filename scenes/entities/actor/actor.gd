@@ -205,7 +205,7 @@ func change_state(new_state: Constants.ActorState) -> void:
 		Constants.ActorState.DEAD:
 			animated_sprite.play("death")
 
-	print(name + "(" + str(uid) + ") currently playing " + animated_sprite.animation + " animation.")
+	# print(name + "(" + str(uid) + ") currently playing " + animated_sprite.animation + " animation.")
 
 
 ## process the current state, e.g. moving if in MOVING
@@ -344,7 +344,7 @@ func _on_health_depleted() -> void:
 func _on_hit_received(attacker: Actor) -> void:
 	# flash damage indicator
 	var tween = get_tree().create_tween()
-	tween.tween_property(animated_sprite, "modulate", Color.RED, 1)
+	tween.tween_property(animated_sprite, "modulate", Color.RED, 0.1)  # FIXME: never goes back to normal colour
 
 	_actions.trigger_reactions(Constants.ActionTrigger.ON_RECEIVE_DAMAGE, attacker)
 

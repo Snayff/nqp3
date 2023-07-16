@@ -247,6 +247,12 @@ func create_sparkles(data: SparklesData) -> Sparkles:
 		sparkles.sparkle_size = data.sparkle_size
 	if data.sparkle_colour:
 		sparkles.sparkle_colour = data.sparkle_colour
+	if data.explosiveness:
+		sparkles.explosiveness = data.explosiveness
+	if data.radius:
+		sparkles.radius = data.radius
+	if data.is_following_parent:
+		sparkles.is_following_parent = data.is_following_parent
 
 	return sparkles
 

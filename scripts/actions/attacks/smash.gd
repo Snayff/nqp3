@@ -27,6 +27,9 @@ func _get_sparkles_data() -> SparklesData:
 	data.sparkle_colour = Color(0.467, 0.373, 0.161)
 	data.sparkle_duration = 0.2
 	data.sparkle_size = 1
+	data.explosiveness = 0.8
+	data.radius = 16
+	data.is_following_parent = false
 
 
 	return data

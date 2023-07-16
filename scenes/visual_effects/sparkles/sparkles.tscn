@@ -57,6 +57,7 @@ self_modulate = Color(1.1, 1.1, 1.1, 1)
 amount = 16
 process_material = SubResource("3")
 texture = ExtResource("1_qr22o")
+one_shot = true
 speed_scale = 0.5
 script = ExtResource("2_12vpw")
 
