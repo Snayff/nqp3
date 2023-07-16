@@ -47,7 +47,7 @@ func create_actor(creator: Unit, name_: String, team: String) -> Actor:
 	creator.add_child(instance._status_effects)
 
 	instance = _add_actor_actions(instance, unit_data)
-	creator.add_child(instance._actions)
+
 
 	instance._cast_timer = _add_actor_cast_timer(instance)
 
@@ -95,13 +95,11 @@ func _build_actor_stats(unit_data: Dictionary) -> ActorStats:
 
 func _build_actor_sprite_frame(unit_name: String) -> SpriteFrames:
 	var anim_names : Array = Constants.ActorAnimationType.keys()
-	var path_prefix : String = "res://sprites/units/"
-
 	var sprite_frames = SpriteFrames.new()
 
 	for anim_name in anim_names:
-		var path : String = path_prefix + unit_name + "/" + anim_name.to_lower() + "/"
-		Utility.add_animation_to_sprite_frames(sprite_frames, path, anim_name.to_lower())
+		var path : String = Constants.PATH_SPRITES_ACTORS + unit_name + "/" + anim_name.to_lower() + "/"
+		sprite_frames = Utility.add_animation_to_sprite_frames(sprite_frames, path, anim_name.to_lower())
 
 	return sprite_frames
 
@@ -145,6 +143,7 @@ func _add_actor_actions(instance: Actor, unit_data: Dictionary) -> Actor:
 
 	# add actions to instance
 	instance._actions = actions
+	instance.add_child(instance._actions)
 
 	return instance
 
@@ -160,46 +159,59 @@ func _add_actor_cast_timer(instance: Actor) -> Timer:
 ############ PROJECTILES ################
 
 ## create projectile and fire towards target
-func create_projectile(proj_data: ProjectileData) -> Projectile:
-	var projectile = _Projectile.new(proj_data.creator)
-	proj_data.creator.add_child(projectile)
+func create_projectile(data: ProjectileData) -> Projectile:
+	var projectile = _Projectile.new(data.creator)
+	data.creator.add_child(projectile)
 	projectile.uid = Utility.generate_id()
 
-	projectile = _add_projectile_target(projectile, proj_data)
-	projectile = _add_projectile_funcs(projectile, proj_data)
+	projectile = _add_projectile_target(projectile, data)
+	projectile = _add_projectile_funcs(projectile, data)
+	projectile = _add_projectile_sprite(projectile, data)
 
-	projectile.speed = proj_data.speed
+	projectile.speed = data.speed
 
-	if proj_data.has_physicality:
-		projectile.has_physicality = proj_data.has_physicality
-	if proj_data.is_homing:
-		projectile.is_homing = proj_data.is_homing
-	if proj_data.hits_before_expiry:
-		projectile.hits_before_expiry = proj_data.hits_before_expiry
+	if data.has_physicality:
+		projectile.has_physicality = data.has_physicality
+	if data.is_homing:
+		projectile.is_homing = data.is_homing
+	if data.hits_before_expiry:
+		projectile.hits_before_expiry = data.hits_before_expiry
 
 
 	return projectile
 
 
-func _add_projectile_target(projectile: Projectile, proj_data: ProjectileData) -> Projectile:
-	if not proj_data.target or not proj_data.target_pos:
-		push_warning("Neither target nor target_pos given to projectile. Projectile wont go anywhere.")
+func _add_projectile_target(projectile: Projectile, data: ProjectileData) -> Projectile:
+	if not data.target and not data.target_pos:
+		push_error("Neither target nor target_pos given to projectile. Projectile wont go anywhere.")
+		return projectile
 
-	if proj_data.target:
-		projectile.target = proj_data.target
-	if proj_data.target_pos:
-		projectile.target_pos = proj_data.target_pos
+	if data.target:
+		projectile.target = data.target
+	if data.target_pos:
+		projectile.target_pos = data.target_pos
 
 	return projectile
 
 
-func _add_projectile_funcs(projectile: Projectile, proj_data: ProjectileData) -> Projectile:
-	if not proj_data.on_hit_func or not proj_data.on_expiry_func:
+func _add_projectile_funcs(projectile: Projectile, data: ProjectileData) -> Projectile:
+	if not data.on_hit_func and not data.on_expiry_func:
 		push_warning("Neither on_hit_func nor on_expiry_func given to projectile. Projectile wont do anything.")
+		return projectile
 
-	if proj_data.on_hit_func:
-		projectile.on_hit_func = proj_data.on_hit_func
-	if proj_data.on_expiry_func:
-		projectile.on_expiry_func = proj_data.on_expiry_func
+	if data.on_hit_func:
+		projectile.on_hit_func = data.on_hit_func
+	if data.on_expiry_func:
+		projectile.on_expiry_func = data.on_expiry_func
+
+	return projectile
+
+
+func _add_projectile_sprite(projectile: Projectile, data: ProjectileData) -> Projectile:
+
+	if not data.sprite_name:
+		push_warning("No sprite set for projectile.")
+	else:
+		projectile.sprite.set_texture(Constants.PATH_SPRITES_PROJECTILES + "/" + data.sprite_name.to_lower())
 
 	return projectile

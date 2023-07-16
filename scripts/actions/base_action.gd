@@ -157,8 +157,8 @@ func _effect_status(status_effect_name: String) -> void:
 
 
 ## create a projectile. returns created projectile
-func _effect_projectile() -> Projectile:
-	return Factory.create_projectile(_creator, _target)
+func _effect_projectile(data: ProjectileData) -> Projectile:
+	return Factory.create_projectile(data)
 
 
 ## create a summon

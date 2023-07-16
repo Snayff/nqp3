@@ -38,6 +38,8 @@ func _ready() -> void:
 	timer.connect("timeout", _on_timeout)
 	impact_detector.connect("body_entered", _on_impact)
 
+	timer.lifetime = lifetime
+
 
 func _physics_process(delta: float) -> void:
 	position += direction * speed * delta
@@ -48,26 +50,30 @@ func _on_impact(_body: Node) -> void:
 	if _body == target:
 		has_hit_target = true
 
+		if on_hit_func:
+			on_hit_func.call()
+
 		# we hit target, pretend time ended
 		timer.stop()
 		timer.timeout.emit()  # this will trigger _disable()
 
 
 ## launch the projectile towards the target
-func launch(creator_: Actor, target_: Actor) -> void:
-	creator = creator_
-	target = target_
-	position = creator_.global_position
+func launch() -> void:
+	position = creator.global_position
 	direction = global_position.direction_to(target.global_position)
 
 	timer.start(lifetime)
 
 
 func _on_timeout() -> void:
-	# N.B. dont queue_free() as used in pool
-
 	emit_signal("expired", [has_hit_target, target])
+
+	if on_expiry_func:
+		on_expiry_func.call()
+
 	_disable()
+	queue_free()
 
 
 func _disable() -> void:

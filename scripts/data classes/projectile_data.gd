@@ -12,6 +12,7 @@ var hits_before_expiry : int = 1  ## expires after this many hits. INF to never 
 var on_hit_func : Callable  ## function to trigger on hit
 var on_expiry_func : Callable  ## function to trigger on expiry
 
+var sprite_name : String  ## the name of the sprite held in PATH_SPRITES_PROJECTILES
 
 func _init(creator_: Actor) -> void:
 	## required info
