@@ -6,6 +6,7 @@ extends Node
 const _Actor : PackedScene = preload("res://scenes/entities/actor/actor.tscn")
 const _Projectile: PackedScene = preload("res://scenes/entities/projectile/projectile.tscn")
 const _Unit : PackedScene = preload("res://scenes/entities/unit/unit.tscn")
+const _VisualSparkles : PackedScene = preload("res://scenes/visual_effects/sparkles/sparkles.tscn")
 
 
 ########### UNIT ###############
@@ -158,7 +159,7 @@ func _add_actor_cast_timer(instance: Actor) -> Timer:
 
 ############ PROJECTILES ################
 
-## create projectile and fire towards target
+## create projectile
 func create_projectile(data: ProjectileData) -> Projectile:
 	var projectile = _Projectile.instantiate()
 	projectile.creator = data.creator
@@ -229,3 +230,23 @@ func _configure_trail(projectile: Projectile, data: ProjectileData) -> Projectil
 		projectile.trail.lifetime = data.trail_lifetime
 
 	return projectile
+
+
+############## VISUAL EFFECTS #############
+
+func create_sparkles(data: SparklesData) -> Sparkles:
+	var sparkles = _VisualSparkles.instantiate()
+
+	if data.duration:
+		sparkles.duration = data.duration
+	if data.sparkle_duration:
+		sparkles.sparkle_duration = data.sparkle_duration
+	if data.num_sparkles:
+		sparkles.num_sparkles = data.num_sparkles
+	if data.sparkle_size:
+		sparkles.sparkle_size = data.sparkle_size
+	if data.sparkle_colour:
+		sparkles.sparkle_colour = data.sparkle_colour
+
+	return sparkles
+

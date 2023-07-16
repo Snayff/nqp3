@@ -16,7 +16,20 @@ func _configure() -> void:
 func use(initial_target: Actor) -> void:
 	super(initial_target)
 
+	var sparkles = Factory.create_sparkles(_get_sparkles_data())
+	_creator.add_child(sparkles)
+
 	_effect_damage(_base_damage + _creator.stats.attack, _base_damage_type)
+
+func _get_sparkles_data() -> SparklesData:
+	var data = SparklesData.new()
+	data.duration = 0.5
+	data.sparkle_colour = Color(0.467, 0.373, 0.161)
+	data.sparkle_duration = 0.2
+	data.sparkle_size = 1
+
+
+	return data
 
 
 func get_description() -> String:

@@ -173,11 +173,6 @@ func _effect_terrain(terrain) -> void:
 	push_warning("terrain: effect not created")
 
 
-## visual, such as animation
-func _effect_visual(visual) -> void:
-	push_warning("visual: effect not created")
-
-
 ## apply force as a vector
 func _effect_apply_force(velocity) -> void:
 	push_warning("apply_force: effect not created")

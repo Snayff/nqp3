@@ -9,6 +9,11 @@ class_name Sparkles extends GPUParticles2D
 
 var is_emitting : bool = false
 var duration : float = 0.0
+var radius: int = 16:
+	set(value):
+		sparkle_size = value
+		process_material.emission_sphere_radius = sparkle_size
+
 
 ########### INDIVIDUAL SPARKLE ATTRIBUTES #########
 
