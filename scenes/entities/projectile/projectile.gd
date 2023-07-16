@@ -15,10 +15,16 @@ signal expired(hit_target: bool, actor_hit: Actor)
 
 ######## ATTRIBUTES #########
 
-var speed : float = 200.0  # FIXME: only works at high speeds
-var lifetime : float = 2.0
-var creator: Actor
-var target: Actor
+var speed : float = 200.0  ## how fast projectile moves
+var lifetime : float = 2.0  ## how long  the projectile exists without contact before expiring
+var creator : Actor
+var target : Actor  ## actor to target. takes precedence over target_pos
+var target_pos : Vector2  ## target position. ignored if there is a target actor.
+var has_physicality : bool = false  ## applies physics, e.g. knockback
+var is_homing : bool = false  ## whether projectile alters direction to track target. does nothing if moving to target_pos.
+var hits_before_expiry : int = 1  ## expires after this many hits. INF to never expire from hits.
+var on_hit_func : Callable  ## function to trigger on hit
+var on_expiry_func : Callable  ## function to trigger on expiry
 
 
 ####### FUNCTIONALITY ############
@@ -30,23 +36,6 @@ var has_hit_target : bool = false
 func _ready() -> void:
 	timer.connect("timeout", _on_timeout)
 	impact_detector.connect("body_entered", _on_impact)
-
-	reset()
-
-
-## reset for use in the object pool
-##
-## assumes assigned to new creator before being called
-func reset() -> void:
-	# move back to the top of the tree, to avoid being impacted by parent's movement
-	top_level = true
-
-	# get ready for processing
-	set_process(true)
-	show()
-	visible = true
-
-	has_hit_target = false
 
 
 func _physics_process(delta: float) -> void:

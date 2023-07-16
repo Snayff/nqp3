@@ -2,23 +2,11 @@ extends Node
 ## A factory for object creation.
 
 ############ SCENES #########
+
 const _Actor : PackedScene = preload("res://scenes/entities/actor/actor.tscn")
 const _Projectile: PackedScene = preload("res://scenes/entities/projectile/projectile.tscn")
 const _Unit : PackedScene = preload("res://scenes/entities/unit/unit.tscn")
 
-######### PROJECTILE POOL #############
-
-const _PROJECTILE_POOL_SIZE : int = 500
-var _projectile_pool : Array[Projectile] = []
-var _last_projectile_pool_index : int = -1
-
-
-func _ready() -> void:
-	_init_pools()
-
-func _init_pools() -> void:
-	for i in _PROJECTILE_POOL_SIZE:
-		_projectile_pool.append(_Projectile.instantiate())
 
 ########### UNIT ###############
 
@@ -154,6 +142,7 @@ func _add_actions(instance: Actor, unit_data: Dictionary) -> Actor:
 
 	return instance
 
+
 func _add_cast_timer(instance: Actor) -> Timer:
 	# create timer to track cast time
 	var cast_timer = Timer.new()
@@ -166,18 +155,21 @@ func _add_cast_timer(instance: Actor) -> Timer:
 
 ## create projectile and fire towards target
 func create_projectile(proj_data: ProjectileData) -> Projectile:
+	var projectile = _Projectile.new(proj_data.creator)
+	proj_data.creator.add_child(projectile)
 
-	# Cycle the pool index between .
-	_last_projectile_pool_index = wrapi(_last_projectile_pool_index + 1, 0, _PROJECTILE_POOL_SIZE)
-	var projectile = _projectile_pool[_last_projectile_pool_index]
+	projectile.speed = proj_data.speed
 
-	# remove projectile from old creator
-	if projectile.creator != null:
-		projectile.creator.remove_child(projectile)
 
-	# re-setup
-	creator.add_child(projectile)
-	projectile.reset()
-	projectile.launch(creator, target)
+#var speed : float = 200.0  ## how fast projectile moves
+#var lifetime : float = 2.0  ## how long  the projectile exists without contact before expiring
+#var creator : Actor
+#var target : Actor  ## actor to target. takes precedence over target_pos
+#var target_pos : Vector2  ## target position. ignored if there is a target actor.
+#var has_physicality : bool = false  ## applies physics, e.g. knockback
+#var is_homing : bool = false  ## whether projectile alters direction to track target. does nothing if moving to target_pos.
+#var hits_before_expiry : int = 1  ## expires after this many hits. INF to never expire from hits.
+#var on_hit_func : Callable  ## function to trigger on hit
+#var on_expiry_func : Callable  ## function to trigger on expiry
 
 	return projectile

@@ -13,7 +13,7 @@ var on_hit_func : Callable  ## function to trigger on hit
 var on_expiry_func : Callable  ## function to trigger on expiry
 
 
-func _init(creator_: Actor, target_: Actor) -> void:
+func _init(creator_: Actor) -> void:
 	## required info
 	creator = creator_
-	target  = target_
+
