@@ -1,23 +1,24 @@
 #@tool  # <- had this in demo but doesnt seem to be needed
+class_name Trail extends Line2D
 ## Draws a 2D trail using Godot's `Line2D`.
 ##
 ## Instantiate `Trail2D` as a child of a moving node to use it. To control the color, width curve,
 ## texture, or trail width, use parameters from the `Line2D` class.
 ## From: https://github.com/GDQuest/godot-visual-effects/tree/master/godot/Trail
 
-class_name Trail extends Line2D
-
 @export var is_emitting := false: set = set_emitting
 
-## Distance in pixels between vertices. A higher resolution leads to more details.
+## distance in pixels between vertices. A higher resolution leads to more details.
 @export var resolution := 5.0
-## Life of each point in seconds before it is deleted.
+## life of each point in seconds before it is deleted.
 @export var lifetime := 0.5
-## Maximum number of points allowed on the curve.
+## maximum number of points allowed on the curve.
 @export var max_points := 100
 ## colour of trail
-@export var trail_colour : Color = Color(0.67, 0.06, 0.47, 1.0)  # starts as pink, same as chaos.png
-
+@export var trail_colour : Color = Color(0.67, 0.06, 0.47, 1.0):  # starts as pink, same as chaos.png
+	set(value):
+		trail_colour = value
+		gradient.set_color(1, trail_colour)
 # Optional path to the target node to follow. If not set, the instance follows its parent.
 @export var target_path: NodePath
 

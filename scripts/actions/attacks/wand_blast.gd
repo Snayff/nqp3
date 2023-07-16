@@ -26,11 +26,14 @@ func use(initial_target: Actor) -> void:
 
 func _get_projectile_data() -> ProjectileData:
 	var data = ProjectileData.new(_creator)
-	data.speed = 50
+	data.speed = 100
 	data.lifetime = 3.0
 	data.target = _target
 	data.on_hit_func = apply_damage
 	data.sprite_name = "chaos"
+	data.has_trail = true
+	data.trail_colour = Color(0.67, 0.06, 0.47, 1.0)
+	data.trail_lifetime = 0.5
 
 	return data
 

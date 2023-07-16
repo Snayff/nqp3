@@ -170,6 +170,8 @@ func create_projectile(data: ProjectileData) -> Projectile:
 	projectile = _add_projectile_funcs(projectile, data)
 	projectile = _add_projectile_sprite(projectile, data)
 
+	projectile = _configure_trail(projectile, data)
+
 	projectile.speed = data.speed
 
 	if data.has_physicality:
@@ -216,5 +218,14 @@ func _add_projectile_sprite(projectile: Projectile, data: ProjectileData) -> Pro
 	else:
 		var texture : Texture2D = load(Constants.PATH_SPRITES_PROJECTILES + "/" + data.sprite_name.to_lower() + ".png")
 		projectile.sprite.set_texture(texture)
+
+	return projectile
+
+
+func _configure_trail(projectile: Projectile, data: ProjectileData) -> Projectile:
+	if data.has_trail:
+		projectile.trail.is_emitting = true
+		projectile.trail.trail_colour = data.trail_colour
+		projectile.trail.lifetime = data.trail_lifetime
 
 	return projectile
