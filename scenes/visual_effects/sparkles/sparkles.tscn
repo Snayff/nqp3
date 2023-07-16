@@ -1,6 +1,7 @@
-[gd_scene load_steps=7 format=3 uid="uid://b5s036p8vuugl"]
+[gd_scene load_steps=8 format=3 uid="uid://b5s036p8vuugl"]
 
-[ext_resource type="Texture2D" uid="uid://4wvxmii2brkq" path="res://sprites/effects/glowing_circle.png" id="1_7xa1d"]
+[ext_resource type="Texture2D" uid="uid://mkotj6vmaqd3" path="res://sprites/effects/white_glowing_circle.png" id="1_qr22o"]
+[ext_resource type="Script" path="res://scenes/visual_effects/sparkles/sparkles.gd" id="2_12vpw"]
 
 [sub_resource type="Curve" id="1"]
 _data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.493213, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
@@ -10,11 +11,11 @@ point_count = 3
 curve = SubResource("1")
 
 [sub_resource type="ParticleProcessMaterial" id="3"]
+lifetime_randomness = 0.1
 emission_shape = 1
 emission_sphere_radius = 60.0
 gravity = Vector3(0, 0, 0)
 scale_curve = SubResource("2")
-color = Color(1.1, 1.1, 1.1, 1)
 
 [sub_resource type="Animation" id="4"]
 resource_name = "Charge"
@@ -41,7 +42,7 @@ tracks/1/keys = {
 "times": PackedFloat32Array(0, 2),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [Color(1.1, 1.1, 1.1, 1), Color(1.5, 1.5, 1.5, 1)]
+"values": [Color(1.1, 1.1, 1.1, 1), Color(1, 1, 1, 1)]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_nsq1b"]
@@ -50,13 +51,16 @@ _data = {
 }
 
 [node name="Sparkles" type="GPUParticles2D"]
-self_modulate = Color(1.5, 1.5, 1.5, 1)
+self_modulate = Color(1.1, 1.1, 1.1, 1)
 amount = 16
 process_material = SubResource("3")
-texture = ExtResource("1_7xa1d")
-speed_scale = 4.0
+texture = ExtResource("1_qr22o")
+speed_scale = 0.5
+script = ExtResource("2_12vpw")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
 "": SubResource("AnimationLibrary_nsq1b")
 }
+
+[node name="Timer" type="Timer" parent="."]
