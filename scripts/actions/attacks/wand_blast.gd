@@ -31,6 +31,7 @@ func _get_projectile_data() -> ProjectileData:
 	data.target = _target
 	data.on_hit_func = apply_damage
 	data.sprite_name = "chaos"
+	data.is_homing = true
 	data.has_trail = true
 	data.trail_colour = Color(0.67, 0.06, 0.47, 1.0)
 	data.trail_lifetime = 0.5
