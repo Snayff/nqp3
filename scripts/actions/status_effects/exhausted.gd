@@ -3,7 +3,7 @@ class_name Exhausted extends BaseStatusEffect
 func _configure() -> void:
 	friendly_name = "Exhausted"
 	tags = [Constants.ActionTag.STATUS_EFFECT, Constants.ActionTag.STAT_MOD]
-	valid_target_types = [Constants.TargetType.ANY]
+	target_type = Constants.TargetType.ANY
 	_base_duration = INF
 
 	# significantly reduce stats

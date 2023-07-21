@@ -4,8 +4,8 @@ class_name Heal extends BaseAction
 func _configure() -> void:
 	friendly_name = "heal"
 	tags = [Constants.ActionTag.HEAL]
-	valid_target_types = [Constants.TargetType.ALLY]
-	_base_cooldown = 1
+	target_type = Constants.TargetType.ALLY
+	_base_cooldown = 2
 	_base_stamina_cost = 50
 	_base_cast_time = 2
 	_base_range = 100

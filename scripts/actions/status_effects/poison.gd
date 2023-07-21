@@ -3,7 +3,7 @@ class_name Poison extends BaseStatusEffect
 func _configure() -> void:
 	friendly_name = "Poison"
 	tags = [Constants.ActionTag.STATUS_EFFECT, Constants.ActionTag.DAMAGE]
-	valid_target_types = [Constants.TargetType.ANY]
+	target_type = Constants.TargetType.ANY
 	_base_cooldown = 1
 	_base_duration = 2
 	_base_damage = 1

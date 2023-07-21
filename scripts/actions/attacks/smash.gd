@@ -4,7 +4,7 @@ class_name Smash extends BaseAction
 func _configure() -> void:
 	friendly_name = "smash"
 	tags = [Constants.ActionTag.DAMAGE]
-	valid_target_types = [Constants.TargetType.ENEMY]
+	target_type = Constants.TargetType.ENEMY
 	_base_cooldown = 1
 	_base_stamina_cost = 5
 	_base_damage = 10

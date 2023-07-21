@@ -95,7 +95,7 @@ func _build_actor_stats(unit_data: Dictionary) -> ActorStats:
 
 
 func _build_actor_sprite_frame(unit_name: String) -> SpriteFrames:
-	var anim_names : Array[String] = Constants.ActorAnimationType.keys()
+	var anim_names : Array = Constants.ActorAnimationType.keys()
 	var sprite_frames : SpriteFrames = SpriteFrames.new()
 
 	for anim_name in anim_names:

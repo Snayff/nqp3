@@ -74,7 +74,7 @@ func use_random_attack(target: Actor) -> void:
 		emit_signal("attacked")
 
 
-## get a random attack, from those available
+## get a random attack, from those available. Can return null
 func get_random_attack() -> BaseAction:
 	var attack_to_use : BaseAction
 	for action in attacks.values():

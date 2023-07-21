@@ -52,8 +52,8 @@ enum TargetType {
 	SELF,  ## actor using the skill
 	ALLY,  ## actor on same team
 	ENEMY,  ## actor on other team
-	ATTACKER,  ## actor attacking self
-	DEFENDER,  ## actor being attacked by self
+	ATTACKER,  ## actor attacking person asking
+	DEFENDER,  ## actor being attacked by person asking
 	ANY,  ## anyone, we dont care
 
 }

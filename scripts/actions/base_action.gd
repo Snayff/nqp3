@@ -7,7 +7,7 @@ class_name BaseAction extends Node
 @export_group("config")
 @export var friendly_name : String = ""  ## name of the action, shown in the ui
 @export var tags : Array[Constants.ActionTag] = []  ## property tags describing the action
-@export var valid_target_types : Array[Constants.TargetType] = []  ## what targets the action can effect
+@export var target_type : Constants.TargetType = Constants.TargetType.ENEMY  ## what target the action can effect
 @export var trigger : Constants.ActionTrigger = Constants.ActionTrigger.ATTACK  ## what triggers the action
 @export var action_type : Constants.ActionType = Constants.ActionType.ATTACK
 @export var target_selection : Constants.ActionTargetSelection = Constants.ActionTargetSelection.ACTOR  ## what thing is selected to cast the action
@@ -58,8 +58,6 @@ var is_ready : bool = true:
 		return _cooldown_timer.is_stopped()
 	set(_value):
 		push_warning("Tried to set is_ready directly. Not allowed.")
-var is_targeting_self : bool = false
-var is_targeting_all : bool = false
 
 ######### UI ##############
 
@@ -147,7 +145,7 @@ func _effect_damage(amount: int, damage_type: Constants.DamageType) -> int:
 
 ## apply amount of damage to current target
 func _effect_heal(amount: int) -> void:
-	push_warning("heal: effect not created")
+	Combat.heal(_creator, _target, amount)
 
 
 ## apply a status effect to current target
