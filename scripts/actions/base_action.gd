@@ -71,6 +71,7 @@ func _init(creator: Actor) -> void:
 	uid = Utility.generate_id()
 
 	_cooldown_timer = Timer.new()
+	_cooldown_timer.set_name("CooldownTimer")
 	_creator.add_child(_cooldown_timer)
 	_cooldown_timer.set_one_shot(true)
 

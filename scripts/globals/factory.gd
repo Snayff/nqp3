@@ -39,14 +39,17 @@ func create_actor(creator: Unit, name_: String, team: String) -> Actor:
 	instance.unit_name = name_
 
 	instance._ai = ActorAI.new(instance)
+	instance._ai.set_name("AI")
 	instance.add_child(instance._ai)
 
 	instance.stats = _build_actor_stats(unit_data)
+	instance.stats.set_name("Stats")
 	instance.add_child(instance.stats)
 
 	instance.animated_sprite.sprite_frames = _build_actor_sprite_frame(name_)
 
 	instance._status_effects = _build_actor_status_effects()
+	instance._status_effects.set_name("StatusEffects")
 	instance.add_child(instance._status_effects)
 
 	instance = _add_actor_actions(instance, unit_data)
@@ -143,6 +146,7 @@ func _add_actor_actions(instance: Actor, unit_data: Dictionary) -> Actor:
 
 	# add actions to instance
 	instance._actions = actions
+	instance._actions.set_name("Actions")
 	instance.add_child(instance._actions)
 
 	return instance

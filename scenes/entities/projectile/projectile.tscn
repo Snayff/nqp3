@@ -33,7 +33,8 @@ self_modulate = Color(0.690196, 0.188235, 0.360784, 1)
 material = SubResource("3")
 shape = SubResource("1")
 
-[node name="Lifetime" type="Timer" parent="."]
+[node name="LifetimeTimer" type="Timer" parent="."]
+editor_description = "Time allowed to exist."
 one_shot = true
 
 [node name="Trail" parent="." instance=ExtResource("4_ghsii")]

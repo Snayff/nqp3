@@ -33,6 +33,7 @@ func _init(creator: Actor) -> void:
 
 	# setup new timer for duration
 	_duration_timer = Timer.new()
+	_duration_timer.set_name("DurationTimer")
 	_duration_timer.timeout.connect(on_duration_expiry)
 
 	# override core functionality to make the action work as a recurring effect

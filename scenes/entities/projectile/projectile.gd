@@ -9,7 +9,7 @@ signal expired(hit_target: bool, actor_hit: Actor)
 
 ######## OTHER NODES ###########
 
-@onready var timer : Timer = $Lifetime
+@onready var timer : Timer = $LifetimeTimer
 @onready var impact_detector : Area2D = $ImpactDetector
 @onready var sprite : Sprite2D = $Sprite
 @onready var trail : Trail = $Trail
