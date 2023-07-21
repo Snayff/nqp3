@@ -2,7 +2,7 @@ class_name Heal extends BaseAction
 ## restore health
 
 func _configure() -> void:
-	friendly_name = "heal"
+	friendly_name = "Heal"
 	tags = [Constants.ActionTag.HEAL]
 	target_type = Constants.TargetType.ALLY
 	_base_cooldown = 2

@@ -26,7 +26,7 @@ func _get_units_from_troupe() -> void:
 
 		for i in range(num_unit_per_team):
 			var unit = Factory.create_unit(self, unit_name, key)
-			unit.set_name(unit_name)
+			unit.set_name(unit_name.to_pascal_case() + "_Unit")
 			_units[key].append(unit)
 
 
