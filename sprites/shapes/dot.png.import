@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dnlqw6qi4ov37"
-path="res://.godot/imported/sparkle.png-ae2c149ef5c78b2dc4262a9e8e6f9c5b.ctex"
+uid="uid://d0oyh6ffdf6rd"
+path="res://.godot/imported/dot.png-0d6dc91d20bd1f135b2ce0fd9a8b473e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/effects/sparkle.png"
-dest_files=["res://.godot/imported/sparkle.png-ae2c149ef5c78b2dc4262a9e8e6f9c5b.ctex"]
+source_file="res://sprites/shapes/dot.png"
+dest_files=["res://.godot/imported/dot.png-0d6dc91d20bd1f135b2ce0fd9a8b473e.ctex"]
 
 [params]
 

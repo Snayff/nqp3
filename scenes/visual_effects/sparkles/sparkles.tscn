@@ -1,6 +1,6 @@
 [gd_scene load_steps=8 format=3 uid="uid://b5s036p8vuugl"]
 
-[ext_resource type="Texture2D" uid="uid://mkotj6vmaqd3" path="res://sprites/effects/white_glowing_circle.png" id="1_qr22o"]
+[ext_resource type="Texture2D" uid="uid://mkotj6vmaqd3" path="res://sprites/shapes/white_glowing_circle.png" id="1_qr22o"]
 [ext_resource type="Script" path="res://scenes/visual_effects/sparkles/sparkles.gd" id="2_12vpw"]
 
 [sub_resource type="Curve" id="1"]

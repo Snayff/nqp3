@@ -69,6 +69,7 @@ enum ActionTargetSelection {
 ## different properties of an action
 enum ActionTag {
 	DAMAGE,
+	HEAL,
 	SUMMON,
 	TERRAIN,
 	STATUS_EFFECT,
@@ -104,6 +105,7 @@ const PATH_REACTIONS : String = "res://scripts/actions/reactions/"  ## the path 
 const PATH_STATUS_EFFECTS : String = "res://scripts/actions/status_effects/" ## the path reaction scripts are stored in
 const PATH_SPRITES_ACTORS : String = "res://sprites/units/"  ## the path unit's actor sprites are held
 const PATH_SPRITES_PROJECTILES : String = "res://sprites/projectiles/"
+const PATH_SPRITES_EFFECTS : String = "res://sprites/effects/"
 
 ############ VALUES ############
 

@@ -1,0 +1,25 @@
+class_name Heal extends BaseAction
+## restore health
+
+func _configure() -> void:
+	friendly_name = "heal"
+	tags = [Constants.ActionTag.HEAL]
+	valid_target_types = [Constants.TargetType.ALLY]
+	_base_cooldown = 1
+	_base_stamina_cost = 50
+	_base_cast_time = 2
+	_base_range = 100
+
+
+func use(initial_target: Actor) -> void:
+	super(initial_target)
+
+	var visual = Factory.create_effect_animation("heal")
+	visual.animation_finished.connect(visual.queue_free)
+	initial_target.add_child(visual)
+
+	_effect_heal(_base_damage + _creator.stats.attack)
+
+
+func get_description() -> String:
+	return "Restore health to an ally."  # TODO: add amount

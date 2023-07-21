@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d0oyh6ffdf6rd"
-path="res://.godot/imported/dot.png-55a55ece56bf802112f5c80627c31d38.ctex"
+uid="uid://4wvxmii2brkq"
+path="res://.godot/imported/blue_glowing_circle.png-6d787d2bd45304db9fb89fe551482c0b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/effects/dot.png"
-dest_files=["res://.godot/imported/dot.png-55a55ece56bf802112f5c80627c31d38.ctex"]
+source_file="res://sprites/shapes/blue_glowing_circle.png"
+dest_files=["res://.godot/imported/blue_glowing_circle.png-6d787d2bd45304db9fb89fe551482c0b.ctex"]
 
 [params]
 

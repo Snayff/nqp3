@@ -95,8 +95,8 @@ func _build_actor_stats(unit_data: Dictionary) -> ActorStats:
 
 
 func _build_actor_sprite_frame(unit_name: String) -> SpriteFrames:
-	var anim_names : Array = Constants.ActorAnimationType.keys()
-	var sprite_frames = SpriteFrames.new()
+	var anim_names : Array[String] = Constants.ActorAnimationType.keys()
+	var sprite_frames : SpriteFrames = SpriteFrames.new()
 
 	for anim_name in anim_names:
 		var path : String = Constants.PATH_SPRITES_ACTORS + unit_name + "/" + anim_name.to_lower() + "/"
@@ -256,3 +256,13 @@ func create_sparkles(data: SparklesData) -> Sparkles:
 
 	return sparkles
 
+
+func create_effect_animation(animation_name) -> AnimatedSprite2D:
+	var animated_sprite : AnimatedSprite2D = AnimatedSprite2D.new()
+	var sprite_frames : SpriteFrames = SpriteFrames.new()
+
+	var path : String = Constants.PATH_SPRITES_EFFECTS + animation_name + "/"
+	sprite_frames = Utility.add_animation_to_sprite_frames(sprite_frames, path, animation_name)
+	animated_sprite.sprite_frames = sprite_frames
+
+	return animated_sprite

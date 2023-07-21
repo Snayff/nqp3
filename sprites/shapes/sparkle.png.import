@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://4wvxmii2brkq"
-path="res://.godot/imported/blue_glowing_circle.png-e8ca05a2583c2dd5e90171c302e390c2.ctex"
+uid="uid://dnlqw6qi4ov37"
+path="res://.godot/imported/sparkle.png-d61bd9a884aad71ffbf637b82f9d7de5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/effects/blue_glowing_circle.png"
-dest_files=["res://.godot/imported/blue_glowing_circle.png-e8ca05a2583c2dd5e90171c302e390c2.ctex"]
+source_file="res://sprites/shapes/sparkle.png"
+dest_files=["res://.godot/imported/sparkle.png-d61bd9a884aad71ffbf637b82f9d7de5.ctex"]
 
 [params]
 

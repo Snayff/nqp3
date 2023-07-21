@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://mkotj6vmaqd3"
-path="res://.godot/imported/white_glowing_circle.png-6c6039566511b8fc76f0834808e50824.ctex"
+path="res://.godot/imported/white_glowing_circle.png-16860f97fc23f958a468cd10d3cb1929.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/effects/white_glowing_circle.png"
-dest_files=["res://.godot/imported/white_glowing_circle.png-6c6039566511b8fc76f0834808e50824.ctex"]
+source_file="res://sprites/shapes/white_glowing_circle.png"
+dest_files=["res://.godot/imported/white_glowing_circle.png-16860f97fc23f958a468cd10d3cb1929.ctex"]
 
 [params]
 
