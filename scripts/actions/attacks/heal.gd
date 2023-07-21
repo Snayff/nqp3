@@ -14,7 +14,7 @@ func _configure() -> void:
 func use(initial_target: Actor) -> void:
 	super(initial_target)
 
-	var visual = Factory.create_effect_animation("heal")
+	var visual = Factory.create_simple_animation("heal")
 	visual.animation_finished.connect(visual.queue_free)
 	initial_target.add_child(visual)
 

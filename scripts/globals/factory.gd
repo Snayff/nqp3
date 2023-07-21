@@ -7,6 +7,7 @@ const _Actor : PackedScene = preload("res://scenes/entities/actor/actor.tscn")
 const _Projectile: PackedScene = preload("res://scenes/entities/projectile/projectile.tscn")
 const _Unit : PackedScene = preload("res://scenes/entities/unit/unit.tscn")
 const _VisualSparkles : PackedScene = preload("res://scenes/visual_effects/sparkles/sparkles.tscn")
+const _VisualSimple : PackedScene = preload("res://scenes/visual_effects/simple_animation/simple_animation.tscn")
 
 
 ########### UNIT ###############
@@ -247,12 +248,14 @@ func create_sparkles(data: SparklesData) -> Sparkles:
 	return sparkles
 
 
-func create_effect_animation(animation_name) -> AnimatedSprite2D:
-	var animated_sprite : AnimatedSprite2D = AnimatedSprite2D.new()
+func create_simple_animation(animation_name) -> SimpleAnimation:
+	var animated_sprite : SimpleAnimation = _VisualSimple.instantiate()
 	var sprite_frames : SpriteFrames = SpriteFrames.new()
 
 	var path : String = Constants.PATH_SPRITES_EFFECTS + animation_name + "/"
 	sprite_frames = Utility.add_animation_to_sprite_frames(sprite_frames, path, animation_name)
 	animated_sprite.sprite_frames = sprite_frames
+
+	animated_sprite.play(animation_name)
 
 	return animated_sprite
