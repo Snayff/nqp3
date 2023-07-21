@@ -99,6 +99,8 @@ func use(initial_target: Actor) -> void:
 	_target = initial_target
 	Combat.reduce_stamina(_creator, _base_stamina_cost)
 
+	print(_creator.debug_name + " used " + friendly_name + " on " + initial_target.debug_name + ".")
+
 
 ## set the cooldown of the action and start the cooldown timer.
 ##

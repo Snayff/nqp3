@@ -74,3 +74,5 @@ func heal(healer: Actor, target: Actor, heal_amount: int) -> void:
 
 	target.stats.health += max_heal
 	target.emit_signal("was_healed", heal_amount)
+
+	print(healer.debug_name + " healed " + str(max_heal) + " to " + target.debug_name + ". Health is now " + str(target.stats.health) + ".")
