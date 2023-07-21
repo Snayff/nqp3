@@ -31,6 +31,7 @@ signal chose_attack_to_cast(attack: BaseAction)
 @onready var animated_sprite : AnimatedSprite2D = $AnimatedSprite2D  # TODO: can we make this private?
 @onready var _collision_shape : CollisionShape2D = $CollisionShape2D
 @onready var _target_finder : Area2D = $TargetFinder
+@onready var _target_refresh_timer : Timer = $TargetRefreshTimer
 
 ############ COMPONENTS ###############
 # these are initialised on creation by Factory

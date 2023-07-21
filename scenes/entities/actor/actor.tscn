@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/entities/actor/actor.gd" id="1_de4j8"]
 [ext_resource type="PackedScene" uid="uid://c757mb1y2lc8g" path="res://scenes/components/hurt_box/hurt_box.tscn" id="2_eofpl"]
-[ext_resource type="Script" path="res://scenes/entities/actor/actor_debug_info.gd" id="3_ddju0"]
+[ext_resource type="Script" path="res://scripts/components/actor_debug_info.gd" id="3_ddju0"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_pdl0k"]
 resource_local_to_scene = true
@@ -66,3 +66,5 @@ monitorable = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="TargetFinder"]
 shape = SubResource("CircleShape2D_4kht2")
+
+[node name="TargetRefreshTimer" type="Timer" parent="."]

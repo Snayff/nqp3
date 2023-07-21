@@ -22,7 +22,7 @@ func deal_damage(attacker: Actor, defender: Actor, damage: int, damage_type: Con
 	else:
 		team2 = "enemy"
 
-	print(attacker.name +  "(" + str(attacker.uid) + ") dealt " + str(damage) + " to " + defender.name + "(" + str(defender.uid) + "). Remaining health is " + str(defender.stats.health))
+	print(attacker._debug_name + " dealt " + str(damage) + " to " + defender.name + "(" + str(defender.uid) + "). Remaining health is " + str(defender.stats.health))
 
 
 ## work out damage of an attack on a defender
@@ -58,7 +58,7 @@ func reduce_stamina(target: Actor, amount: int) -> void:
 
 ## instantly kill actor
 func kill(attacker: Actor, target: Actor) -> void:
-	print(attacker.name +  "(" + str(attacker.uid) + ") instantly killed " + target.name +  "(" + str(target.uid) + ")")
+	print(attacker._debug_name + " instantly killed " + target._debug_name )
 	target.die()
 
 
