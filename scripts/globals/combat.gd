@@ -60,3 +60,17 @@ func reduce_stamina(target: Actor, amount: int) -> void:
 func kill(attacker: Actor, target: Actor) -> void:
 	print(attacker.name +  "(" + str(attacker.uid) + ") instantly killed " + target.name +  "(" + str(target.uid) + ")")
 	target.die()
+
+
+## restore health and signal interactions
+func heal(healer: Actor, target: Actor, heal_amount: int) -> void:
+	healer.emit_signal("healed_someone", heal_amount)
+
+	var max_heal = 0
+	if target.stats.max_health - target.stats.health > heal_amount:
+		max_heal = heal_amount
+	else:
+		max_heal = max(0, target.stats.max_health - target.stats.health)
+
+	target.stats.health += max_heal
+	target.emit_signal("was_healed", heal_amount)

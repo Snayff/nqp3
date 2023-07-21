@@ -47,7 +47,8 @@ const unit_data: Dictionary = {
 		"tier": 1,
 		"actions": {  ## must use Action Type, script name (NOT class name)
 			Constants.ActionType.ATTACK : [
-				"wand_blast"
+				"wand_blast",
+				"heal"
 			],
 			Constants.ActionType.REACTION : {
 				Constants.ActionTrigger.ON_DEAL_DAMAGE : [

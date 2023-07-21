@@ -17,6 +17,10 @@ signal took_damage(amount: int, damage_type: Constants.DamageType)
 signal hit_received(attacker: Actor)
 ## emitted when died
 signal died
+## emitted when health restored
+signal was_healed(amount: int)
+## emitted when heal someone
+signal healed_someone(amount: int)
 
 
 ############## NODES ##################
