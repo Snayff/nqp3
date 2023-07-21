@@ -32,6 +32,7 @@ signal chose_attack_to_cast(attack: BaseAction)
 @onready var _collision_shape : CollisionShape2D = $CollisionShape2D
 @onready var _target_finder : Area2D = $TargetFinder
 @onready var _target_refresh_timer : Timer = $TargetRefreshTimer
+@onready var _cast_timer : Timer = $CastTimer
 
 ############ COMPONENTS ###############
 # these are initialised on creation by Factory
@@ -50,12 +51,16 @@ var _status_effects : ActorStatusEffects
 ######### FUNCTIONAL ATTRIBUTES ###############
 
 var uid : int
-var _debug_name : String = name +  "(" + str(uid) + ")"
+## unit name. recalcs debug name on set.
+var unit_name: String:
+	set(value):
+		unit_name = value
+		debug_name = unit_name + "(" + str(uid) + ")"
+var debug_name : String = unit_name + "(" + str(uid) + ")"
 var _previous_state : Constants.ActorState = Constants.ActorState.IDLING
 var _state : Constants.ActorState = Constants.ActorState.IDLING
 var _target : Actor
 var _facing : Constants.Direction = Constants.Direction.LEFT
-var _cast_timer : Timer
 var is_active : bool:
 	set(value):
 		is_active = value
@@ -83,6 +88,7 @@ var attack_to_cast : BaseAction = null:
 		attack_to_cast = value
 		if attack_to_cast != null:
 			_update_target_finder_range(attack_to_cast.range)
+			print(debug_name + "chose to use " + attack_to_cast.friendly_name)
 var neighbours : Array
 
 ######### UI ATTRIBUTES ###############
@@ -117,7 +123,7 @@ func actor_setup() -> void:
 	_actions._recalculate_attack_range()
 
 	# Now that the navigation map is no longer empty, set the movement target.
-	refresh_target()
+	_attempt_target_refresh()
 
 
 ## connect up all relevant signals for actor
@@ -166,9 +172,9 @@ func update_state() -> void:
 
 		# get new target
 		if attack_to_cast != null:
-			refresh_target(attack_to_cast.target_type)
+			_attempt_target_refresh(attack_to_cast.target_type)
 		else:
-			refresh_target()
+			_attempt_target_refresh()
 
 	# has no target, go idle
 	if _target == null:
@@ -216,8 +222,7 @@ func change_state(new_state: Constants.ActorState) -> void:
 			animated_sprite.play("cast")
 
 			# trigger cast timer
-			_cast_timer.wait_time = attack_to_cast.cast_time
-			_cast_timer.start()
+			_cast_timer.start(attack_to_cast.cast_time)
 
 		Constants.ActorState.ATTACKING:
 			animated_sprite.play("attack")
@@ -228,7 +233,7 @@ func change_state(new_state: Constants.ActorState) -> void:
 		Constants.ActorState.DEAD:
 			animated_sprite.play("death")
 
-	# print(_debug_name + " currently playing " + animated_sprite.animation + " animation.")
+	# print(debug_name + " currently playing " + animated_sprite.animation + " animation.")
 
 
 ## process the current state, e.g. moving if in MOVING
@@ -303,7 +308,7 @@ func die() -> void:
 
 	emit_signal("died")
 
-	print(_debug_name + " died.")
+	print(debug_name + " died.")
 
 
 ## execute actor's attack.
@@ -400,10 +405,14 @@ func _on_cast_completed() -> void:
 
 ########### REFRESHES #############
 
+## checks conditions for refresh and if they pass will refresh target
+func _attempt_target_refresh(target_type: Constants.TargetType = Constants.TargetType.ENEMY) -> void:
+	if _target_refresh_timer.is_stopped():
+		refresh_target(target_type)
+
+
 ## get new target and update _ai and nav's target
 func refresh_target(target_type: Constants.TargetType = Constants.TargetType.ENEMY) -> void:
-
-
 	# disconnect from current signals on target
 	if _target:
 		if _target.is_connected("no_longer_targetable", refresh_target):
@@ -415,10 +424,10 @@ func refresh_target(target_type: Constants.TargetType = Constants.TargetType.ENE
 	# FIXME: placeholder until Unit AI added
 	if _target == null:
 		var group_to_target : String
-		if is_in_group("ally"):
-			group_to_target = "enemy"
+		if is_in_group("team1"):
+			group_to_target = "team2"
 		else:
-			group_to_target = "ally"
+			group_to_target = "team1"
 		_target = get_tree().get_nodes_in_group(group_to_target)[0]   # just pick the first enemy node and move towards them, eventually will be in range
 
 	# relisten to target changes
@@ -426,6 +435,10 @@ func refresh_target(target_type: Constants.TargetType = Constants.TargetType.ENE
 
 	# update nav agent's target
 	_navigation_agent.set_target_position(_target.global_position)
+
+	var timer_min : float = 0.9
+	var timer_max : float = 1.1
+	_target_refresh_timer.start(randf_range(timer_min, timer_max))
 
 
 func _refresh_facing() -> void:
@@ -439,4 +452,4 @@ func _refresh_facing() -> void:
 ## update the size of the target finder
 func _update_target_finder_range(new_range: int) -> void:
 	_target_finder.get_node("CollisionShape2D").shape.radius =  new_range
-	print(_debug_name + " set target finder's range to " + str(_target_finder.get_node("CollisionShape2D").shape.radius))
+	print(debug_name + " set target finder's range to " + str(_target_finder.get_node("CollisionShape2D").shape.radius))

@@ -51,7 +51,7 @@ collision_mask = 4
 monitoring = false
 
 [node name="DebugInfo" type="Label" parent="."]
-visible = false
+process_mode = 4
 offset_right = 40.0
 offset_bottom = 23.0
 label_settings = SubResource("LabelSettings_dcwuh")
@@ -68,3 +68,8 @@ monitorable = false
 shape = SubResource("CircleShape2D_4kht2")
 
 [node name="TargetRefreshTimer" type="Timer" parent="."]
+one_shot = true
+autostart = true
+
+[node name="CastTimer" type="Timer" parent="."]
+one_shot = true

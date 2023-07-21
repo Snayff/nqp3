@@ -35,22 +35,20 @@ func create_actor(creator: Unit, name_: String, team: String) -> Actor:
 	var unit_data = RefData.unit_data[name_]
 
 	instance.uid = Utility.generate_id()
+	instance.unit_name = name_
 
 	instance._ai = ActorAI.new(instance)
-	creator.add_child(instance._ai)
+	instance.add_child(instance._ai)
 
 	instance.stats = _build_actor_stats(unit_data)
-	creator.add_child(instance.stats)
+	instance.add_child(instance.stats)
 
 	instance.animated_sprite.sprite_frames = _build_actor_sprite_frame(name_)
 
 	instance._status_effects = _build_actor_status_effects()
-	creator.add_child(instance._status_effects)
+	instance.add_child(instance._status_effects)
 
 	instance = _add_actor_actions(instance, unit_data)
-
-
-	instance._cast_timer = _add_actor_cast_timer(instance)
 
 	# shuffle starting pos so they dont start on top of one another
 	var pos_offset := Vector2(randf_range(-5, 5), randf_range(-5, 5))
@@ -148,14 +146,6 @@ func _add_actor_actions(instance: Actor, unit_data: Dictionary) -> Actor:
 
 	return instance
 
-
-func _add_actor_cast_timer(instance: Actor) -> Timer:
-	# create timer to track cast time
-	var cast_timer = Timer.new()
-	instance.add_child(cast_timer)
-	cast_timer.set_one_shot(true)
-
-	return cast_timer
 
 ############ PROJECTILES ################
 

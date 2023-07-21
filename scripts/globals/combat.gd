@@ -11,18 +11,18 @@ func deal_damage(attacker: Actor, defender: Actor, damage: int, damage_type: Con
 
 	# debug gubbins
 	var team : String = ""
-	if attacker.is_in_group("ally"):
-		team = "ally"
+	if attacker.is_in_group("team1"):
+		team = "team1"
 	else:
-		team = "enemy"
+		team = "team2"
 
 	var team2 : String = ""
-	if defender.is_in_group("ally"):
-		team2 = "ally"
+	if defender.is_in_group("team1"):
+		team2 = "team1"
 	else:
-		team2 = "enemy"
+		team2 = "team2"
 
-	print(attacker._debug_name + " dealt " + str(damage) + " to " + defender.name + "(" + str(defender.uid) + "). Remaining health is " + str(defender.stats.health))
+	print(attacker.debug_name + " dealt " + str(damage) + " to " + defender.debug_name + ". Remaining health is " + str(defender.stats.health) + ".")
 
 
 ## work out damage of an attack on a defender
@@ -58,7 +58,7 @@ func reduce_stamina(target: Actor, amount: int) -> void:
 
 ## instantly kill actor
 func kill(attacker: Actor, target: Actor) -> void:
-	print(attacker._debug_name + " instantly killed " + target._debug_name )
+	print(attacker.debug_name + " instantly killed " + target.debug_name )
 	target.die()
 
 

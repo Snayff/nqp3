@@ -10,11 +10,11 @@ func _ready() -> void:
 	pass
 
 func is_enemy(target : Actor) -> bool:
-	if _creator.is_in_group("ally"):
-		if target.is_in_group("enemy"):
+	if _creator.is_in_group("team1"):
+		if target.is_in_group("team2"):
 			return true
-	if _creator.is_in_group("enemy"):
-		if target.is_in_group("ally"):
+	if _creator.is_in_group("team2"):
+		if target.is_in_group("team1"):
 			return true
 	return false
 
@@ -46,18 +46,18 @@ func get_target(target_type: Constants.TargetType, preference: Constants.TargetP
 			nearest_distance = nearest_target.global_position.distance_to(creator_pos)
 
 		var is_alive = _target.is_in_group("alive")
-		var is_enemy = _target.is_in_group(group_to_target)
-		if distance < nearest_distance and is_alive and is_enemy:
+		var is_correct_type = _target.is_in_group(group_to_target)
+		if distance < nearest_distance and is_alive and is_correct_type:
 			nearest_target = _target
 
 	# debug helper
 	if nearest_target == null:
 		print(
-			str(_creator.uid) + " couldnt find target of type " + group_to_target + " in range (" +
+			_creator.debug_name + " couldnt find target of type " + group_to_target + " in range (" +
 			str(_creator._target_finder.get_node("CollisionShape2D").shape.radius) + ")."
 		)
 	else:
-		print(str(_creator.uid) + "'s nearest target in " + group_to_target + " is at " + str(nearest_target.global_position))
+		print(_creator.debug_name + "'s nearest target in " + group_to_target + " is at " + str(nearest_target.global_position))
 
 	return nearest_target
 
@@ -73,16 +73,16 @@ func _get_target_group(target_type: Constants.TargetType) -> String:
 			group_to_target =  ""
 
 		Constants.TargetType.ALLY:
-			if _creator.is_in_group("ally"):
-				group_to_target = "ally"
+			if _creator.is_in_group("team1"):
+				group_to_target = "team1"
 			else:
-				group_to_target = "enemy"
+				group_to_target = "team2"
 
 		Constants.TargetType.ENEMY:
-			if _creator.is_in_group("ally"):
-				group_to_target = "enemy"
+			if _creator.is_in_group("team1"):
+				group_to_target = "team2"
 			else:
-				group_to_target = "ally"
+				group_to_target = "team1"
 
 		Constants.TargetType.ATTACKER:
 			push_error("_get_target_group: not able to process ATTACKER.")
