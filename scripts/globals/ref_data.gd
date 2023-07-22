@@ -25,7 +25,11 @@ const unit_data: Dictionary = {
 			Constants.ActionType.ATTACK : [
 				"smash"
 			],
-			Constants.ActionType.REACTION : { },
+			Constants.ActionType.REACTION : {
+				Constants.ActionTrigger.ON_DEAL_DAMAGE : [
+					"spiky_shell"
+				]
+			},
 		}
 	},
 	"conjurer": {
@@ -50,11 +54,32 @@ const unit_data: Dictionary = {
 				"wand_blast",
 				"heal"
 			],
-			Constants.ActionType.REACTION : {
-				Constants.ActionTrigger.ON_DEAL_DAMAGE : [
-					"spiky_shell"
-				]
-			}
+			Constants.ActionType.REACTION : { }
+		}
+	},
+	"poet": {
+		"max_health": 70,
+		"max_stamina": 100,
+		"regen": 100,
+		"dodge": 100,
+		"magic_defence": 2,
+		"mundane_defence": 3,
+		"attack": 33,
+		"attack_speed": 100,
+		"penetration": 100,
+		"crit_chance": 100,
+		"move_speed": 200,
+		"stamina": 10,
+		"num_units": 2,
+		"faction": "faction1",
+		"gold_cost": 100,
+		"tier": 1,
+		"actions": {  ## must use Action Type, script name (NOT class name)
+			Constants.ActionType.ATTACK : [
+				"wand_blast",
+				"heal"
+			],
+			Constants.ActionType.REACTION : { }
 		}
 	},
 
