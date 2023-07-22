@@ -3,9 +3,11 @@ extends Node
 
 ############ SCENES #########
 
+# N.B. can't preload with variable, so all hardcoded
 const _Actor : PackedScene = preload("res://scenes/entities/actor/actor.tscn")
 const _Projectile: PackedScene = preload("res://scenes/entities/projectile/projectile.tscn")
 const _Unit : PackedScene = preload("res://scenes/entities/unit/unit.tscn")
+const _TargetFinder : PackedScene = preload("res://scenes/components/target_finder/target_finder.tscn")
 const _VisualSparkles : PackedScene = preload("res://scenes/visual_effects/sparkles/sparkles.tscn")
 const _VisualSimple : PackedScene = preload("res://scenes/visual_effects/simple_animation/simple_animation.tscn")
 
@@ -264,3 +266,13 @@ func create_simple_animation(animation_name) -> SimpleAnimation:
 	animated_sprite.play(animation_name)
 
 	return animated_sprite
+
+
+############# ADDITIONAL COMPONENTS ##########
+
+func create_target_finder(is_visible: bool = false, colour: Color = Color(0, 0, 0, 0)) -> TargetFinder:
+	var target_finder : TargetFinder = _TargetFinder.instantiate()
+	target_finder.is_visible = is_visible
+	if not colour.is_equal_approx(Color(0, 0, 0, 0)):
+		target_finder.shape_colour = colour
+	return target_finder

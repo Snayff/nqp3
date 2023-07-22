@@ -83,27 +83,6 @@ func get_actors_in_area(pos: Vector2, radius: int) -> Array[Actor]:
 	return actors
 
 
-## get nearest actor from position. Can return null.
-func get_nearest_actor(pos: Vector2, actors: Array[Actor]) -> Actor:
-	# check there are any actors at all
-	if actors.size() ==  0:
-		return null
-
-	# assume the first node is closest
-	var nearest = actors[0]
-	var current_closest = nearest.global_position.distance_to(pos)
-
-	# look through nodes to see if any are closer
-	for actor in actors:
-		var distance = actor.global_position.distance_to(pos)
-		var is_alive = actor.is_in_group("alive")
-
-		if distance < current_closest and is_alive:
-			nearest = actor
-			current_closest = nearest.global_position.distance_to(pos)
-
-	return nearest
-
 
 ## convert a polar coord to a cartesian one
 func convert_polar_to_cartesian(radius: float, theta: float) -> Vector2:

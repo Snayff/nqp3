@@ -455,5 +455,5 @@ func _refresh_facing() -> void:
 
 ## update the size of the target finder
 func _update_target_finder_range(new_range: int) -> void:
-	_target_finder.get_node("CollisionShape2D").shape.radius =  new_range
-	print(debug_name + " set target finder's range to " + str(_target_finder.get_node("CollisionShape2D").shape.radius) + ".")
+	_target_finder.radius =  new_range
+	print(debug_name + " set target finder's range to " + str(_target_finder.radius) + ".")
