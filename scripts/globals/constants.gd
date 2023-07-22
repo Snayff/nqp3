@@ -65,7 +65,8 @@ enum ActionTargetSelection {
 	GLOBAL,  ##  affects all valid units
 	UNIT,  ## specific Unit is chosen
 	ACTOR,  ## specific actor is chosen. Used by Actors.
-	GROUND  ## position on the ground is chosen.
+	GROUND,  ## position on the ground is chosen.
+	SELF,  ## targets self
 }
 
 ## different properties of an action

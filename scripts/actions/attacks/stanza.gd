@@ -7,8 +7,8 @@ func _configure() -> void:
 	action_type = Constants.ActionType.ATTACK
 	tags = [Constants.ActionTag.STATUS_EFFECT]
 
-	target_selection  = Constants.ActionTargetSelection.GROUND
-	target_type = Constants.TargetType
+	target_selection  = Constants.ActionTargetSelection.SELF
+	target_type = Constants.TargetType.ALLY
 	target_preferences = [Constants.TargetPreference]
 
 	_base_cooldown = 4.0
@@ -22,7 +22,15 @@ func _configure() -> void:
 func use(initial_target: Actor) -> void:
 	super(initial_target)
 
+	# get all targets in range
 	var target_finder = Factory.create_target_finder(true, Color(0.51, 0.094, 0))
+	_creator.add_child(target_finder)
+	var targets : Array[Actor] = target_finder.get_overlapping_bodies()
+
+
+
+
+
 
 
 

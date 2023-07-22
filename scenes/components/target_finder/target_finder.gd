@@ -3,7 +3,7 @@ class_name TargetFinder extends Area2D
 
 @onready var col_shape : CollisionShape2D = $CollisionShape2D
 
-var is_visible : bool = true:
+var is_visible : bool = false:
 	set(value):
 		is_visible = value
 		if is_visible == true:
