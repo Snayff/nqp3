@@ -96,7 +96,6 @@ enum ActionTrigger {
 	ON_MOVE,
 	ON_DEAL_DAMAGE,
 	ON_RECEIVE_DAMAGE
-
 }
 
 
