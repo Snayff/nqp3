@@ -41,10 +41,13 @@ enum DamageType {
 
 ## defined types of target preference
 enum TargetPreference {
-	ANY,
-	LOWEST_HEALTH,
-	WEAK_TO_MUNDANE,
-	HIGHEST_HEALTH
+	ANY, ## anyone
+	LOWEST_HEALTH, ## actor with lowest health
+	HIGHEST_HEALTH,  ## actor with highest health
+	WEAK_TO_MUNDANE,  ## actor with weakness to mundane damage type
+	DAMAGED,  ## actor that isnt full health
+	NEAREST,  ## actor nearest caller
+	FURTHEST,  ## actor furthest from caller, but still in range
 }
 
 ## different types of target
@@ -55,7 +58,6 @@ enum TargetType {
 	ATTACKER,  ## actor attacking person asking
 	DEFENDER,  ## actor being attacked by person asking
 	ANY,  ## anyone, we dont care
-
 }
 
 ## what needs to be selected as the target for an action

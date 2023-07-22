@@ -5,6 +5,7 @@ func _configure() -> void:
 	friendly_name = "smash"
 	tags = [Constants.ActionTag.DAMAGE]
 	target_type = Constants.TargetType.ENEMY
+	target_preferences = [Constants.TargetPreference.NEAREST]
 	_base_cooldown = 1
 	_base_stamina_cost = 5
 	_base_damage = 10

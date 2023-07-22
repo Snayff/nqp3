@@ -5,6 +5,7 @@ func _configure() -> void:
 	friendly_name = "Heal"
 	tags = [Constants.ActionTag.HEAL]
 	target_type = Constants.TargetType.ALLY
+	target_preferences = [Constants.TargetPreference.DAMAGED, Constants.TargetPreference.LOWEST_HEALTH]
 	_base_cooldown = 2
 	_base_stamina_cost = 50
 	_base_cast_time = 2
@@ -22,4 +23,4 @@ func use(initial_target: Actor) -> void:
 
 
 func get_description() -> String:
-	return "Restore health to an ally."  # TODO: add amount
+	return "Restore health to lowest health, damaged ally."  # TODO: add amount

@@ -11,6 +11,7 @@ class_name BaseAction extends Node
 		_cooldown_timer.set_name("CooldownTimer_" + friendly_name)
 @export var tags : Array[Constants.ActionTag] = []  ## property tags describing the action
 @export var target_type : Constants.TargetType = Constants.TargetType.ENEMY  ## what target the action can effect
+@export var target_preferences : Array[Constants.TargetPreference] = [Constants.TargetPreference.ANY]  ## what kind of target to find, within the target type
 @export var trigger : Constants.ActionTrigger = Constants.ActionTrigger.ATTACK  ## what triggers the action
 @export var action_type : Constants.ActionType = Constants.ActionType.ATTACK
 @export var target_selection : Constants.ActionTargetSelection = Constants.ActionTargetSelection.ACTOR  ## what thing is selected to cast the action

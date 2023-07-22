@@ -172,7 +172,7 @@ func update_state() -> void:
 
 		# get new target
 		if attack_to_cast != null:
-			_attempt_target_refresh(attack_to_cast.target_type)
+			_attempt_target_refresh(attack_to_cast.target_type, attack_to_cast.target_preferences)
 		else:
 			_attempt_target_refresh()
 
@@ -403,20 +403,26 @@ func _on_cast_completed() -> void:
 ########### REFRESHES #############
 
 ## checks conditions for refresh and if they pass will refresh target
-func _attempt_target_refresh(target_type: Constants.TargetType = Constants.TargetType.ENEMY) -> void:
+func _attempt_target_refresh(
+	target_type: Constants.TargetType = Constants.TargetType.ENEMY,
+	preferences: Array[Constants.TargetPreference] = [Constants.TargetPreference.ANY]
+	) -> void:
 	if _target_refresh_timer.is_stopped():
-		refresh_target(target_type)
+		refresh_target(target_type, preferences)
 
 
 ## get new target and update _ai and nav's target
-func refresh_target(target_type: Constants.TargetType = Constants.TargetType.ENEMY) -> void:
+func refresh_target(
+	target_type: Constants.TargetType = Constants.TargetType.ENEMY,
+	preferences: Array[Constants.TargetPreference] = [Constants.TargetPreference.ANY]
+	) -> void:
 	# disconnect from current signals on target
 	if _target:
 		if _target.is_connected("no_longer_targetable", refresh_target):
 			_target.no_longer_targetable.disconnect(refresh_target)
 
 	# get new target
-	_target = _ai.get_target(target_type)
+	_target = _ai.get_target(target_type, preferences)
 
 	# FIXME: placeholder until Unit AI added
 	if _target == null:

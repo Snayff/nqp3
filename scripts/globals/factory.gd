@@ -37,6 +37,7 @@ func create_actor(creator: Unit, name_: String, team: String) -> Actor:
 
 	instance.uid = Utility.generate_id()
 	instance.unit_name = name_
+	instance.set_name(instance.debug_name.to_pascal_case())
 
 	instance._ai = ActorAI.new(instance)
 	instance._ai.set_name("AI")
