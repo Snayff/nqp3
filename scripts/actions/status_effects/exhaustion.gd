@@ -1,7 +1,7 @@
-class_name Exhausted extends BaseStatusEffect
+class_name Exhaustion extends BaseStatusEffect
 
 func _configure() -> void:
-	friendly_name = "Exhausted"
+	friendly_name = "Exhaustion"
 	tags = [Constants.ActionTag.STATUS_EFFECT, Constants.ActionTag.STAT_MOD]
 	target_type = Constants.TargetType.ANY
 	_base_duration = INF

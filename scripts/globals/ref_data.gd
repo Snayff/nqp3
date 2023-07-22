@@ -23,11 +23,11 @@ const unit_data: Dictionary = {
 		"tier": 1,
 		"actions": {  ## must use {Action Type, script name} (NOT class name)
 			Constants.ActionType.ATTACK : [
-				"smash"
+				"smash",
 			],
 			Constants.ActionType.REACTION : {
 				Constants.ActionTrigger.ON_DEAL_DAMAGE : [
-					"spiky_shell"
+					"spiky_shell",
 				]
 			},
 		}
@@ -52,7 +52,7 @@ const unit_data: Dictionary = {
 		"actions": {  ## must use Action Type, script name (NOT class name)
 			Constants.ActionType.ATTACK : [
 				"wand_blast",
-				"heal"
+				"heal",
 			],
 			Constants.ActionType.REACTION : { }
 		}
@@ -76,8 +76,7 @@ const unit_data: Dictionary = {
 		"tier": 1,
 		"actions": {  ## must use Action Type, script name (NOT class name)
 			Constants.ActionType.ATTACK : [
-				"wand_blast",
-				"heal"
+				"stanza",
 			],
 			Constants.ActionType.REACTION : { }
 		}

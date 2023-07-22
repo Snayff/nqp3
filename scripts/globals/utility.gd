@@ -177,6 +177,47 @@ func get_nearest(caller: Actor, actors: Array[Actor]) -> Actor:
 	return nearest_target
 
 
+## find all actors in area
+func get_actors_in_area(pos: Vector2, radius: int) -> Array[Actor]:
+	# FIXME: this doesnt ever return actors. When this works it might be better than target_finder for use when casting
+
+	var actors: Array[Actor] = []
+	# configure shape cast
+	var shape_cast = ShapeCast2D.new()
+	add_child(shape_cast)
+	shape_cast.collide_with_bodies = true
+	shape_cast.collision_mask = 2  # entity mask
+	shape_cast.max_results = 50
+	shape_cast.target_position = Vector2.ZERO
+	shape_cast.global_position = pos
+
+	# configure shape
+	shape_cast.shape = CircleShape2D.new()
+	shape_cast.shape.radius = radius
+
+	# get info right away
+	shape_cast.force_shapecast_update()
+
+	# filter results
+	if shape_cast.is_colliding():
+		for result in shape_cast.collision_result:
+			actors.append(result["collider"])
+
+	# clean up
+	shape_cast.queue_free()
+
+
+	# rather than using a shape cast we could query the phys engine like the following, but needs to be called from _physics_process:
+#	var space := get_world_2d().direct_space_state
+#	var parameters := PhysicsShapeQueryParameters2D.new()
+#	var rect_shape = RectangleShape2D.new()
+#	rect_shape.size = Vector2(50,50)
+#	parameters.shape = rect_shape
+#	var hits = space.intersect_shape(parameters)
+
+	return actors
+
+
 ######## MATHS ##########
 
 ## convert a polar coord to a cartesian one

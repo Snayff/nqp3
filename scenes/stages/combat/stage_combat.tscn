@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://01qjv0fopxx0"]
 
 [ext_resource type="Script" path="res://scenes/stages/combat/stage_combat.gd" id="1_b58k1"]
-[ext_resource type="Script" path="res://scenes/stages/combat/FPSCounter.gd" id="2_qukio"]
+[ext_resource type="Script" path="res://scenes/stages/combat/fps_counter.gd" id="2_5twv8"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_qkf04"]
 vertices = PackedVector2Array(1, 21, -2, -3, 1151, -1, 690, 210, 451, 210, 1144, 650, 680, 648, 0, 646, 451, 647)
@@ -40,4 +40,4 @@ debug_color = Color(0.835294, 0.372549, 0.313726, 0.419608)
 [node name="FPSCounter" type="Label" parent="."]
 offset_right = 40.0
 offset_bottom = 23.0
-script = ExtResource("2_qukio")
+script = ExtResource("2_5twv8")

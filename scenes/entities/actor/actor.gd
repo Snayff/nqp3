@@ -388,12 +388,12 @@ func _on_attack() -> void:
 	_actions.trigger_reactions(Constants.ActionTrigger.ON_ATTACK, self)
 
 
-## on stamina <= 0; apply exhausted status effect
+## on stamina <= 0; apply Exhaustion status effect
 ##
 ## signal emitted by stats
 func _on_stamina_depleted() -> void:
-	var exhausted = Exhausted.new(self)
-	add_status_effect(exhausted)
+	var exhaustion = Exhaustion.new(self)
+	add_status_effect(exhaustion)
 
 
 # on _cast_timer reaching 0; transition to attack

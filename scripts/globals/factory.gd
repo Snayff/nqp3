@@ -270,9 +270,15 @@ func create_simple_animation(animation_name) -> SimpleAnimation:
 
 ############# ADDITIONAL COMPONENTS ##########
 
-func create_target_finder(is_visible: bool = false, colour: Color = Color(0, 0, 0, 0)) -> TargetFinder:
+func add_target_finder(creator: Actor, radius: int, is_visible: bool = false, colour: Color = Color(0, 0, 0, 0)) -> TargetFinder:
+	print("Creating new target finder for " + creator.debug_name + " ===========>")
 	var target_finder : TargetFinder = _TargetFinder.instantiate()
+	creator.add_child(target_finder)  # need to add child to trigger the onready stuff
+	target_finder.radius = radius
 	target_finder.is_visible = is_visible
-	if not colour.is_equal_approx(Color(0, 0, 0, 0)):
+	target_finder.global_position = creator.global_position
+	if not colour.is_equal_approx(Color(0, 0, 0, 0)):  # if colour isnt default value
 		target_finder.shape_colour = colour
+
+	#remove_child(target_finder)  # unparent so that it can be added to caller as required
 	return target_finder
