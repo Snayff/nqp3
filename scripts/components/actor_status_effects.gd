@@ -21,6 +21,7 @@ func add_status_effect(status_effect: BaseStatusEffect) -> void:
 		return
 
 	_effects[status_effect.uid] = status_effect
+	print(status_effect.friendly_name + " added to " + get_parent().debug_name + ".")
 
 	# signal for  all stat mods, to be picked up in Actor
 	for stat_mod in status_effect.stat_modifiers:

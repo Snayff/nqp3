@@ -62,6 +62,8 @@ var is_ready : bool = true:
 		return _cooldown_timer.is_stopped()
 	set(_value):
 		push_warning("Tried to set is_ready directly. Not allowed.")
+var target_finder: TargetFinder
+
 
 ######### UI ##############
 
@@ -73,6 +75,10 @@ func _init(creator: Actor) -> void:
 	_creator = creator
 
 	uid = Utility.generate_id()
+
+	target_finder = Factory.add_target_finder(_creator, range)
+	target_finder.set_name("TargetFinder_" + friendly_name)
+	#_creator.add_child(target_finder)
 
 	_cooldown_timer = Timer.new()
 	_cooldown_timer.set_name("CooldownTimer_" + friendly_name)

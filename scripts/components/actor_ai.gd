@@ -49,12 +49,15 @@ func get_target(target_type: Constants.TargetType, preferences: Array[Constants.
 		var is_correct_type = target_.is_in_group(group_to_target)
 		if is_alive and is_correct_type:
 			valid_targets.append(target_)
-		else:
-			# debug couldnt find anyone
-			print(
-				_creator.debug_name + " couldnt find target of type " + group_to_target + " in range (" +
-				str(_creator._target_finder.radius) + ")."
-			)
+
+	if valid_targets.size() == 0:
+		# debug couldnt find anyone
+		print(
+			_creator.debug_name + " couldnt find target of type " + group_to_target + " in range (" +
+			str(_creator._target_finder.radius) + ")."
+		)
+		return null
+
 
 	# filter by preferences
 	var pref_targets: Array[Actor] = []

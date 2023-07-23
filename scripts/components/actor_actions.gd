@@ -47,7 +47,7 @@ func use_attack(uid: int, target: Actor) -> void:
 
 	var attack = attacks[uid]
 	if not attack.is_ready:
-		push_warning("Tried to use attack, (" + attack.friendly_name + ") that isnt.")
+		push_warning("Tried to use attack (" + attack.friendly_name + ") that isnt ready.")
 
 	attack.use(target)
 	attack.reset_cooldown()

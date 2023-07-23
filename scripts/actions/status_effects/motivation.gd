@@ -8,12 +8,8 @@ func _configure() -> void:
 
 	target_type = Constants.TargetType.ANY
 
-	_base_cooldown = 1.0
-	_base_damage = 0
-	_base_damage_type = Constants.DamageType
-
 	# status effect attrs
-	_base_duration = 0.5  # less than cooldown, so only applied once
+	_base_duration = 1.5  # less than cooldown, so only applied once
 	stat_modifiers = []
 
 	var move_speed_boost = StatModifier.new("move_speed", Constants.StatModType.ADD, 100)

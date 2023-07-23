@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://beicjar6efrax"]
+
+[ext_resource type="Script" path="res://scenes/components/target_finder/target_finder.gd" id="1_6h745"]
+
+[node name="Action" type="Node2D"]
+
+[node name="TargetFinder" type="Area2D" parent="."]
+script = ExtResource("1_6h745")
+
+[node name="CooldownTimer" type="Timer" parent="."]

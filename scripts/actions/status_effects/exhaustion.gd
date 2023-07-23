@@ -33,4 +33,4 @@ func use(initial_target: Actor) -> void:
 
 
 func get_description() -> String:
-	return "Blighted to the point of sickness."
+	return "One can only fight for so long."
