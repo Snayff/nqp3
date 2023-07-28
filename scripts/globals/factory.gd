@@ -25,7 +25,8 @@ func _init_pools() -> void:
 ## create unit, pulling base data from RefData
 func create_unit(creator, unit_name: String, team_name: String) -> Unit:
 	var unit = _Unit.instantiate()
-	creator.add_child(unit)
+	unit.name = "%s_%s"%[unit_name, "unit"]
+	creator.add_child(unit, true)
 
 	unit.unit_name = unit_name
 	unit.team = team_name
@@ -38,7 +39,8 @@ func create_unit(creator, unit_name: String, team_name: String) -> Unit:
 func create_actor(creator: Unit, name_: String, team: String) -> Actor:
 
 	var instance = _Actor.instantiate()
-	creator.add_child(instance)
+	instance.name = name_
+	creator.add_child(instance, true)
 
 	# dont do anything until we're ready
 	instance.set_physics_process(false)
@@ -153,7 +155,8 @@ func _add_actions(instance: Actor, unit_data: Dictionary) -> Actor:
 func _add_cast_timer(instance: Actor) -> Timer:
 	# create timer to track cast time
 	var cast_timer = Timer.new()
-	instance.add_child(cast_timer)
+	cast_timer.name = "Cast"
+	instance.add_child(cast_timer, true)
 	cast_timer.set_one_shot(true)
 
 	return cast_timer

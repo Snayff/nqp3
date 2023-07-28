@@ -376,7 +376,7 @@ func _on_cast_completed() -> void:
 func refresh_target() -> void:
 	# disconnect from current signals on target
 	if _target:
-		if _target.is_connected("no_longer_targetable", refresh_target):
+		if _target.no_longer_targetable.is_connected(refresh_target):
 			_target.no_longer_targetable.disconnect(refresh_target)
 
 	# get new target
@@ -389,10 +389,17 @@ func refresh_target() -> void:
 			group_to_target = "enemy"
 		else:
 			group_to_target = "ally"
-		_target = get_tree().get_nodes_in_group(group_to_target)[0]   # just pick the first enemy node and move towards them, eventually will be in range
-
+		# just pick the first enemy node and move towards them, eventually will be in range
+		var targets := get_tree().get_nodes_in_group(group_to_target)
+		if targets.size() > 0:
+			_target = targets[0]
+	
+	if _target == null:
+		return
+	
 	# relisten to target changes
-	_target.no_longer_targetable.connect(refresh_target)
+	if not _target.no_longer_targetable.is_connected(refresh_target):
+		_target.no_longer_targetable.connect(refresh_target)
 
 	# update nav agent's target
 	_navigation_agent.set_target_position(_target.global_position)
