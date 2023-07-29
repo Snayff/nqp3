@@ -7,6 +7,9 @@ const _PlayerActor : PackedScene = preload("res://scenes/entities/actor/player_a
 const _Projectile: PackedScene = preload("res://scenes/entities/non_colliding_projectile/non_colliding_projectile.tscn")
 const _Unit : PackedScene = preload("res://scenes/entities/unit/unit.tscn")
 
+############ PATHS ###########
+const _PATH_COMMANDER := "res://scenes/entities/commander/commander.gd"
+
 ######### PROJECTILE POOL #############
 
 const _PROJECTILE_POOL_SIZE : int = 100
@@ -26,6 +29,10 @@ func _init_pools() -> void:
 ## create unit, pulling base data from RefData
 func create_unit(creator, unit_name: String, team_name: String) -> Unit:
 	var unit = _Unit.instantiate()
+	if unit_name == "commander":
+		var script := load(_PATH_COMMANDER)
+		unit.set_script(script)
+	
 	unit.name = "%s_%s"%[unit_name, "unit"]
 	creator.add_child(unit, true)
 
@@ -74,7 +81,6 @@ func create_actor(creator: Unit, name_: String, team: String) -> Actor:
 
 ## create actor, pulling base data from RefData
 func create_player_actor(creator: Unit, name_: String, team: String) -> Actor:
-
 	var instance = _PlayerActor.instantiate()
 	instance.name = name_
 	creator.add_child(instance, true)

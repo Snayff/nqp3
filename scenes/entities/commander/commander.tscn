@@ -1,9 +1,0 @@
-[gd_scene load_steps=3 format=3 uid="uid://brnnnvjdbrx5l"]
-
-[ext_resource type="PackedScene" uid="uid://c07u6gw5ur4l" path="res://scenes/entities/unit/unit.tscn" id="1_o3f2r"]
-[ext_resource type="Script" path="res://scenes/entities/commander/commander.gd" id="2_1cusl"]
-
-[node name="Commander" instance=ExtResource("1_o3f2r")]
-script = ExtResource("2_1cusl")
-team = "ally"
-unit_name = "commander"
