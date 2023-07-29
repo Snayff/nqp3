@@ -1,0 +1,7 @@
+[gd_scene load_steps=3 format=3 uid="uid://cx1afprabmpdr"]
+
+[ext_resource type="PackedScene" uid="uid://01qjv0fopxx0" path="res://scenes/stages/combat/stage_combat.tscn" id="1_j4bxi"]
+[ext_resource type="Script" path="res://scenes/stages/commander_test/comander_test.gd" id="2_jgjr3"]
+
+[node name="ComanderTest" instance=ExtResource("1_j4bxi")]
+script = ExtResource("2_jgjr3")
