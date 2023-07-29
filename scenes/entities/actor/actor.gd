@@ -276,7 +276,7 @@ func die() -> void:
 	animated_sprite.stop()  # its already looped back to 0 so pause == stop
 	animated_sprite.frame = animated_sprite.sprite_frames.get_frame_count("death")
 
-	emit_signal("died")
+	died.emit()
 
 	print(name +  "(" + str(uid) + ") died.")
 
@@ -385,10 +385,10 @@ func refresh_target() -> void:
 	# FIXME: placeholder until Unit AI added
 	if _target == null:
 		var group_to_target : String
-		if is_in_group("ally"):
-			group_to_target = "enemy"
+		if is_in_group(Constants.TEAM_ALLY):
+			group_to_target = Constants.TEAM_ENEMY
 		else:
-			group_to_target = "ally"
+			group_to_target = Constants.TEAM_ALLY
 		# just pick the first enemy node and move towards them, eventually will be in range
 		var targets := get_tree().get_nodes_in_group(group_to_target)
 		if targets.size() > 0:
