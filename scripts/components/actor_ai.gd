@@ -10,11 +10,11 @@ func _ready() -> void:
 	pass
 
 func is_enemy(target : Actor) -> bool:
-	if _creator.is_in_group("ally"):
-		if target.is_in_group("enemy"):
+	if _creator.is_in_group(Constants.TEAM_ALLY):
+		if target.is_in_group(Constants.TEAM_ENEMY):
 			return true
-	if _creator.is_in_group("enemy"):
-		if target.is_in_group("ally"):
+	if _creator.is_in_group(Constants.TEAM_ENEMY):
+		if target.is_in_group(Constants.TEAM_ALLY):
 			return true
 	return false
 
@@ -24,10 +24,10 @@ func get_target(preference: Constants.TargetPreference = Constants.TargetPrefere
 	# TODO: Use target preference
 
 	var group_to_target : String
-	if _creator.is_in_group("ally"):
-		group_to_target = "enemy"
+	if _creator.is_in_group(Constants.TEAM_ALLY):
+		group_to_target = Constants.TEAM_ENEMY
 	else:
-		group_to_target = "ally"
+		group_to_target = Constants.TEAM_ALLY
 
 	#var poss_targets := get_tree().get_nodes_in_group(group_to_target)
 	var poss_targets = _creator._target_finder.get_overlapping_bodies()

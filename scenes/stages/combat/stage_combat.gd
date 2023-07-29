@@ -4,7 +4,7 @@ class_name StageCombat extends BaseStage
 @onready var _ally_spawner_col_shape : CollisionShape2D = $AllySpawner/CollisionShape2D
 @onready var _enemy_spawner_col_shape : CollisionShape2D = $EnemySpawner/CollisionShape2D
 
-var _units : Dictionary = {"ally":[], "enemy": []}  ## Dict[String, Array[Unit]]
+var _units : Dictionary = {Constants.TEAM_ALLY:[], Constants.TEAM_ENEMY: []}  ## Dict[String, Array[Unit]]
 
 func _ready() -> void:
 	_get_units_from_troupe()
@@ -19,7 +19,7 @@ func _get_units_from_troupe() -> void:
 	for key in _units.keys():
 		var num_unit_per_team = 25
 		var unit_name: String
-		if key == "ally":
+		if key == Constants.TEAM_ALLY:
 			unit_name = "conjurer"
 		else:
 			unit_name = "copper_golem"
@@ -35,7 +35,7 @@ func _place_units() -> void:
 		assert(unit is Unit)
 
 		var spawner : CollisionShape2D
-		if unit.team == "ally":
+		if unit.team == Constants.TEAM_ALLY:
 			spawner = _ally_spawner_col_shape
 		else:
 			spawner = _enemy_spawner_col_shape
