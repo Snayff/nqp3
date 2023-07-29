@@ -163,6 +163,7 @@ func _effect_heal(amount: int) -> void:
 
 ## apply a status effect to current target
 func _effect_status(status_effect_name: String) -> void:
+	# FIXME: status not being applied
 	var action_type_ = Constants.ActionType.STATUS_EFFECT
 	var script_path : String = Utility.get_action_type_script_path(action_type_) + status_effect_name + ".gd"
 	var status_effect = load(script_path).new(_target)

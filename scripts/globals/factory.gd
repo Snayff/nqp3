@@ -134,6 +134,8 @@ func _add_actor_actions(instance: Actor, unit_data: Dictionary) -> Actor:
 				var script_path : String = Utility.get_action_type_script_path(action_type) + action_name + ".gd"
 				var script : BaseAction = load(script_path).new(instance)
 				actions.add_attack(script)
+				script.set_name(script.friendly_name)
+				actions.add_child(script)
 
 		# reactions are Dictionary[ActionType, Dictionary[ActionTrigger, Array[String]]
 		elif action_type == Constants.ActionType.REACTION:
@@ -142,6 +144,8 @@ func _add_actor_actions(instance: Actor, unit_data: Dictionary) -> Actor:
 					var script_path : String = Utility.get_action_type_script_path(action_type) + action_name + ".gd"
 					var script : BaseAction = load(script_path).new(instance)
 					actions.add_reaction(script, trigger)
+					script.set_name(script.friendly_name)
+					actions.add_child(script)
 
 		else:
 			# we only add attacks and reactions, ignore everything else
@@ -149,8 +153,8 @@ func _add_actor_actions(instance: Actor, unit_data: Dictionary) -> Actor:
 
 	# add actions to instance
 	instance._actions = actions
-	instance._actions.set_name("Actions")
-	instance.add_child(instance._actions)
+	actions.set_name("Actions")
+	instance.add_child(actions)
 
 	return instance
 
@@ -268,7 +272,7 @@ func create_simple_animation(animation_name) -> SimpleAnimation:
 	return animated_sprite
 
 
-############# ADDITIONAL COMPONENTS ##########
+############# SHARED COMPONENTS ##########
 
 func add_target_finder(creator: Actor, radius: int, is_visible: bool = false, colour: Color = Color(0, 0, 0, 0)) -> TargetFinder:
 	#print("Creating new target finder for " + creator.debug_name + " ===========>")
