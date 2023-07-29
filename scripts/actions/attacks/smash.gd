@@ -4,7 +4,8 @@ class_name Smash extends BaseAction
 func _configure() -> void:
 	friendly_name = "smash"
 	tags = [Constants.ActionTag.DAMAGE]
-	valid_target_types = [Constants.TargetType.ENEMY]
+	target_type = Constants.TargetType.ENEMY
+	target_preferences = [Constants.TargetPreference.NEAREST]
 	_base_cooldown = 1
 	_base_stamina_cost = 5
 	_base_damage = 10
@@ -16,22 +17,23 @@ func _configure() -> void:
 func use(initial_target: Actor) -> void:
 	super(initial_target)
 
-	var apply_damage = true
+	var sparkles = Factory.create_sparkles(_get_sparkles_data())
+	_creator.add_child(sparkles)
 
-	if not _creator.is_melee:
-		var projectile = _effect_projectile()
+	_effect_damage(_base_damage + _creator.stats.attack, _base_damage_type)
 
-		# wait for projectile to hit and then update target to Actor hit
-		var result : Array = await projectile.expired
-		var hit_target : bool =  result[0]
+func _get_sparkles_data() -> SparklesData:
+	var data = SparklesData.new()
+	data.duration = 0.5
+	data.sparkle_colour = Color(0.467, 0.373, 0.161)
+	data.sparkle_duration = 0.2
+	data.sparkle_size = 1
+	data.explosiveness = 0.8
+	data.radius = 16
+	data.is_following_parent = false
 
-		if hit_target:
-			_target = result[1]
-		else:
-			apply_damage = false
 
-	if apply_damage:
-		_effect_damage(_base_damage + _creator.stats.attack, _base_damage_type)
+	return data
 
 
 func get_description() -> String:

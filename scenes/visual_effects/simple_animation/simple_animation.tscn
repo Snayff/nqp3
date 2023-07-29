@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://dx727hvvkpb4g"]
+
+[ext_resource type="Script" path="res://scenes/visual_effects/simple_animation/simple_animation.gd" id="1_5xwn4"]
+
+[node name="SimpleAnimation" type="AnimatedSprite2D"]
+script = ExtResource("1_5xwn4")

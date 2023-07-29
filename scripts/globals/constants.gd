@@ -41,10 +41,13 @@ enum DamageType {
 
 ## defined types of target preference
 enum TargetPreference {
-	ANY,
-	LOWEST_HEALTH,
-	WEAK_TO_MUNDANE,
-	HIGHEST_HEALTH
+	ANY, ## anyone
+	LOWEST_HEALTH, ## actor with lowest health
+	HIGHEST_HEALTH,  ## actor with highest health
+	WEAK_TO_MUNDANE,  ## actor with weakness to mundane damage type
+	DAMAGED,  ## actor that isnt full health
+	NEAREST,  ## actor nearest caller
+	FURTHEST,  ## actor furthest from caller, but still in range
 }
 
 ## different types of target
@@ -52,10 +55,9 @@ enum TargetType {
 	SELF,  ## actor using the skill
 	ALLY,  ## actor on same team
 	ENEMY,  ## actor on other team
-	ATTACKER,  ## actor attacking self
-	DEFENDER,  ## actor being attacked by self
+	ATTACKER,  ## actor attacking person asking
+	DEFENDER,  ## actor being attacked by person asking
 	ANY,  ## anyone, we dont care
-
 }
 
 ## what needs to be selected as the target for an action
@@ -63,12 +65,14 @@ enum ActionTargetSelection {
 	GLOBAL,  ##  affects all valid units
 	UNIT,  ## specific Unit is chosen
 	ACTOR,  ## specific actor is chosen. Used by Actors.
-	GROUND  ## position on the ground is chosen.
+	GROUND,  ## position on the ground is chosen.
+	SELF,  ## targets self
 }
 
 ## different properties of an action
 enum ActionTag {
 	DAMAGE,
+	HEAL,
 	SUMMON,
 	TERRAIN,
 	STATUS_EFFECT,
@@ -93,15 +97,22 @@ enum ActionTrigger {
 	ON_MOVE,
 	ON_DEAL_DAMAGE,
 	ON_RECEIVE_DAMAGE
-
 }
 
 
 ############# PATHS ##############
 
+const PATH_ENTITIES : String = "res://scenes/entities/"
+const PATH_COMMANDER := "res://scenes/entities/commander/commander.gd"
+const PATH_COMPONENTS : String = "res://scenes/components/"
+const PATH_VISUAL_EFFECTS : String = "res://scenes/visual_effects/"
 const PATH_ATTACKS : String = "res://scripts/actions/attacks/"  ## the path attack scripts are stored in
 const PATH_REACTIONS : String = "res://scripts/actions/reactions/"  ## the path reaction scripts are stored in
 const PATH_STATUS_EFFECTS : String = "res://scripts/actions/status_effects/" ## the path reaction scripts are stored in
+const PATH_SPRITES_ACTORS : String = "res://sprites/units/"  ## the path unit's actor sprites are held
+const PATH_SPRITES_PROJECTILES : String = "res://sprites/projectiles/"
+const PATH_SPRITES_EFFECTS : String = "res://sprites/effects/"
+
 
 ############ VALUES ############
 

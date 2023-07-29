@@ -17,6 +17,12 @@ signal took_damage(amount: int, damage_type: Constants.DamageType)
 signal hit_received(attacker: Actor)
 ## emitted when died
 signal died
+## emitted when health restored
+signal was_healed(amount: int)
+## emitted when heal someone
+signal healed_someone(amount: int)
+## emitted when new attack chosen
+signal chose_attack_to_cast(attack: BaseAction)
 
 
 ############## NODES ##################
@@ -25,29 +31,36 @@ signal died
 @onready var animated_sprite : AnimatedSprite2D = $AnimatedSprite2D  # TODO: can we make this private?
 @onready var _collision_shape : CollisionShape2D = $CollisionShape2D
 @onready var _target_finder : Area2D = $TargetFinder
+@onready var _target_refresh_timer : Timer = $TargetRefreshTimer
+@onready var _cast_timer : Timer = $CastTimer
 
 ############ COMPONENTS ###############
 # these are initialised on creation by Factory
 
 ## resource that manages both the base and final stats for the actor.
 ##
-## added to combatant on init by Unit
+## added to actor on init by Unit
 var stats : ActorStats  # cant be private due to needing access to all its attributes
 ## decision making
-var _ai : ActorAI
+var ai : ActorAI
 ## all of an actor's actions
-var _actions : ActorActions
+var actions : ActorActions
 ## active status effects
-var _status_effects : ActorStatusEffects
+var status_effects : ActorStatusEffects
 
 ######### FUNCTIONAL ATTRIBUTES ###############
 
 var uid : int
+## unit name. recalcs debug name on set.
+var unit_name: String:
+	set(value):
+		unit_name = value
+		debug_name = unit_name + "(" + str(uid) + ")"
+var debug_name : String = unit_name + "(" + str(uid) + ")"
 var _previous_state : Constants.ActorState = Constants.ActorState.IDLING
 var _state : Constants.ActorState = Constants.ActorState.IDLING
 var _target : Actor
 var _facing : Constants.Direction = Constants.Direction.LEFT
-var _cast_timer : Timer
 var is_active : bool:
 	set(value):
 		is_active = value
@@ -59,23 +72,23 @@ var is_targetable : bool:
 			no_longer_targetable.emit()
 var has_ready_attack : bool:
 	get:
-		return _actions.has_ready_attack
+		return actions.has_ready_attack
 	set(_value):
 		push_warning("Tried to set has_ready_attack directly. Not allowed.")
-## lowest action range of available actions
-var attack_range : int:
-	get:
-		return _actions.lowest_attack_range
-	set(_value):
-		push_warning("Tried to set attack_range directly. Not allowed.")
 var is_melee : bool:
 	get:
-		if attack_range <= Constants.MELEE_RANGE:
-			return true
+		if attack_to_cast:
+			if attack_to_cast.range <= Constants.MELEE_RANGE:
+				return true
 		return false
 	set(_value):
 		push_warning("Tried to set is_melee directly. Not allowed.")
-var attack_to_cast : BaseAction = null
+var attack_to_cast : BaseAction = null:
+	set(value):
+		attack_to_cast = value
+		if attack_to_cast != null:
+			_update_target_finder_range(attack_to_cast.range)
+			print(debug_name + " chose to use " + attack_to_cast.friendly_name + ".")
 var neighbours : Array
 
 ######### UI ATTRIBUTES ###############
@@ -106,11 +119,11 @@ func actor_setup() -> void:
 	# Wait for the first physics frame so the NavigationServer can sync.
 	await get_tree().physics_frame
 
-	# with _actions fully initialised lets force the attack_range_updated signal to fire
-	_actions._recalculate_attack_range()
+	# with actions fully initialised lets force the attack_range_updated signal to fire
+	actions._recalculate_attack_range()
 
 	# Now that the navigation map is no longer empty, set the movement target.
-	refresh_target()
+	_attempt_target_refresh()
 
 
 ## connect up all relevant signals for actor
@@ -125,14 +138,13 @@ func _connect_signals() -> void:
 	stats.health_depleted.connect(_on_health_depleted)
 	stats.stamina_depleted.connect(_on_stamina_depleted)
 
-	_actions.attack_range_updated.connect(_update_target_finder_range)
-	_actions.attacked.connect(_on_attack)
+	actions.attacked.connect(_on_attack)
 
 	_cast_timer.timeout.connect(_on_cast_completed)
 
 	# link component signals
-	_status_effects.stat_modifier_added.connect(stats.add_modifier)
-	_status_effects.stat_modifier_removed.connect(stats.remove_modifier)
+	status_effects.stat_modifier_added.connect(stats.add_modifier)
+	status_effects.stat_modifier_removed.connect(stats.remove_modifier)
 
 	# connect to node signals
 	animated_sprite.animation_finished.connect(_on_animation_completed)
@@ -154,29 +166,46 @@ func update_state() -> void:
 	if _state == Constants.ActorState.DEAD:
 		return
 
-	# if we have target, move towards them, else get new
-	if _target != null:
-		# cast if in range, else move closer
-		_navigation_agent.target_position = _target.global_position
-		var in_attack_range : bool = _navigation_agent.distance_to_target() <= attack_range
-		if in_attack_range and has_ready_attack:
-			# set target pos to current pos to stop moving
-			_navigation_agent.target_position = global_position
+	## if we have no attack primed then get one
+	if attack_to_cast == null:
+		attack_to_cast = actions.get_random_attack()
 
-			# if not yet attacking or casting, cast
-			if _state != Constants.ActorState.ATTACKING and _state != Constants.ActorState.CASTING:
-				attack_to_cast = _actions.get_random_attack()
-				change_state(Constants.ActorState.CASTING)  #  attack is triggered after cast
-
-		# has target but not in range, move towards target
+		# get new target
+		if attack_to_cast != null:
+			_attempt_target_refresh(attack_to_cast.target_type, attack_to_cast.target_preferences)
 		else:
-			if _state != Constants.ActorState.MOVING:
-				change_state(Constants.ActorState.MOVING)
+			_attempt_target_refresh()
 
 	# has no target, go idle
-	else:
+	if _target == null:
 		if _state != Constants.ActorState.MOVING:
 			change_state(Constants.ActorState.IDLING)
+		return
+
+	# we have target, but do we have an attack
+	if attack_to_cast == null:
+		if _state != Constants.ActorState.MOVING:
+			change_state(Constants.ActorState.IDLING)
+		return
+
+	# we have target and attack so cast if in range, else move closer
+	_navigation_agent.target_position = _target.global_position
+	var in_attack_range : bool = _navigation_agent.distance_to_target() <= attack_to_cast.range
+	if in_attack_range and has_ready_attack:
+		# set target pos to current pos to stop moving
+		_navigation_agent.target_position = global_position
+
+		# if not yet attacking or casting, cast
+		if _state != Constants.ActorState.ATTACKING and _state != Constants.ActorState.CASTING:
+			change_state(Constants.ActorState.CASTING)  #  attack is triggered after cast
+
+	# has target but not in range, move towards target
+	elif not in_attack_range and has_ready_attack:
+		if _state != Constants.ActorState.MOVING:
+			change_state(Constants.ActorState.MOVING)
+
+	else:
+		change_state(Constants.ActorState.IDLING)
 
 
 ## change to new state, trigger transition action
@@ -193,8 +222,7 @@ func change_state(new_state: Constants.ActorState) -> void:
 			animated_sprite.play("cast")
 
 			# trigger cast timer
-			_cast_timer.wait_time = attack_to_cast.cast_time
-			_cast_timer.start()
+			_cast_timer.start(attack_to_cast.cast_time)
 
 		Constants.ActorState.ATTACKING:
 			animated_sprite.play("attack")
@@ -205,14 +233,14 @@ func change_state(new_state: Constants.ActorState) -> void:
 		Constants.ActorState.DEAD:
 			animated_sprite.play("death")
 
-	print(name + "(" + str(uid) + ") currently playing " + animated_sprite.animation + " animation.")
+	# print(debug_name + " currently playing " + animated_sprite.animation + " animation.")
 
 
 ## process the current state, e.g. moving if in MOVING
 func process_current_state() -> void:
 	match _state:
 		Constants.ActorState.IDLING:
-			refresh_target()  # TODO: this will be too resource heavy. User timer to force refreshes.
+			pass
 
 		Constants.ActorState.CASTING:
 			pass
@@ -244,7 +272,7 @@ func move_towards_target() -> void:
 		var p1 : Vector2 = self.global_position
 		var p2 : Vector2 = neighbour.global_position
 		var distance : float = p1.distance_to(p2)
-		if distance < distance_to_target and _ai.is_enemy(neighbour):
+		if distance < distance_to_target and ai.is_enemy(neighbour):
 			_target = neighbour
 			distance_to_target = distance
 		var p3 : Vector2 = p1.direction_to(p2) * maxf((100 - distance * 2), 0)
@@ -271,6 +299,8 @@ func die() -> void:
 	add_to_group("dead")
 	remove_from_group("alive")
 
+	stats.health = 0
+
 	_collision_shape.call_deferred("set_disabled", true)  # need to call deferred as otherwise locked
 
 	animated_sprite.stop()  # its already looped back to 0 so pause == stop
@@ -278,30 +308,18 @@ func die() -> void:
 
 	died.emit()
 
-	print(name +  "(" + str(uid) + ") died.")
+	print(debug_name + " died.")
 
 
-## execute actor's attack. this is a random attack if attack_to_cast is null.
+## execute actor's attack.
+## this is a random attack if attack_to_cast is null.
 func attack() -> void:
 	if attack_to_cast == null:
-		_actions.use_random_attack(_target)
+		actions.use_random_attack(_target)
 	else:
-		_actions.use_attack(attack_to_cast.uid, _target)
+		actions.use_attack(attack_to_cast.uid, _target)
 
-
-## add status effect to actor
-func add_status_effect(status_effect: BaseStatusEffect) -> void:
-	_status_effects.add_status_effect(status_effect)
-
-
-## remove a status effect by its uid
-func remove_status_effect(uid_: int) -> void:
-	_status_effects.remove_status_effect(uid_)
-
-
-## remove all status effects by type
-func remove_status_effect_by_type(status_effect: BaseStatusEffect) -> void:
-	_status_effects.remove_status_effect_by_type(status_effect)
+	attack_to_cast = null
 
 
 ############ REACTIONS ###########
@@ -342,28 +360,25 @@ func _on_health_depleted() -> void:
 func _on_hit_received(attacker: Actor) -> void:
 	# flash damage indicator
 	var tween = get_tree().create_tween()
-	tween.tween_property(animated_sprite, "modulate", Color.RED, 1)
+	tween.tween_property(animated_sprite, "modulate", Color.RED, 0.1)  # FIXME: never goes back to normal colour
 
-	_actions.trigger_reactions(Constants.ActionTrigger.ON_RECEIVE_DAMAGE, attacker)
+	actions.trigger_reactions(Constants.ActionTrigger.ON_RECEIVE_DAMAGE, attacker)
 
 
 func _on_death() -> void:
-	_actions.trigger_reactions(Constants.ActionTrigger.ON_DEATH, self)
+	actions.trigger_reactions(Constants.ActionTrigger.ON_DEATH, self)
 
 
 func _on_attack() -> void:
-	_actions.trigger_reactions(Constants.ActionTrigger.ON_ATTACK, self)
-
-	# clear attack to cast
-	attack_to_cast = null
+	actions.trigger_reactions(Constants.ActionTrigger.ON_ATTACK, self)
 
 
-## on stamina <= 0; apply exhausted status effect
+## on stamina <= 0; apply Exhaustion status effect
 ##
 ## signal emitted by stats
 func _on_stamina_depleted() -> void:
-	var exhausted = Exhausted.new(self)
-	add_status_effect(exhausted)
+	var exhaustion = Exhaustion.new(self)
+	status_effects.add_status_effect(exhaustion)
 
 
 # on _cast_timer reaching 0; transition to attack
@@ -372,37 +387,45 @@ func _on_cast_completed() -> void:
 
 ########### REFRESHES #############
 
-## get new target and update _ai and nav's target
-func refresh_target() -> void:
+## checks conditions for refresh and if they pass will refresh target
+func _attempt_target_refresh(
+	target_type: Constants.TargetType = Constants.TargetType.ENEMY,
+	preferences: Array[Constants.TargetPreference] = [Constants.TargetPreference.ANY]
+	) -> void:
+	if _target_refresh_timer.is_stopped():
+		refresh_target(target_type, preferences)
+		_target_refresh_timer.start(1)
+
+
+## get new target and update ai and nav's target
+func refresh_target(
+	target_type: Constants.TargetType = Constants.TargetType.ENEMY,
+	preferences: Array[Constants.TargetPreference] = [Constants.TargetPreference.ANY]
+	) -> void:
 	# disconnect from current signals on target
 	if _target:
 		if _target.no_longer_targetable.is_connected(refresh_target):
 			_target.no_longer_targetable.disconnect(refresh_target)
 
 	# get new target
-	_target = _ai.get_target()
+	_target = ai.get_target(target_type, preferences)
 
 	# FIXME: placeholder until Unit AI added
 	if _target == null:
-		var group_to_target : String
-		if is_in_group(Constants.TEAM_ALLY):
-			group_to_target = Constants.TEAM_ENEMY
-		else:
-			group_to_target = Constants.TEAM_ALLY
-		# just pick the first enemy node and move towards them, eventually will be in range
-		var targets := get_tree().get_nodes_in_group(group_to_target)
-		if targets.size() > 0:
-			_target = targets[0]
-	
-	if _target == null:
-		return
-	
+		var group_to_target : String = Utility.get_target_group(self, Constants.TargetType.ENEMY)
+		_target = get_tree().get_nodes_in_group(group_to_target)[0]   # just pick the first enemy node and move towards them, eventually will be in range
+		print(debug_name + " randomly picked " + _target.debug_name + " to run towards.")
+
 	# relisten to target changes
-	if not _target.no_longer_targetable.is_connected(refresh_target):
+	if not _target.is_connected("no_longer_targetable", refresh_target):
 		_target.no_longer_targetable.connect(refresh_target)
 
 	# update nav agent's target
 	_navigation_agent.set_target_position(_target.global_position)
+
+	var timer_min : float = 0.9
+	var timer_max : float = 1.1
+	_target_refresh_timer.start(randf_range(timer_min, timer_max))
 
 
 func _refresh_facing() -> void:
@@ -415,4 +438,5 @@ func _refresh_facing() -> void:
 
 ## update the size of the target finder
 func _update_target_finder_range(new_range: int) -> void:
-	_target_finder.get_node("CollisionShape2D").shape.radius =  new_range
+	_target_finder.radius =  new_range
+	print(debug_name + " set target finder's range to " + str(_target_finder.radius) + ".")

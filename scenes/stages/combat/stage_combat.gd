@@ -15,17 +15,19 @@ func _ready() -> void:
 ## load units from the troupes involved in the combat
 func _get_units_from_troupe() -> void:
 	# FIXME: when troupes exist update to use troupe. placeholder code for now.
+	var num_unit_per_team = 5
 
+	var unit_name: String = ""
+	var unit_choices : Dictionary = {
+		Constants.TEAM_ALLY: ["conjurer", "poet"],
+		Constants.TEAM_ENEMY: ["copper_golem"]
+	}
 	for key in _units.keys():
-		var num_unit_per_team = 25
-		var unit_name: String
-		if key == Constants.TEAM_ALLY:
-			unit_name = "conjurer"
-		else:
-			unit_name = "copper_golem"
-
 		for i in range(num_unit_per_team):
+			unit_choices[key].shuffle()
+			unit_name = unit_choices[key][0]
 			var unit = Factory.create_unit(self, unit_name, key)
+			unit.set_name(unit_name.to_pascal_case() + "_Unit")
 			_units[key].append(unit)
 
 

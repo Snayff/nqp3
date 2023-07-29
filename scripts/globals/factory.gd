@@ -2,27 +2,17 @@ extends Node
 ## A factory for object creation.
 
 ############ SCENES #########
+
+# N.B. can't preload with variable, so all hardcoded
 const _Actor : PackedScene = preload("res://scenes/entities/actor/actor.tscn")
+const _Projectile: PackedScene = preload("res://scenes/entities/projectile/projectile.tscn")
 const _PlayerActor : PackedScene = preload("res://scenes/entities/actor/player_actor.tscn")
-const _Projectile: PackedScene = preload("res://scenes/entities/non_colliding_projectile/non_colliding_projectile.tscn")
 const _Unit : PackedScene = preload("res://scenes/entities/unit/unit.tscn")
-
-############ PATHS ###########
-const _PATH_COMMANDER := "res://scenes/entities/commander/commander.gd"
-
-######### PROJECTILE POOL #############
-
-const _PROJECTILE_POOL_SIZE : int = 100
-var _projectile_pool : Array[NonCollidingProjectile] = []
-var _last_projectile_pool_index : int = -1
+const _TargetFinder : PackedScene = preload("res://scenes/components/target_finder/target_finder.tscn")
+const _VisualSparkles : PackedScene = preload("res://scenes/visual_effects/sparkles/sparkles.tscn")
+const _VisualSimple : PackedScene = preload("res://scenes/visual_effects/simple_animation/simple_animation.tscn")
 
 
-func _ready() -> void:
-	_init_pools()
-
-func _init_pools() -> void:
-	for i in _PROJECTILE_POOL_SIZE:
-		_projectile_pool.append(_Projectile.instantiate())
 
 ########### UNIT ###############
 
@@ -30,9 +20,9 @@ func _init_pools() -> void:
 func create_unit(creator, unit_name: String, team_name: String) -> Unit:
 	var unit = _Unit.instantiate()
 	if unit_name == "commander":
-		var script := load(_PATH_COMMANDER)
+		var script := load(Constants.PATH_COMMANDER)
 		unit.set_script(script)
-	
+
 	unit.name = "%s_%s"%[unit_name, "unit"]
 	creator.add_child(unit, true)
 
@@ -56,12 +46,24 @@ func create_actor(creator: Unit, name_: String, team: String) -> Actor:
 	var unit_data = RefData.unit_data[name_]
 
 	instance.uid = Utility.generate_id()
-	instance._ai = ActorAI.new(instance)
+	instance.unit_name = name_
+	instance.set_name(instance.debug_name.to_pascal_case())
+
+	instance.ai = ActorAI.new(instance)
+	instance.ai.set_name("AI")
+	instance.add_child(instance.ai)
+
 	instance.stats = _build_actor_stats(unit_data)
-	instance.animated_sprite.sprite_frames = _build_sprite_frame(name_)
-	instance._status_effects = _build_status_effects()
-	instance = _add_actions(instance, unit_data)
-	instance._cast_timer = _add_cast_timer(instance)
+	instance.stats.set_name("Stats")
+	instance.add_child(instance.stats)
+
+	instance.animated_sprite.sprite_frames = _build_actor_sprite_frame(name_)
+
+	instance.status_effects = _build_actor_status_effects()
+	instance.status_effects.set_name("StatusEffects")
+	instance.add_child(instance.status_effects)
+
+	instance = _add_actor_actions(instance, unit_data)
 
 	# shuffle starting pos so they dont start on top of one another
 	var pos_offset := Vector2(randf_range(-5, 5), randf_range(-5, 5))
@@ -91,11 +93,11 @@ func create_player_actor(creator: Unit, name_: String, team: String) -> Actor:
 	var unit_data = RefData.unit_data[name_]
 
 	instance.uid = Utility.generate_id()
-	instance._ai = ActorAI.new(instance)
+	instance.ai = ActorAI.new(instance)
 	instance.stats = _build_actor_stats(unit_data)
-	instance.animated_sprite.sprite_frames = _build_sprite_frame(name_)
-	instance._status_effects = _build_status_effects()
-	instance = _add_actions(instance, unit_data)
+	instance.animated_sprite.sprite_frames = _build_actor_sprite_frame(name_)
+	instance.status_effects = _build_actor_status_effects()
+	instance = _add_actor_actions(instance, unit_data)
 	instance._cast_timer = _add_cast_timer(instance)
 
 	# shuffle starting pos so they dont start on top of one another
@@ -140,20 +142,18 @@ func _build_actor_stats(unit_data: Dictionary) -> ActorStats:
 	return stats
 
 
-func _build_sprite_frame(unit_name: String) -> SpriteFrames:
+func _build_actor_sprite_frame(unit_name: String) -> SpriteFrames:
 	var anim_names : Array = Constants.ActorAnimationType.keys()
-	var path_prefix : String = "res://sprites/units/"
-
-	var sprite_frames = SpriteFrames.new()
+	var sprite_frames : SpriteFrames = SpriteFrames.new()
 
 	for anim_name in anim_names:
-		var path : String = path_prefix + unit_name + "/" + anim_name.to_lower() + "/"
-		Utility.add_animation_to_sprite_frames(sprite_frames, path, anim_name.to_lower())
+		var path : String = Constants.PATH_SPRITES_ACTORS + unit_name + "/" + anim_name.to_lower() + "/"
+		sprite_frames = Utility.add_animation_to_sprite_frames(sprite_frames, path, anim_name.to_lower())
 
 	return sprite_frames
 
 
-func _build_status_effects() -> ActorStatusEffects:
+func _build_actor_status_effects() -> ActorStatusEffects:
 	var status_effects = ActorStatusEffects.new()
 	return status_effects
 
@@ -166,7 +166,7 @@ func _add_actor_groups(instance: Actor, team: String) -> Actor:
 	return instance
 
 
-func _add_actions(instance: Actor, unit_data: Dictionary) -> Actor:
+func _add_actor_actions(instance: Actor, unit_data: Dictionary) -> Actor:
 	var actions : ActorActions = ActorActions.new()
 
 	for action_type in Constants.ActionType.values():
@@ -177,6 +177,8 @@ func _add_actions(instance: Actor, unit_data: Dictionary) -> Actor:
 				var script_path : String = Utility.get_action_type_script_path(action_type) + action_name + ".gd"
 				var script : BaseAction = load(script_path).new(instance)
 				actions.add_attack(script)
+				script.set_name(script.friendly_name)
+				actions.add_child(script)
 
 		# reactions are Dictionary[ActionType, Dictionary[ActionTrigger, Array[String]]
 		elif action_type == Constants.ActionType.REACTION:
@@ -185,13 +187,17 @@ func _add_actions(instance: Actor, unit_data: Dictionary) -> Actor:
 					var script_path : String = Utility.get_action_type_script_path(action_type) + action_name + ".gd"
 					var script : BaseAction = load(script_path).new(instance)
 					actions.add_reaction(script, trigger)
+					script.set_name(script.friendly_name)
+					actions.add_child(script)
 
 		else:
 			# we only add attacks and reactions, ignore everything else
 			continue
 
 	# add actions to instance
-	instance._actions = actions
+	instance.actions = actions
+	actions.set_name("Actions")
+	instance.add_child(actions)
 
 	return instance
 
@@ -201,25 +207,132 @@ func _add_cast_timer(instance: Actor) -> Timer:
 	cast_timer.name = "Cast"
 	instance.add_child(cast_timer, true)
 	cast_timer.set_one_shot(true)
-
 	return cast_timer
 
 ############ PROJECTILES ################
 
-## create projectile and fire towards target
-func create_projectile(creator: Actor, target: Actor) -> NonCollidingProjectile:
+## create projectile
+func create_projectile(data: ProjectileData) -> Projectile:
+	var projectile = _Projectile.instantiate()
+	projectile.creator = data.creator
+	data.creator.add_child(projectile)
+	projectile.uid = Utility.generate_id()
+	projectile.global_position = projectile.creator.global_position
 
-	# Cycle the pool index between .
-	_last_projectile_pool_index = wrapi(_last_projectile_pool_index + 1, 0, _PROJECTILE_POOL_SIZE)
-	var projectile = _projectile_pool[_last_projectile_pool_index]
+	projectile = _add_projectile_target(projectile, data)
+	projectile = _add_projectile_funcs(projectile, data)
+	projectile = _add_projectile_sprite(projectile, data)
 
-	# remove projectile from old creator
-	if projectile.creator != null:
-		projectile.creator.remove_child(projectile)
+	projectile = _configure_trail(projectile, data)
 
-	# re-setup
-	creator.add_child(projectile)
-	projectile.reset()
-	projectile.launch(creator, target)
+	projectile.speed = data.speed
+
+	if data.has_physicality:
+		projectile.has_physicality = data.has_physicality
+	if data.is_homing:
+		projectile.is_homing = data.is_homing
+	if data.hits_before_expiry:
+		projectile.hits_before_expiry = data.hits_before_expiry
+
 
 	return projectile
+
+
+func _add_projectile_target(projectile: Projectile, data: ProjectileData) -> Projectile:
+	if not data.target and not data.target_pos:
+		push_error("Neither target nor target_pos given to projectile. Projectile wont go anywhere.")
+		return projectile
+
+	if data.target:
+		projectile.target = data.target
+	if data.target_pos:
+		projectile.target_pos = data.target_pos
+
+	return projectile
+
+
+func _add_projectile_funcs(projectile: Projectile, data: ProjectileData) -> Projectile:
+	if not data.on_hit_func and not data.on_expiry_func:
+		push_warning("Neither on_hit_func nor on_expiry_func given to projectile. Projectile wont do anything.")
+		return projectile
+
+	if data.on_hit_func:
+		projectile.on_hit_func = data.on_hit_func
+	if data.on_expiry_func:
+		projectile.on_expiry_func = data.on_expiry_func
+
+	return projectile
+
+
+func _add_projectile_sprite(projectile: Projectile, data: ProjectileData) -> Projectile:
+
+	if not data.sprite_name:
+		push_warning("No sprite set for projectile.")
+	else:
+		var texture : Texture2D = load(Constants.PATH_SPRITES_PROJECTILES + "/" + data.sprite_name.to_lower() + ".png")
+		projectile.sprite.set_texture(texture)
+
+	return projectile
+
+
+func _configure_trail(projectile: Projectile, data: ProjectileData) -> Projectile:
+	if data.has_trail:
+		projectile.trail.is_emitting = true
+		projectile.trail.trail_colour = data.trail_colour
+		projectile.trail.lifetime = data.trail_lifetime
+
+	return projectile
+
+
+############## VISUAL EFFECTS #############
+
+func create_sparkles(data: SparklesData) -> Sparkles:
+	var sparkles = _VisualSparkles.instantiate()
+
+	if data.duration:
+		sparkles.duration = data.duration
+	if data.sparkle_duration:
+		sparkles.sparkle_duration = data.sparkle_duration
+	if data.num_sparkles:
+		sparkles.num_sparkles = data.num_sparkles
+	if data.sparkle_size:
+		sparkles.sparkle_size = data.sparkle_size
+	if data.sparkle_colour:
+		sparkles.sparkle_colour = data.sparkle_colour
+	if data.explosiveness:
+		sparkles.explosiveness = data.explosiveness
+	if data.radius:
+		sparkles.radius = data.radius
+	if data.is_following_parent:
+		sparkles.is_following_parent = data.is_following_parent
+
+	return sparkles
+
+
+func create_simple_animation(animation_name) -> SimpleAnimation:
+	var animated_sprite : SimpleAnimation = _VisualSimple.instantiate()
+	var sprite_frames : SpriteFrames = SpriteFrames.new()
+
+	var path : String = Constants.PATH_SPRITES_EFFECTS + animation_name + "/"
+	sprite_frames = Utility.add_animation_to_sprite_frames(sprite_frames, path, animation_name)
+	animated_sprite.sprite_frames = sprite_frames
+
+	animated_sprite.play(animation_name)
+
+	return animated_sprite
+
+
+############# SHARED COMPONENTS ##########
+
+func add_target_finder(creator: Actor, radius: int, is_visible: bool = false, colour: Color = Color(0, 0, 0, 0)) -> TargetFinder:
+	#print("Creating new target finder for " + creator.debug_name + " ===========>")
+	var target_finder : TargetFinder = _TargetFinder.instantiate()
+	creator.add_child(target_finder)  # need to add child to trigger the onready stuff
+	target_finder.radius = radius
+	target_finder.is_visible = is_visible
+	target_finder.global_position = creator.global_position
+	if not colour.is_equal_approx(Color(0, 0, 0, 0)):  # if colour isnt default value
+		target_finder.shape_colour = colour
+
+	#remove_child(target_finder)  # unparent so that it can be added to caller as required
+	return target_finder

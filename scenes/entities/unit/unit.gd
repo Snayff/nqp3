@@ -1,5 +1,5 @@
 class_name Unit extends Node2D
-## A collection of [annotation combatant]s.
+## A collection of [annotation Actor]s.
 ##
 ## Used to create and manage groups of Units.
 

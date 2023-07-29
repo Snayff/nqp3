@@ -47,7 +47,7 @@ func use_attack(uid: int, target: Actor) -> void:
 
 	var attack = attacks[uid]
 	if not attack.is_ready:
-		push_warning("Tried to use attack, (" + attack.friendly_name + ") that isnt.")
+		push_warning("Tried to use attack (" + attack.friendly_name + ") that isnt ready.")
 
 	attack.use(target)
 	attack.reset_cooldown()
@@ -74,7 +74,7 @@ func use_random_attack(target: Actor) -> void:
 		emit_signal("attacked")
 
 
-## get a random attack, from those available
+## get a random attack, from those available. Can return null
 func get_random_attack() -> BaseAction:
 	var attack_to_use : BaseAction
 	for action in attacks.values():

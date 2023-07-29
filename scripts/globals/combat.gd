@@ -1,16 +1,8 @@
 extends Node
 ## Combat functionality.
 
-## calculate and resolve damage allocation
-func deal_damage(attacker: Actor, defender: Actor, initial_damage: int, damage_type: Constants.DamageType) -> void:
-	# polynomial / exponential example:  ax^2 + bx + c, with a, b, and c being constants.
-	# e.g. (((strength) ^ 3 ÷ 32) + 32) x damage_multiplier
-	# damage multiplier would be set by the attack in question
-	#
-	# linear example: (a + b - c) * e
-	# e.g. (attacker_attack * damage_multiplier - defender_defence) * weakness_multiplier
-
-	var damage = calculate_damage(attacker, defender, initial_damage, damage_type)
+## allocate damage and signal interactions
+func deal_damage(attacker: Actor, defender: Actor, damage: int, damage_type: Constants.DamageType) -> void:
 	attacker.emit_signal("dealt_damage", [damage, damage_type])
 
 	defender.stats.health -= damage
@@ -30,11 +22,18 @@ func deal_damage(attacker: Actor, defender: Actor, initial_damage: int, damage_t
 	else:
 		team2 = Constants.TEAM_ENEMY
 
-	print(attacker.name +  "(" + str(attacker.uid) + ") dealt " + str(damage) + " to " + defender.name + "(" + str(defender.uid) + "). Remaining health is " + str(defender.stats.health))
+	print(attacker.debug_name + " dealt " + str(damage) + " to " + defender.debug_name + ". Remaining health is " + str(defender.stats.health) + ".")
 
 
 ## work out damage of an attack on a defender
 func calculate_damage(attacker: Actor, defender: Actor, damage: int, damage_type: Constants.DamageType) -> int:
+	# polynomial / exponential example:  ax^2 + bx + c, with a, b, and c being constants.
+	# e.g. (((strength) ^ 3 ÷ 32) + 32) x damage_multiplier
+	# damage multiplier would be set by the attack in question
+	#
+	# linear example: (a + b - c) * e
+	# e.g. (attacker_attack * damage_multiplier - defender_defence) * weakness_multiplier
+
 	var reduced_damage = _reduce_damage_by_defence(damage, defender, damage_type)
 
 	return reduced_damage
@@ -55,3 +54,25 @@ func _reduce_damage_by_defence(base_damage: int, defender: Actor, damage_type: C
 ## reduce an actor's stamina
 func reduce_stamina(target: Actor, amount: int) -> void:
 	target.stats.stamina -= min(amount, 0)
+
+
+## instantly kill actor
+func kill(attacker: Actor, target: Actor) -> void:
+	print(attacker.debug_name + " instantly killed " + target.debug_name )
+	target.die()
+
+
+## restore health and signal interactions
+func heal(healer: Actor, target: Actor, heal_amount: int) -> void:
+	healer.emit_signal("healed_someone", heal_amount)
+
+	var max_heal = 0
+	if target.stats.max_health - target.stats.health > heal_amount:
+		max_heal = heal_amount
+	else:
+		max_heal = max(0, target.stats.max_health - target.stats.health)
+
+	target.stats.health += max_heal
+	target.emit_signal("was_healed", heal_amount)
+
+	print(healer.debug_name + " healed " + str(max_heal) + " to " + target.debug_name + ". Health is now " + str(target.stats.health) + ".")

@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://d4iye4ok3dni7"]
+
+[ext_resource type="Script" path="res://scenes/components/target_finder/target_finder.gd" id="1_6o88n"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_4kht2"]
+resource_local_to_scene = true
+
+[node name="TargetFinder" type="Area2D"]
+y_sort_enabled = true
+collision_layer = 0
+collision_mask = 2
+input_pickable = false
+monitorable = false
+script = ExtResource("1_6o88n")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_4kht2")
+
+[node name="VisibilityTimer" type="Timer" parent="."]
+one_shot = true

@@ -1,0 +1,42 @@
+[gd_scene load_steps=7 format=3 uid="uid://ctod81p1jm1xk"]
+
+[ext_resource type="Script" path="res://scenes/entities/projectile/projectile.gd" id="1_7hkth"]
+[ext_resource type="Texture2D" uid="uid://dg554oxl15fs8" path="res://sprites/projectiles/chaos.png" id="2_563nw"]
+[ext_resource type="PackedScene" path="res://scenes/components/hit_box/hit_box.tscn" id="3_im6im"]
+[ext_resource type="PackedScene" uid="uid://dpxk6n8wdywcx" path="res://scenes/visual_effects/trail/trail.tscn" id="4_ghsii"]
+
+[sub_resource type="ShaderMaterial" id="3"]
+
+[sub_resource type="CircleShape2D" id="1"]
+radius = 2.0
+
+[node name="Projectile" type="Node2D"]
+script = ExtResource("1_7hkth")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_563nw")
+
+[node name="HitBox" parent="." instance=ExtResource("3_im6im")]
+visible = false
+collision_layer = 4
+collision_mask = 0
+
+[node name="ImpactDetector" type="Area2D" parent="."]
+visible = false
+collision_layer = 0
+collision_mask = 3
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ImpactDetector"]
+self_modulate = Color(0.690196, 0.188235, 0.360784, 1)
+material = SubResource("3")
+shape = SubResource("1")
+
+[node name="LifetimeTimer" type="Timer" parent="."]
+editor_description = "Time allowed to exist."
+one_shot = true
+
+[node name="Trail" parent="." instance=ExtResource("4_ghsii")]
+position = Vector2(-5, 0)
+scale = Vector2(0.140533, 0.1625)

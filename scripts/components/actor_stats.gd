@@ -179,6 +179,7 @@ func add_modifier(stat_mod: StatModifier) -> void:
 	_modifiers[stat_mod.stat_name][stat_mod.uid] = {"type": stat_mod.mod_type, "value": stat_mod.amount}
 
 	_recalculate(stat_mod.stat_name)
+	print("Added stat modifier to " + get_parent().debug_name + ". " + stat_mod.stat_name + " is now " + str(get(stat_mod.stat_name)))
 
 
 ## Removes a modifier from stat.
@@ -187,4 +188,6 @@ func remove_modifier(stat_name: String, id: int) -> void:
 
 	_modifiers[stat_name].erase(id)
 	_recalculate(stat_name)
+
+	print("Stat modifier removed from " + get_parent().debug_name + ". " + stat_name + " is now " + str(get(stat_name)))
 

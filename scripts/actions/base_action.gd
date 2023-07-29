@@ -5,9 +5,14 @@ class_name BaseAction extends Node
 ########### CONFIG #############
 
 @export_group("config")
-@export var friendly_name : String = ""  ## name of the action, shown in the ui
+@export var friendly_name : String = "":  ## name of the action, shown in the ui
+	set(value):
+		friendly_name = value
+		_cooldown_timer.set_name("CooldownTimer_" + friendly_name)
+		target_finder.set_name("TargetFinder_" + friendly_name)
 @export var tags : Array[Constants.ActionTag] = []  ## property tags describing the action
-@export var valid_target_types : Array[Constants.TargetType] = []  ## what targets the action can effect
+@export var target_type : Constants.TargetType = Constants.TargetType.ENEMY  ## what target the action can effect
+@export var target_preferences : Array[Constants.TargetPreference] = [Constants.TargetPreference.ANY]  ## what kind of target to find, within the target type
 @export var trigger : Constants.ActionTrigger = Constants.ActionTrigger.ATTACK  ## what triggers the action
 @export var action_type : Constants.ActionType = Constants.ActionType.ATTACK
 @export var target_selection : Constants.ActionTargetSelection = Constants.ActionTargetSelection.ACTOR  ## what thing is selected to cast the action
@@ -58,8 +63,8 @@ var is_ready : bool = true:
 		return _cooldown_timer.is_stopped()
 	set(_value):
 		push_warning("Tried to set is_ready directly. Not allowed.")
-var is_targeting_self : bool = false
-var is_targeting_all : bool = false
+var target_finder: TargetFinder
+
 
 ######### UI ##############
 
@@ -72,9 +77,13 @@ func _init(creator: Actor) -> void:
 
 	uid = Utility.generate_id()
 
+	# TODO: move components to sit under actions. They need the parents, which doesnt exist at init.
+	target_finder = Factory.add_target_finder(_creator, range)
+	target_finder.set_name("TargetFinder_" + friendly_name)
+
 	_cooldown_timer = Timer.new()
-	_cooldown_timer.name = "Cooldown"
-	_creator.add_child(_cooldown_timer, true)
+	_cooldown_timer.set_name("CooldownTimer_" + friendly_name)
+	_creator.add_child(_cooldown_timer)
 	_cooldown_timer.set_one_shot(true)
 
 	_configure()
@@ -102,6 +111,8 @@ func use(initial_target: Actor) -> void:
 	_target = initial_target
 	Combat.reduce_stamina(_creator, _base_stamina_cost)
 
+	print(_creator.debug_name + " used " + friendly_name + " on " + initial_target.debug_name + ".")
+
 
 ## set the cooldown of the action and start the cooldown timer.
 ##
@@ -109,8 +120,7 @@ func use(initial_target: Actor) -> void:
 func set_cooldown(cooldown_time: float) -> void:
 	# ignore if wait time == 0
 	if cooldown_time > 0:
-		_cooldown_timer.wait_time = cooldown_time
-		_cooldown_timer.start()
+		_cooldown_timer.start(cooldown_time)
 
 
 ## reset cooldown timer to cooldown time
@@ -139,27 +149,31 @@ func _effect_new_target(
 	push_warning("new target: effect not created")
 
 
-## apply amount of damage to current target
-func _effect_damage(amount: int, damage_type: Constants.DamageType) -> void:
-	Combat.deal_damage(_creator, _target, amount, damage_type)
+## apply amount of damage to current target. returns damage dealth
+func _effect_damage(amount: int, damage_type: Constants.DamageType) -> int:
+	var damage = Combat.calculate_damage(_creator, _target, amount, damage_type)
+	Combat.deal_damage(_creator, _target, damage, damage_type)
+
+	return damage
 
 
 ## apply amount of damage to current target
 func _effect_heal(amount: int) -> void:
-	push_warning("heal: effect not created")
+	Combat.heal(_creator, _target, amount)
 
 
 ## apply a status effect to current target
 func _effect_status(status_effect_name: String) -> void:
+	# FIXME: status not being applied
 	var action_type_ = Constants.ActionType.STATUS_EFFECT
 	var script_path : String = Utility.get_action_type_script_path(action_type_) + status_effect_name + ".gd"
 	var status_effect = load(script_path).new(_target)
-	_target.add_status_effect(status_effect)
+	_target.status_effects.add_status_effect(status_effect)
 
 
 ## create a projectile. returns created projectile
-func _effect_projectile() -> NonCollidingProjectile:
-	return Factory.create_projectile(_creator, _target)
+func _effect_projectile(data: ProjectileData) -> Projectile:
+	return Factory.create_projectile(data)
 
 
 ## create a summon
@@ -172,11 +186,6 @@ func _effect_terrain(terrain) -> void:
 	push_warning("terrain: effect not created")
 
 
-## visual, such as animation
-func _effect_visual(visual) -> void:
-	push_warning("visual: effect not created")
-
-
 ## apply force as a vector
 func _effect_apply_force(velocity) -> void:
 	push_warning("apply_force: effect not created")
@@ -187,6 +196,9 @@ func _effect_teleport(direction, distance) -> void:
 	push_warning("teleport: effect not created")
 
 
-## instantly kill target
-func _effect_kill() -> void:
-	push_warning("_effect_kill: effect not created")
+## instantly kill target. returns true if successfully killed.
+func _effect_kill() -> bool:
+	# TODO - check for immunity
+	Combat.kill(_creator, _target)
+
+	return true
