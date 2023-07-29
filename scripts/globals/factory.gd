@@ -55,13 +55,13 @@ func create_actor(creator: Unit, name_: String, team: String) -> Actor:
 	instance.ai.set_name("AI")
 	instance.add_child(instance.ai)
 
-	instance.stats = _build_actor_stats(unit_data)
+	instance.stats = _create_actor_stats(unit_data)
 	instance.stats.set_name("Stats")
 	instance.add_child(instance.stats)
 
-	instance.animated_sprite.sprite_frames = _build_actor_sprite_frame(name_)
+	instance.animated_sprite.sprite_frames = _create_actor_sprite_frame(name_)
 
-	instance.status_effects = _build_actor_status_effects()
+	instance.status_effects = _create_actor_status_effects()
 	instance.status_effects.set_name("StatusEffects")
 	instance.add_child(instance.status_effects)
 
@@ -98,9 +98,9 @@ func create_player_actor(creator: Unit, name_: String, team: String) -> Actor:
 
 	instance.uid = Utility.generate_id()
 	instance.ai = ActorAI.new(instance)
-	instance.stats = _build_actor_stats(unit_data)
-	instance.animated_sprite.sprite_frames = _build_actor_sprite_frame(name_)
-	instance.status_effects = _build_actor_status_effects()
+	instance.stats = _create_actor_stats(unit_data)
+	instance.animated_sprite.sprite_frames = _create_actor_sprite_frame(name_)
+	instance.status_effects = _create_actor_status_effects()
 	instance = _add_actor_actions(instance, unit_data)
 	instance._cast_timer = _add_cast_timer(instance)
 
@@ -120,7 +120,7 @@ func create_player_actor(creator: Unit, name_: String, team: String) -> Actor:
 	return instance
 
 
-func _build_actor_stats(unit_data: Dictionary) -> ActorStats:
+func _create_actor_stats(unit_data: Dictionary) -> ActorStats:
 	var stats = ActorStats.new()
 
 	stats.max_health = unit_data["max_health"]
@@ -146,7 +146,7 @@ func _build_actor_stats(unit_data: Dictionary) -> ActorStats:
 	return stats
 
 
-func _build_actor_sprite_frame(unit_name: String) -> SpriteFrames:
+func _create_actor_sprite_frame(unit_name: String) -> SpriteFrames:
 	var anim_names : Array = Constants.ActorAnimationType.keys()
 	var sprite_frames : SpriteFrames = SpriteFrames.new()
 
@@ -157,7 +157,7 @@ func _build_actor_sprite_frame(unit_name: String) -> SpriteFrames:
 	return sprite_frames
 
 
-func _build_actor_status_effects() -> ActorStatusEffects:
+func _create_actor_status_effects() -> ActorStatusEffects:
 	var status_effects = ActorStatusEffects.new()
 	return status_effects
 
