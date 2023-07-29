@@ -46,7 +46,7 @@ var ai : ActorAI
 ## all of an actor's actions
 var actions : ActorActions
 ## active status effects
-var _status_effects : ActorStatusEffects
+var status_effects : ActorStatusEffects
 
 ######### FUNCTIONAL ATTRIBUTES ###############
 
@@ -143,8 +143,8 @@ func _connect_signals() -> void:
 	_cast_timer.timeout.connect(_on_cast_completed)
 
 	# link component signals
-	_status_effects.stat_modifier_added.connect(stats.add_modifier)
-	_status_effects.stat_modifier_removed.connect(stats.remove_modifier)
+	status_effects.stat_modifier_added.connect(stats.add_modifier)
+	status_effects.stat_modifier_removed.connect(stats.remove_modifier)
 
 	# connect to node signals
 	animated_sprite.animation_finished.connect(_on_animation_completed)
@@ -322,21 +322,6 @@ func attack() -> void:
 	attack_to_cast = null
 
 
-## add status effect to actor
-func add_status_effect(status_effect: BaseStatusEffect) -> void:
-	_status_effects.add_status_effect(status_effect)
-
-
-## remove a status effect by its uid
-func remove_status_effect(uid_: int) -> void:
-	_status_effects.remove_status_effect(uid_)
-
-
-## remove all status effects by type
-func remove_status_effect_by_type(status_effect: BaseStatusEffect) -> void:
-	_status_effects.remove_status_effect_by_type(status_effect)
-
-
 ############ REACTIONS ###########
 
 ## act out result of animations completion
@@ -393,7 +378,7 @@ func _on_attack() -> void:
 ## signal emitted by stats
 func _on_stamina_depleted() -> void:
 	var exhaustion = Exhaustion.new(self)
-	add_status_effect(exhaustion)
+	status_effects.add_status_effect(exhaustion)
 
 
 # on _cast_timer reaching 0; transition to attack

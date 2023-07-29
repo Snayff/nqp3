@@ -168,7 +168,7 @@ func _effect_status(status_effect_name: String) -> void:
 	var action_type_ = Constants.ActionType.STATUS_EFFECT
 	var script_path : String = Utility.get_action_type_script_path(action_type_) + status_effect_name + ".gd"
 	var status_effect = load(script_path).new(_target)
-	_target.add_status_effect(status_effect)
+	_target.status_effects.add_status_effect(status_effect)
 
 
 ## create a projectile. returns created projectile

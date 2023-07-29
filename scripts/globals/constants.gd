@@ -103,6 +103,7 @@ enum ActionTrigger {
 ############# PATHS ##############
 
 const PATH_ENTITIES : String = "res://scenes/entities/"
+const PATH_COMMANDER := "res://scenes/entities/commander/commander.gd"
 const PATH_COMPONENTS : String = "res://scenes/components/"
 const PATH_VISUAL_EFFECTS : String = "res://scenes/visual_effects/"
 const PATH_ATTACKS : String = "res://scripts/actions/attacks/"  ## the path attack scripts are stored in
@@ -111,6 +112,7 @@ const PATH_STATUS_EFFECTS : String = "res://scripts/actions/status_effects/" ## 
 const PATH_SPRITES_ACTORS : String = "res://sprites/units/"  ## the path unit's actor sprites are held
 const PATH_SPRITES_PROJECTILES : String = "res://sprites/projectiles/"
 const PATH_SPRITES_EFFECTS : String = "res://sprites/effects/"
+
 
 ############ VALUES ############
 

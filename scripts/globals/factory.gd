@@ -12,7 +12,7 @@ const _TargetFinder : PackedScene = preload("res://scenes/components/target_find
 const _VisualSparkles : PackedScene = preload("res://scenes/visual_effects/sparkles/sparkles.tscn")
 const _VisualSimple : PackedScene = preload("res://scenes/visual_effects/simple_animation/simple_animation.tscn")
 
-const _PATH_COMMANDER := "res://scenes/entities/commander/commander.gd"
+
 
 ########### UNIT ###############
 
@@ -20,7 +20,7 @@ const _PATH_COMMANDER := "res://scenes/entities/commander/commander.gd"
 func create_unit(creator, unit_name: String, team_name: String) -> Unit:
 	var unit = _Unit.instantiate()
 	if unit_name == "commander":
-		var script := load(_PATH_COMMANDER)
+		var script := load(Constants.PATH_COMMANDER)
 		unit.set_script(script)
 
 	unit.name = "%s_%s"%[unit_name, "unit"]
@@ -59,9 +59,9 @@ func create_actor(creator: Unit, name_: String, team: String) -> Actor:
 
 	instance.animated_sprite.sprite_frames = _build_actor_sprite_frame(name_)
 
-	instance._status_effects = _build_actor_status_effects()
-	instance._status_effects.set_name("StatusEffects")
-	instance.add_child(instance._status_effects)
+	instance.status_effects = _build_actor_status_effects()
+	instance.status_effects.set_name("StatusEffects")
+	instance.add_child(instance.status_effects)
 
 	instance = _add_actor_actions(instance, unit_data)
 
