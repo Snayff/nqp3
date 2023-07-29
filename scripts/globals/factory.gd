@@ -3,6 +3,7 @@ extends Node
 
 ############ SCENES #########
 const _Actor : PackedScene = preload("res://scenes/entities/actor/actor.tscn")
+const _PlayerActor : PackedScene = preload("res://scenes/entities/actor/player_actor.tscn")
 const _Projectile: PackedScene = preload("res://scenes/entities/non_colliding_projectile/non_colliding_projectile.tscn")
 const _Unit : PackedScene = preload("res://scenes/entities/unit/unit.tscn")
 
@@ -39,6 +40,42 @@ func create_unit(creator, unit_name: String, team_name: String) -> Unit:
 func create_actor(creator: Unit, name_: String, team: String) -> Actor:
 
 	var instance = _Actor.instantiate()
+	instance.name = name_
+	creator.add_child(instance, true)
+
+	# dont do anything until we're ready
+	instance.set_physics_process(false)
+
+	var unit_data = RefData.unit_data[name_]
+
+	instance.uid = Utility.generate_id()
+	instance._ai = ActorAI.new(instance)
+	instance.stats = _build_actor_stats(unit_data)
+	instance.animated_sprite.sprite_frames = _build_sprite_frame(name_)
+	instance._status_effects = _build_status_effects()
+	instance = _add_actions(instance, unit_data)
+	instance._cast_timer = _add_cast_timer(instance)
+
+	# shuffle starting pos so they dont start on top of one another
+	var pos_offset := Vector2(randf_range(-5, 5), randf_range(-5, 5))
+	var pos := Vector2(creator.global_position.x + pos_offset.x, creator.global_position.y + pos_offset.y)
+	instance.global_position = pos
+	# TODO: ensure shuffling to empty spot
+
+	instance.actor_setup()
+
+	instance = _add_actor_groups(instance, team)
+
+	# now we're ready to react to the world
+	instance.set_physics_process(true)
+
+	return instance
+
+
+## create actor, pulling base data from RefData
+func create_player_actor(creator: Unit, name_: String, team: String) -> Actor:
+
+	var instance = _PlayerActor.instantiate()
 	instance.name = name_
 	creator.add_child(instance, true)
 
