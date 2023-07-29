@@ -41,9 +41,9 @@ func create_actor(creator: Unit, name_: String, team: String) -> Actor:
 	instance.unit_name = name_
 	instance.set_name(instance.debug_name.to_pascal_case())
 
-	instance._ai = ActorAI.new(instance)
-	instance._ai.set_name("AI")
-	instance.add_child(instance._ai)
+	instance.ai = ActorAI.new(instance)
+	instance.ai.set_name("AI")
+	instance.add_child(instance.ai)
 
 	instance.stats = _build_actor_stats(unit_data)
 	instance.stats.set_name("Stats")
@@ -152,7 +152,7 @@ func _add_actor_actions(instance: Actor, unit_data: Dictionary) -> Actor:
 			continue
 
 	# add actions to instance
-	instance._actions = actions
+	instance.actions = actions
 	actions.set_name("Actions")
 	instance.add_child(actions)
 

@@ -42,9 +42,9 @@ signal chose_attack_to_cast(attack: BaseAction)
 ## added to actor on init by Unit
 var stats : ActorStats  # cant be private due to needing access to all its attributes
 ## decision making
-var _ai : ActorAI
+var ai : ActorAI
 ## all of an actor's actions
-var _actions : ActorActions
+var actions : ActorActions
 ## active status effects
 var _status_effects : ActorStatusEffects
 
@@ -72,7 +72,7 @@ var is_targetable : bool:
 			no_longer_targetable.emit()
 var has_ready_attack : bool:
 	get:
-		return _actions.has_ready_attack
+		return actions.has_ready_attack
 	set(_value):
 		push_warning("Tried to set has_ready_attack directly. Not allowed.")
 var is_melee : bool:
@@ -119,8 +119,8 @@ func actor_setup() -> void:
 	# Wait for the first physics frame so the NavigationServer can sync.
 	await get_tree().physics_frame
 
-	# with _actions fully initialised lets force the attack_range_updated signal to fire
-	_actions._recalculate_attack_range()
+	# with actions fully initialised lets force the attack_range_updated signal to fire
+	actions._recalculate_attack_range()
 
 	# Now that the navigation map is no longer empty, set the movement target.
 	_attempt_target_refresh()
@@ -138,7 +138,7 @@ func _connect_signals() -> void:
 	stats.health_depleted.connect(_on_health_depleted)
 	stats.stamina_depleted.connect(_on_stamina_depleted)
 
-	_actions.attacked.connect(_on_attack)
+	actions.attacked.connect(_on_attack)
 
 	_cast_timer.timeout.connect(_on_cast_completed)
 
@@ -168,7 +168,7 @@ func update_state() -> void:
 
 	## if we have no attack primed then get one
 	if attack_to_cast == null:
-		attack_to_cast = _actions.get_random_attack()
+		attack_to_cast = actions.get_random_attack()
 
 		# get new target
 		if attack_to_cast != null:
@@ -272,7 +272,7 @@ func move_towards_target() -> void:
 		var p1 : Vector2 = self.global_position
 		var p2 : Vector2 = neighbour.global_position
 		var distance : float = p1.distance_to(p2)
-		if distance < distance_to_target and _ai.is_enemy(neighbour):
+		if distance < distance_to_target and ai.is_enemy(neighbour):
 			_target = neighbour
 			distance_to_target = distance
 		var p3 : Vector2 = p1.direction_to(p2) * maxf((100 - distance * 2), 0)
@@ -315,9 +315,9 @@ func die() -> void:
 ## this is a random attack if attack_to_cast is null.
 func attack() -> void:
 	if attack_to_cast == null:
-		_actions.use_random_attack(_target)
+		actions.use_random_attack(_target)
 	else:
-		_actions.use_attack(attack_to_cast.uid, _target)
+		actions.use_attack(attack_to_cast.uid, _target)
 
 	attack_to_cast = null
 
@@ -377,15 +377,15 @@ func _on_hit_received(attacker: Actor) -> void:
 	var tween = get_tree().create_tween()
 	tween.tween_property(animated_sprite, "modulate", Color.RED, 0.1)  # FIXME: never goes back to normal colour
 
-	_actions.trigger_reactions(Constants.ActionTrigger.ON_RECEIVE_DAMAGE, attacker)
+	actions.trigger_reactions(Constants.ActionTrigger.ON_RECEIVE_DAMAGE, attacker)
 
 
 func _on_death() -> void:
-	_actions.trigger_reactions(Constants.ActionTrigger.ON_DEATH, self)
+	actions.trigger_reactions(Constants.ActionTrigger.ON_DEATH, self)
 
 
 func _on_attack() -> void:
-	_actions.trigger_reactions(Constants.ActionTrigger.ON_ATTACK, self)
+	actions.trigger_reactions(Constants.ActionTrigger.ON_ATTACK, self)
 
 
 ## on stamina <= 0; apply Exhaustion status effect
@@ -412,7 +412,7 @@ func _attempt_target_refresh(
 		_target_refresh_timer.start(1)
 
 
-## get new target and update _ai and nav's target
+## get new target and update ai and nav's target
 func refresh_target(
 	target_type: Constants.TargetType = Constants.TargetType.ENEMY,
 	preferences: Array[Constants.TargetPreference] = [Constants.TargetPreference.ANY]
@@ -423,7 +423,7 @@ func refresh_target(
 			_target.no_longer_targetable.disconnect(refresh_target)
 
 	# get new target
-	_target = _ai.get_target(target_type, preferences)
+	_target = ai.get_target(target_type, preferences)
 
 	# FIXME: placeholder until Unit AI added
 	if _target == null:

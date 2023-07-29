@@ -9,6 +9,7 @@ class_name BaseAction extends Node
 	set(value):
 		friendly_name = value
 		_cooldown_timer.set_name("CooldownTimer_" + friendly_name)
+		target_finder.set_name("TargetFinder_" + friendly_name)
 @export var tags : Array[Constants.ActionTag] = []  ## property tags describing the action
 @export var target_type : Constants.TargetType = Constants.TargetType.ENEMY  ## what target the action can effect
 @export var target_preferences : Array[Constants.TargetPreference] = [Constants.TargetPreference.ANY]  ## what kind of target to find, within the target type
@@ -76,9 +77,9 @@ func _init(creator: Actor) -> void:
 
 	uid = Utility.generate_id()
 
+	# TODO: move components to sit under actions. They need the parents, which doesnt exist at init.
 	target_finder = Factory.add_target_finder(_creator, range)
 	target_finder.set_name("TargetFinder_" + friendly_name)
-	#_creator.add_child(target_finder)
 
 	_cooldown_timer = Timer.new()
 	_cooldown_timer.set_name("CooldownTimer_" + friendly_name)
