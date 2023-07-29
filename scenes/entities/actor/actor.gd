@@ -47,6 +47,8 @@ var ai : ActorAI
 var actions : ActorActions
 ## active status effects
 var status_effects : ActorStatusEffects
+## state machine that controls current state
+var state : StateMachine
 
 ######### FUNCTIONAL ATTRIBUTES ###############
 

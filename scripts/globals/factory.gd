@@ -1,5 +1,7 @@
 extends Node
 ## A factory for object creation.
+##
+## "create" scripts build an object and return it. "add" scripts add the object to the specified object, i.e. handles add_child etc.
 
 ############ SCENES #########
 
@@ -62,6 +64,8 @@ func create_actor(creator: Unit, name_: String, team: String) -> Actor:
 	instance.status_effects = _build_actor_status_effects()
 	instance.status_effects.set_name("StatusEffects")
 	instance.add_child(instance.status_effects)
+
+	instance.state = _create_actor_state_machine()
 
 	instance = _add_actor_actions(instance, unit_data)
 
@@ -201,6 +205,7 @@ func _add_actor_actions(instance: Actor, unit_data: Dictionary) -> Actor:
 
 	return instance
 
+
 func _add_cast_timer(instance: Actor) -> Timer:
 	# create timer to track cast time
 	var cast_timer = Timer.new()
@@ -208,6 +213,20 @@ func _add_cast_timer(instance: Actor) -> Timer:
 	instance.add_child(cast_timer, true)
 	cast_timer.set_one_shot(true)
 	return cast_timer
+
+
+func _create_actor_state_machine() -> StateMachine:
+	var states : Array[Constants.ActorState] = [
+		Constants.ActorState.IDLING,
+		Constants.ActorState.CASTING,
+		Constants.ActorState.ATTACKING,
+		Constants.ActorState.MOVING,
+		Constants.ActorState.DEAD,
+	]
+
+	var state_machine : StateMachine = StateMachine.new(states)
+
+	return state_machine
 
 ############ PROJECTILES ################
 
@@ -309,7 +328,7 @@ func create_sparkles(data: SparklesData) -> Sparkles:
 	return sparkles
 
 
-func create_simple_animation(animation_name) -> SimpleAnimation:
+func create_simple_animation(animation_name: String) -> SimpleAnimation:
 	var animated_sprite : SimpleAnimation = _VisualSimple.instantiate()
 	var sprite_frames : SpriteFrames = SpriteFrames.new()
 
@@ -336,3 +355,11 @@ func add_target_finder(creator: Actor, radius: int, is_visible: bool = false, co
 
 	#remove_child(target_finder)  # unparent so that it can be added to caller as required
 	return target_finder
+
+
+func _create_state(state: Constants.ActorState) -> BaseState:
+	# assumes constant name matches state scripts name
+	var path : String = Constants.PATH_STATES + "actor/" + Constants.ActorState.keys()[state] + ".gd"
+	var state_: BaseState = load(path).new()
+	return state_
+
