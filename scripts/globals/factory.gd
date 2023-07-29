@@ -66,6 +66,8 @@ func create_actor(creator: Unit, name_: String, team: String) -> Actor:
 	instance.add_child(instance.status_effects)
 
 	instance.state = _create_actor_state_machine()
+	instance.state.set_name("StateMachine")
+	instance.add_child(instance.state)
 
 	instance = _add_actor_actions(instance, unit_data)
 
@@ -357,9 +359,11 @@ func add_target_finder(creator: Actor, radius: int, is_visible: bool = false, co
 	return target_finder
 
 
-func _create_state(state: Constants.ActorState) -> BaseState:
+func add_state(creator: Actor, state: Constants.ActorState) -> BaseState:
 	# assumes constant name matches state scripts name
-	var path : String = Constants.PATH_STATES + "actor/" + Constants.ActorState.keys()[state] + ".gd"
-	var state_: BaseState = load(path).new()
+	var state_name : String = Constants.ActorState.keys()[state]
+	var path : String = Constants.PATH_STATES + "actor/" + state_name + ".gd"
+	var state_: BaseState = load(path).new(creator)
+	state_.set_name(state_name.to_pascal_case())
 	return state_
 

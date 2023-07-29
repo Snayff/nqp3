@@ -1,6 +1,12 @@
 class_name BaseState extends Node
 ## base class for an entities state
 
+var _creator : Actor
+
+
+func _init(creator: Actor) -> void:
+	_creator = creator
+
 
 ## actions on entering state
 ## @tag virtual function
