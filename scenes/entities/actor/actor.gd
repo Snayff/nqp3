@@ -276,7 +276,7 @@ func die() -> void:
 	animated_sprite.stop()  # its already looped back to 0 so pause == stop
 	animated_sprite.frame = animated_sprite.sprite_frames.get_frame_count("death")
 
-	emit_signal("died")
+	died.emit()
 
 	print(name +  "(" + str(uid) + ") died.")
 
