@@ -71,16 +71,16 @@ func get_target_group(caller: Actor, target_type: Constants.TargetType) -> Strin
 			group_to_target =  ""
 
 		Constants.TargetType.ALLY:
-			if caller.is_in_group("team1"):
-				group_to_target = "team1"
+			if caller.is_in_group(Constants.TEAM_ALLY):
+				group_to_target = Constants.TEAM_ALLY
 			else:
-				group_to_target = "team2"
+				group_to_target = Constants.TEAM_ENEMY
 
 		Constants.TargetType.ENEMY:
-			if caller.is_in_group("team1"):
-				group_to_target = "team2"
+			if caller.is_in_group(Constants.TEAM_ALLY):
+				group_to_target = Constants.TEAM_ENEMY
 			else:
-				group_to_target = "team1"
+				group_to_target = Constants.TEAM_ALLY
 
 		Constants.TargetType.ATTACKER:
 			push_error("_get_target_group: not able to process ATTACKER.")

@@ -11,16 +11,16 @@ func deal_damage(attacker: Actor, defender: Actor, damage: int, damage_type: Con
 
 	# debug gubbins
 	var team : String = ""
-	if attacker.is_in_group("team1"):
-		team = "team1"
+	if attacker.is_in_group(Constants.TEAM_ALLY):
+		team = Constants.TEAM_ALLY
 	else:
-		team = "team2"
+		team = Constants.TEAM_ENEMY
 
 	var team2 : String = ""
-	if defender.is_in_group("team1"):
-		team2 = "team1"
+	if defender.is_in_group(Constants.TEAM_ALLY):
+		team2 = Constants.TEAM_ALLY
 	else:
-		team2 = "team2"
+		team2 = Constants.TEAM_ENEMY
 
 	print(attacker.debug_name + " dealt " + str(damage) + " to " + defender.debug_name + ". Remaining health is " + str(defender.stats.health) + ".")
 

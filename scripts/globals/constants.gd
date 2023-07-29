@@ -115,3 +115,8 @@ const PATH_SPRITES_EFFECTS : String = "res://sprites/effects/"
 ############ VALUES ############
 
 const MELEE_RANGE : int = 20  ## the range at which a unit is determined to be melee.
+
+############# TEAMS ##############
+
+const TEAM_ALLY = "ally"
+const TEAM_ENEMY = "enemy"

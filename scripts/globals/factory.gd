@@ -6,18 +6,25 @@ extends Node
 # N.B. can't preload with variable, so all hardcoded
 const _Actor : PackedScene = preload("res://scenes/entities/actor/actor.tscn")
 const _Projectile: PackedScene = preload("res://scenes/entities/projectile/projectile.tscn")
+const _PlayerActor : PackedScene = preload("res://scenes/entities/actor/player_actor.tscn")
 const _Unit : PackedScene = preload("res://scenes/entities/unit/unit.tscn")
 const _TargetFinder : PackedScene = preload("res://scenes/components/target_finder/target_finder.tscn")
 const _VisualSparkles : PackedScene = preload("res://scenes/visual_effects/sparkles/sparkles.tscn")
 const _VisualSimple : PackedScene = preload("res://scenes/visual_effects/simple_animation/simple_animation.tscn")
 
+const _PATH_COMMANDER := "res://scenes/entities/commander/commander.gd"
 
 ########### UNIT ###############
 
 ## create unit, pulling base data from RefData
 func create_unit(creator, unit_name: String, team_name: String) -> Unit:
 	var unit = _Unit.instantiate()
-	creator.add_child(unit)
+	if unit_name == "commander":
+		var script := load(_PATH_COMMANDER)
+		unit.set_script(script)
+
+	unit.name = "%s_%s"%[unit_name, "unit"]
+	creator.add_child(unit, true)
 
 	unit.unit_name = unit_name
 	unit.team = team_name
@@ -30,7 +37,8 @@ func create_unit(creator, unit_name: String, team_name: String) -> Unit:
 func create_actor(creator: Unit, name_: String, team: String) -> Actor:
 
 	var instance = _Actor.instantiate()
-	creator.add_child(instance)
+	instance.name = name_
+	creator.add_child(instance, true)
 
 	# dont do anything until we're ready
 	instance.set_physics_process(false)
@@ -56,6 +64,41 @@ func create_actor(creator: Unit, name_: String, team: String) -> Actor:
 	instance.add_child(instance._status_effects)
 
 	instance = _add_actor_actions(instance, unit_data)
+
+	# shuffle starting pos so they dont start on top of one another
+	var pos_offset := Vector2(randf_range(-5, 5), randf_range(-5, 5))
+	var pos := Vector2(creator.global_position.x + pos_offset.x, creator.global_position.y + pos_offset.y)
+	instance.global_position = pos
+	# TODO: ensure shuffling to empty spot
+
+	instance.actor_setup()
+
+	instance = _add_actor_groups(instance, team)
+
+	# now we're ready to react to the world
+	instance.set_physics_process(true)
+
+	return instance
+
+
+## create actor, pulling base data from RefData
+func create_player_actor(creator: Unit, name_: String, team: String) -> Actor:
+	var instance = _PlayerActor.instantiate()
+	instance.name = name_
+	creator.add_child(instance, true)
+
+	# dont do anything until we're ready
+	instance.set_physics_process(false)
+
+	var unit_data = RefData.unit_data[name_]
+
+	instance.uid = Utility.generate_id()
+	instance.ai = ActorAI.new(instance)
+	instance.stats = _build_actor_stats(unit_data)
+	instance.animated_sprite.sprite_frames = _build_actor_sprite_frame(name_)
+	instance.status_effects = _build_actor_status_effects()
+	instance = _add_actor_actions(instance, unit_data)
+	instance._cast_timer = _add_cast_timer(instance)
 
 	# shuffle starting pos so they dont start on top of one another
 	var pos_offset := Vector2(randf_range(-5, 5), randf_range(-5, 5))
@@ -158,6 +201,13 @@ func _add_actor_actions(instance: Actor, unit_data: Dictionary) -> Actor:
 
 	return instance
 
+func _add_cast_timer(instance: Actor) -> Timer:
+	# create timer to track cast time
+	var cast_timer = Timer.new()
+	cast_timer.name = "Cast"
+	instance.add_child(cast_timer, true)
+	cast_timer.set_one_shot(true)
+	return cast_timer
 
 ############ PROJECTILES ################
 

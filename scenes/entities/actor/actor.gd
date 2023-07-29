@@ -306,7 +306,7 @@ func die() -> void:
 	animated_sprite.stop()  # its already looped back to 0 so pause == stop
 	animated_sprite.frame = animated_sprite.sprite_frames.get_frame_count("death")
 
-	emit_signal("died")
+	died.emit()
 
 	print(debug_name + " died.")
 
@@ -419,7 +419,7 @@ func refresh_target(
 	) -> void:
 	# disconnect from current signals on target
 	if _target:
-		if _target.is_connected("no_longer_targetable", refresh_target):
+		if _target.no_longer_targetable.is_connected(refresh_target):
 			_target.no_longer_targetable.disconnect(refresh_target)
 
 	# get new target

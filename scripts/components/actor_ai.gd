@@ -10,11 +10,11 @@ func _ready() -> void:
 	pass
 
 func is_enemy(target : Actor) -> bool:
-	if _creator.is_in_group("team1"):
-		if target.is_in_group("team2"):
+	if _creator.is_in_group(Constants.TEAM_ALLY):
+		if target.is_in_group(Constants.TEAM_ENEMY):
 			return true
-	if _creator.is_in_group("team2"):
-		if target.is_in_group("team1"):
+	if _creator.is_in_group(Constants.TEAM_ENEMY):
+		if target.is_in_group(Constants.TEAM_ALLY):
 			return true
 	return false
 
