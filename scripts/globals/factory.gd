@@ -65,9 +65,9 @@ func create_actor(creator: Unit, name_: String, team: String) -> Actor:
 	instance.status_effects.set_name("StatusEffects")
 	instance.add_child(instance.status_effects)
 
-	instance.state = _create_actor_state_machine()
-	instance.state.set_name("StateMachine")
-	instance.add_child(instance.state)
+	instance.state_machine = _create_actor_state_machine(instance)
+	instance.state_machine.set_name("StateMachine")
+	instance.add_child(instance.state_machine)
 
 	instance = _add_actor_actions(instance, unit_data)
 
@@ -217,7 +217,7 @@ func _add_cast_timer(instance: Actor) -> Timer:
 	return cast_timer
 
 
-func _create_actor_state_machine() -> StateMachine:
+func _create_actor_state_machine(actor: Actor) -> StateMachine:
 	var states : Array[Constants.ActorState] = [
 		Constants.ActorState.IDLING,
 		Constants.ActorState.CASTING,
@@ -225,9 +225,9 @@ func _create_actor_state_machine() -> StateMachine:
 		Constants.ActorState.MOVING,
 		Constants.ActorState.DEAD,
 	]
-
-	var state_machine : StateMachine = StateMachine.new(states)
-
+	
+	var state_machine : StateMachine = StateMachine.new(actor, states)
+	
 	return state_machine
 
 ############ PROJECTILES ################
@@ -362,7 +362,9 @@ func add_target_finder(creator: Actor, radius: int, is_visible: bool = false, co
 func add_state(creator: Actor, state: Constants.ActorState) -> BaseState:
 	# assumes constant name matches state scripts name
 	var state_name : String = Constants.ActorState.keys()[state]
-	var path : String = Constants.PATH_STATES + "actor/" + state_name + ".gd"
+	var path : String = Constants.PATH_STATES\
+			.path_join("actor")\
+			.path_join("%s.gd"%[state_name.to_lower()])
 	var state_: BaseState = load(path).new(creator)
 	state_.set_name(state_name.to_pascal_case())
 	return state_

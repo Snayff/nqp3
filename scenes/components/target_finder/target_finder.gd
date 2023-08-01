@@ -42,5 +42,5 @@ func set_visibility(visible: bool, duration: float = 0) -> void:
 	# set timer to revert to previous visibility
 	if duration != 0:
 		visibility_timer.start(duration)
-		visibility_timer.timeout.connect(set_visibility, original_state)
+		visibility_timer.timeout.connect(set_visibility.bind(original_state), CONNECT_ONE_SHOT)
 

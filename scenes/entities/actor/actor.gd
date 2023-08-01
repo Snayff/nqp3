@@ -48,7 +48,7 @@ var actions : ActorActions
 ## active status effects
 var status_effects : ActorStatusEffects
 ## state machine that controls current state
-var state : StateMachine
+var state_machine : StateMachine
 
 ######### FUNCTIONAL ATTRIBUTES ###############
 
@@ -142,120 +142,15 @@ func _connect_signals() -> void:
 
 	actions.attacked.connect(_on_attack)
 
-	_cast_timer.timeout.connect(_on_cast_completed)
-
 	# link component signals
 	status_effects.stat_modifier_added.connect(stats.add_modifier)
 	status_effects.stat_modifier_removed.connect(stats.remove_modifier)
 
-	# connect to node signals
-	animated_sprite.animation_finished.connect(_on_animation_completed)
-	animated_sprite.animation_looped.connect(_on_animation_completed)
-
 ########## MAIN LOOP ##########
 
 func _physics_process(delta) -> void:
-
 	if is_in_group("alive"):
-		update_state()
-		process_current_state()
-
-########## STATE #############
-
-## update the current state
-func update_state() -> void:
-	# dont change state if dead
-	if _state == Constants.ActorState.DEAD:
-		return
-
-	## if we have no attack primed then get one
-	if attack_to_cast == null:
-		attack_to_cast = actions.get_random_attack()
-
-		# get new target
-		if attack_to_cast != null:
-			_attempt_target_refresh(attack_to_cast.target_type, attack_to_cast.target_preferences)
-		else:
-			_attempt_target_refresh()
-
-	# has no target, go idle
-	if _target == null:
-		if _state != Constants.ActorState.MOVING:
-			change_state(Constants.ActorState.IDLING)
-		return
-
-	# we have target, but do we have an attack
-	if attack_to_cast == null:
-		if _state != Constants.ActorState.MOVING:
-			change_state(Constants.ActorState.IDLING)
-		return
-
-	# we have target and attack so cast if in range, else move closer
-	_navigation_agent.target_position = _target.global_position
-	var in_attack_range : bool = _navigation_agent.distance_to_target() <= attack_to_cast.range
-	if in_attack_range and has_ready_attack:
-		# set target pos to current pos to stop moving
-		_navigation_agent.target_position = global_position
-
-		# if not yet attacking or casting, cast
-		if _state != Constants.ActorState.ATTACKING and _state != Constants.ActorState.CASTING:
-			change_state(Constants.ActorState.CASTING)  #  attack is triggered after cast
-
-	# has target but not in range, move towards target
-	elif not in_attack_range and has_ready_attack:
-		if _state != Constants.ActorState.MOVING:
-			change_state(Constants.ActorState.MOVING)
-
-	else:
-		change_state(Constants.ActorState.IDLING)
-
-
-## change to new state, trigger transition action
-## actions will trigger after animation
-func change_state(new_state: Constants.ActorState) -> void:
-	_previous_state = _state
-	_state = new_state
-
-	match _state:
-		Constants.ActorState.IDLING:
-			animated_sprite.play("idle")
-
-		Constants.ActorState.CASTING:
-			animated_sprite.play("cast")
-
-			# trigger cast timer
-			_cast_timer.start(attack_to_cast.cast_time)
-
-		Constants.ActorState.ATTACKING:
-			animated_sprite.play("attack")
-
-		Constants.ActorState.MOVING:
-			animated_sprite.play("walk")
-
-		Constants.ActorState.DEAD:
-			animated_sprite.play("death")
-
-	# print(debug_name + " currently playing " + animated_sprite.animation + " animation.")
-
-
-## process the current state, e.g. moving if in MOVING
-func process_current_state() -> void:
-	match _state:
-		Constants.ActorState.IDLING:
-			pass
-
-		Constants.ActorState.CASTING:
-			pass
-
-		Constants.ActorState.ATTACKING:
-			pass
-
-		Constants.ActorState.MOVING:
-			move_towards_target()
-			_refresh_facing()
-
-		Constants.ActorState.DEAD:
-			pass
+		state_machine.update_state()
 
 ######### ACTIONS ############
 
@@ -320,34 +215,11 @@ func attack() -> void:
 		actions.use_random_attack(_target)
 	else:
 		actions.use_attack(attack_to_cast.uid, _target)
-
+	
 	attack_to_cast = null
 
 
 ############ REACTIONS ###########
-
-## act out result of animations completion
-func _on_animation_completed() -> void:
-	match _state:
-		Constants.ActorState.IDLING:
-			# just keep idling
-			pass
-
-		Constants.ActorState.CASTING:
-			# casting will time out and move to next state
-			pass
-
-		Constants.ActorState.ATTACKING:
-			attack()
-
-		Constants.ActorState.MOVING:
-			# walking not dependant on anim completion
-			pass
-
-		Constants.ActorState.DEAD:
-			# FIXME: we're never hitting this. dont seem to ever enter death anim
-			die()
-
 
 ## on health <= 0; trigger death
 ##
@@ -356,7 +228,7 @@ func _on_health_depleted() -> void:
 	# immediately remove targetable, dont wait for animation to finish
 	is_active = false
 	is_targetable = false
-	change_state(Constants.ActorState.DEAD)
+	state_machine.change_state(Constants.ActorState.DEAD)
 
 
 func _on_hit_received(attacker: Actor) -> void:
@@ -382,10 +254,6 @@ func _on_stamina_depleted() -> void:
 	var exhaustion = Exhaustion.new(self)
 	status_effects.add_status_effect(exhaustion)
 
-
-# on _cast_timer reaching 0; transition to attack
-func _on_cast_completed() -> void:
-	change_state(Constants.ActorState.ATTACKING)
 
 ########### REFRESHES #############
 
@@ -434,7 +302,7 @@ func _refresh_facing() -> void:
 	if velocity.x < 0:
 		self._facing = Constants.Direction.LEFT
 		animated_sprite.flip_h = true
-	else:
+	elif velocity.x > 0:
 		self._facing = Constants.Direction.RIGHT
 		animated_sprite.flip_h = false
 

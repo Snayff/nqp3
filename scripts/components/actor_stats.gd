@@ -41,11 +41,12 @@ var _modifiers : Dictionary = {}
 	set(value):
 		var previous_health := health
 		health = clamp(value, 0, max_health)
-		emit_signal("health_changed", previous_health, health)
-
-		# inform of death
-		if health == 0:
-			emit_signal("health_depleted")
+		if previous_health != health:
+			emit_signal("health_changed", previous_health, health)
+		
+			# inform of death
+			if health == 0:
+				emit_signal("health_depleted")
 @export var max_stamina : int
 @export var stamina : int:
 	set(value):

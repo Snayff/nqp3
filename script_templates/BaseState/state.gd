@@ -10,7 +10,7 @@ func enter_state() -> void:
 
 
 
-func _physics_process(delta: float) -> void:
+func physics_process(delta: float) -> void:
 	pass
 
 

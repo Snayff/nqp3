@@ -3,11 +3,14 @@ extends BaseState
 
 ## actions on entering state
 func enter_state() -> void:
-	pass
+	if not _creator.animated_sprite.animation_looped.is_connected(
+			_on_animated_sprite_animation_looped
+	):
+		_creator.animated_sprite.animation_looped.connect(_on_animated_sprite_animation_looped)
+	_creator.animated_sprite.play("death")
 
 
-
-func _physics_process(delta: float) -> void:
+func physics_process(delta: float) -> void:
 	pass
 
 
@@ -20,3 +23,6 @@ func update_state() -> void:
 func exit_state() -> void:
 	pass
 
+
+func _on_animated_sprite_animation_looped() -> void:
+	_creator.die()
