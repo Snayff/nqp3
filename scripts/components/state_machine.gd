@@ -37,7 +37,7 @@ func change_state(state_name: Constants.ActorState) -> void:
 
 
 func _physics_process(delta: float) -> void:
-	current_state._physics_process(delta)
+	current_state.physics_process(delta)
 
 
 func update_state() -> void:
