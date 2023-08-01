@@ -57,7 +57,7 @@ func get_action_type_script_path(action_type: Constants.ActionType) -> String:
 	return path
 
 
-########## ACTOR quries #################
+########## ACTOR QUERIES #################
 
 ## get the relevant group based on target type
 ##

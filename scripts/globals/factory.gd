@@ -1,5 +1,7 @@
 extends Node
 ## A factory for object creation.
+##
+## "create" scripts build an object and return it. "add" scripts add the object to the specified object, i.e. handles add_child etc.
 
 ############ SCENES #########
 
@@ -53,15 +55,19 @@ func create_actor(creator: Unit, name_: String, team: String) -> Actor:
 	instance.ai.set_name("AI")
 	instance.add_child(instance.ai)
 
-	instance.stats = _build_actor_stats(unit_data)
+	instance.stats = _create_actor_stats(unit_data)
 	instance.stats.set_name("Stats")
 	instance.add_child(instance.stats)
 
-	instance.animated_sprite.sprite_frames = _build_actor_sprite_frame(name_)
+	instance.animated_sprite.sprite_frames = _create_actor_sprite_frame(name_)
 
-	instance.status_effects = _build_actor_status_effects()
+	instance.status_effects = _create_actor_status_effects()
 	instance.status_effects.set_name("StatusEffects")
 	instance.add_child(instance.status_effects)
+
+	instance.state_machine = _create_actor_state_machine(instance)
+	instance.state_machine.set_name("StateMachine")
+	instance.add_child(instance.state_machine)
 
 	instance = _add_actor_actions(instance, unit_data)
 
@@ -94,9 +100,9 @@ func create_player_actor(creator: Unit, name_: String, team: String) -> Actor:
 
 	instance.uid = Utility.generate_id()
 	instance.ai = ActorAI.new(instance)
-	instance.stats = _build_actor_stats(unit_data)
-	instance.animated_sprite.sprite_frames = _build_actor_sprite_frame(name_)
-	instance.status_effects = _build_actor_status_effects()
+	instance.stats = _create_actor_stats(unit_data)
+	instance.animated_sprite.sprite_frames = _create_actor_sprite_frame(name_)
+	instance.status_effects = _create_actor_status_effects()
 	instance = _add_actor_actions(instance, unit_data)
 	instance._cast_timer = _add_cast_timer(instance)
 
@@ -116,7 +122,7 @@ func create_player_actor(creator: Unit, name_: String, team: String) -> Actor:
 	return instance
 
 
-func _build_actor_stats(unit_data: Dictionary) -> ActorStats:
+func _create_actor_stats(unit_data: Dictionary) -> ActorStats:
 	var stats = ActorStats.new()
 
 	stats.max_health = unit_data["max_health"]
@@ -142,7 +148,7 @@ func _build_actor_stats(unit_data: Dictionary) -> ActorStats:
 	return stats
 
 
-func _build_actor_sprite_frame(unit_name: String) -> SpriteFrames:
+func _create_actor_sprite_frame(unit_name: String) -> SpriteFrames:
 	var anim_names : Array = Constants.ActorAnimationType.keys()
 	var sprite_frames : SpriteFrames = SpriteFrames.new()
 
@@ -153,7 +159,7 @@ func _build_actor_sprite_frame(unit_name: String) -> SpriteFrames:
 	return sprite_frames
 
 
-func _build_actor_status_effects() -> ActorStatusEffects:
+func _create_actor_status_effects() -> ActorStatusEffects:
 	var status_effects = ActorStatusEffects.new()
 	return status_effects
 
@@ -201,6 +207,7 @@ func _add_actor_actions(instance: Actor, unit_data: Dictionary) -> Actor:
 
 	return instance
 
+
 func _add_cast_timer(instance: Actor) -> Timer:
 	# create timer to track cast time
 	var cast_timer = Timer.new()
@@ -208,6 +215,20 @@ func _add_cast_timer(instance: Actor) -> Timer:
 	instance.add_child(cast_timer, true)
 	cast_timer.set_one_shot(true)
 	return cast_timer
+
+
+func _create_actor_state_machine(actor: Actor) -> StateMachine:
+	var states : Array[Constants.ActorState] = [
+		Constants.ActorState.IDLING,
+		Constants.ActorState.CASTING,
+		Constants.ActorState.ATTACKING,
+		Constants.ActorState.MOVING,
+		Constants.ActorState.DEAD,
+	]
+	
+	var state_machine : StateMachine = StateMachine.new(actor, states)
+	
+	return state_machine
 
 ############ PROJECTILES ################
 
@@ -309,7 +330,7 @@ func create_sparkles(data: SparklesData) -> Sparkles:
 	return sparkles
 
 
-func create_simple_animation(animation_name) -> SimpleAnimation:
+func create_simple_animation(animation_name: String) -> SimpleAnimation:
 	var animated_sprite : SimpleAnimation = _VisualSimple.instantiate()
 	var sprite_frames : SpriteFrames = SpriteFrames.new()
 
@@ -336,3 +357,15 @@ func add_target_finder(creator: Actor, radius: int, is_visible: bool = false, co
 
 	#remove_child(target_finder)  # unparent so that it can be added to caller as required
 	return target_finder
+
+
+func add_state(creator: Actor, state: Constants.ActorState) -> BaseState:
+	# assumes constant name matches state scripts name
+	var state_name : String = Constants.ActorState.keys()[state]
+	var path : String = Constants.PATH_STATES\
+			.path_join("actor")\
+			.path_join("%s.gd"%[state_name.to_lower()])
+	var state_: BaseState = load(path).new(creator)
+	state_.set_name(state_name.to_pascal_case())
+	return state_
+
