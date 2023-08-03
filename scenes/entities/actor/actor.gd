@@ -115,15 +115,17 @@ func _ready() -> void:
 
 ## post _ready setup
 func actor_setup() -> void:
-
 	_connect_signals()
-
+	
 	# Wait for the first physics frame so the NavigationServer can sync.
 	await get_tree().physics_frame
-
+	
+	# Trigger enter function on initial state
+	state_machine.change_state(state_machine._current_state_name)
+	
 	# with actions fully initialised lets force the attack_range_updated signal to fire
 	actions._recalculate_attack_range()
-
+	
 	# Now that the navigation map is no longer empty, set the movement target.
 	_attempt_target_refresh()
 
