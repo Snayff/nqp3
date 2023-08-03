@@ -11,15 +11,16 @@ var current_state : BaseState:  ## can return null if no current state
 		return null
 	set(_value):
 		push_error("Tried to set current state manually. Not allowed.")
+
 var _current_state_name := Constants.ActorState.IDLING
 var _states : Dictionary = {}   ## {Constants.ActorState, BaseState}
 
 
-func _init(actor: Actor, states: Array[Constants.ActorState]) -> void:
+func _init(actor: Actor, states: Array[Constants.ActorState], states_base_folder := "actor") -> void:
 	uid = Utility.generate_id()
 	
 	for state_name in states:
-		var _state = Factory.add_state(actor, state_name)
+		var _state = Factory.add_state(actor, state_name, states_base_folder)
 		add_child(_state)
 		_states[state_name] = _state	
 	

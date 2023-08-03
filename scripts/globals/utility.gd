@@ -35,7 +35,8 @@ func add_animation_to_sprite_frames(
 			# ensure we dont have a folder
 			if not dir.current_is_dir():
 				if not ".import" in file_name:
-					sprite_frames.add_frame(animation_name, load(sprite_folder_path + file_name))
+					var full_path := sprite_folder_path.path_join(file_name)
+					sprite_frames.add_frame(animation_name, load(full_path))
 			file_name = dir.get_next()
 
 	return sprite_frames

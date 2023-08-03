@@ -8,7 +8,6 @@ extends Node
 # N.B. can't preload with variable, so all hardcoded
 const _Actor : PackedScene = preload("res://scenes/entities/actor/actor.tscn")
 const _Projectile: PackedScene = preload("res://scenes/entities/projectile/projectile.tscn")
-const _PlayerActor : PackedScene = preload("res://scenes/entities/actor/player_actor.tscn")
 const _Unit : PackedScene = preload("res://scenes/entities/unit/unit.tscn")
 const _TargetFinder : PackedScene = preload("res://scenes/components/target_finder/target_finder.tscn")
 const _VisualSparkles : PackedScene = preload("res://scenes/visual_effects/sparkles/sparkles.tscn")
@@ -21,7 +20,7 @@ const _VisualSimple : PackedScene = preload("res://scenes/visual_effects/simple_
 ## create unit, pulling base data from RefData
 func create_unit(creator, unit_name: String, team_name: String) -> Unit:
 	var unit = _Unit.instantiate()
-	if unit_name == "commander":
+	if unit_name in ["knight", "cavalier"]:
 		var script := load(Constants.PATH_COMMANDER)
 		unit.set_script(script)
 
@@ -37,88 +36,80 @@ func create_unit(creator, unit_name: String, team_name: String) -> Unit:
 
 ## create actor, pulling base data from RefData
 func create_actor(creator: Unit, name_: String, team: String) -> Actor:
-
-	var instance = _Actor.instantiate()
-	instance.name = name_
-	creator.add_child(instance, true)
-
-	# dont do anything until we're ready
-	instance.set_physics_process(false)
-
-	var unit_data = RefData.unit_data[name_]
-
-	instance.uid = Utility.generate_id()
-	instance.unit_name = name_
-	instance.set_name(instance.debug_name.to_pascal_case())
-
-	instance.ai = ActorAI.new(instance)
-	instance.ai.set_name("AI")
-	instance.add_child(instance.ai)
-
-	instance.stats = _create_actor_stats(unit_data)
-	instance.stats.set_name("Stats")
-	instance.add_child(instance.stats)
-
-	instance.animated_sprite.sprite_frames = _create_actor_sprite_frame(name_)
-
-	instance.status_effects = _create_actor_status_effects()
-	instance.status_effects.set_name("StatusEffects")
-	instance.add_child(instance.status_effects)
-
+	var instance := _get_base_actor_instance(creator, name_, team)
+	
 	instance.state_machine = _create_actor_state_machine(instance)
 	instance.state_machine.set_name("StateMachine")
 	instance.add_child(instance.state_machine)
-
-	instance = _add_actor_actions(instance, unit_data)
-
-	# shuffle starting pos so they dont start on top of one another
-	var pos_offset := Vector2(randf_range(-5, 5), randf_range(-5, 5))
-	var pos := Vector2(creator.global_position.x + pos_offset.x, creator.global_position.y + pos_offset.y)
-	instance.global_position = pos
-	# TODO: ensure shuffling to empty spot
-
+	
 	instance.actor_setup()
-
-	instance = _add_actor_groups(instance, team)
-
+	
 	# now we're ready to react to the world
 	instance.set_physics_process(true)
-
+	
 	return instance
 
 
 ## create actor, pulling base data from RefData
 func create_player_actor(creator: Unit, name_: String, team: String) -> Actor:
-	var instance = _PlayerActor.instantiate()
+	var instance := _get_base_actor_instance(creator, name_, team)
+	
+	instance.state_machine = _create_player_actor_state_machine(instance)
+	instance.state_machine.set_name("StateMachine")
+	instance.add_child(instance.state_machine)
+	
+	instance.actor_setup()
+	
+	# now we're ready to react to the world
+	instance.set_physics_process(true)
+	
+	return instance
+
+
+func _get_base_actor_instance(
+		creator: Unit, 
+		name_ : String, 
+		team : String
+) -> Actor:
+	var instance = _Actor.instantiate()
 	instance.name = name_
 	creator.add_child(instance, true)
-
+	
 	# dont do anything until we're ready
 	instance.set_physics_process(false)
-
+	
 	var unit_data = RefData.unit_data[name_]
-
+	
 	instance.uid = Utility.generate_id()
+	instance.unit_name = name_
+	instance.set_name(instance.debug_name.to_pascal_case())
+	
 	instance.ai = ActorAI.new(instance)
+	instance.ai.set_name("AI")
+	instance.add_child(instance.ai)
+	
 	instance.stats = _create_actor_stats(unit_data)
-	instance.animated_sprite.sprite_frames = _create_actor_sprite_frame(name_)
+	instance.stats.set_name("Stats")
+	instance.add_child(instance.stats)
+	
+	instance.animated_sprite.sprite_frames = _create_actor_sprite_frame(
+			name_, unit_data.path_base_sprites
+	)
+	
 	instance.status_effects = _create_actor_status_effects()
+	instance.status_effects.set_name("StatusEffects")
+	instance.add_child(instance.status_effects)
+	
 	instance = _add_actor_actions(instance, unit_data)
-	instance._cast_timer = _add_cast_timer(instance)
-
+	
 	# shuffle starting pos so they dont start on top of one another
 	var pos_offset := Vector2(randf_range(-5, 5), randf_range(-5, 5))
 	var pos := Vector2(creator.global_position.x + pos_offset.x, creator.global_position.y + pos_offset.y)
 	instance.global_position = pos
 	# TODO: ensure shuffling to empty spot
-
-	instance.actor_setup()
-
+	
 	instance = _add_actor_groups(instance, team)
-
-	# now we're ready to react to the world
-	instance.set_physics_process(true)
-
+	
 	return instance
 
 
@@ -148,13 +139,15 @@ func _create_actor_stats(unit_data: Dictionary) -> ActorStats:
 	return stats
 
 
-func _create_actor_sprite_frame(unit_name: String) -> SpriteFrames:
+func _create_actor_sprite_frame(unit_name: String, base_path: String) -> SpriteFrames:
 	var anim_names : Array = Constants.ActorAnimationType.keys()
 	var sprite_frames : SpriteFrames = SpriteFrames.new()
 
 	for anim_name in anim_names:
-		var path : String = Constants.PATH_SPRITES_ACTORS + unit_name + "/" + anim_name.to_lower() + "/"
-		sprite_frames = Utility.add_animation_to_sprite_frames(sprite_frames, path, anim_name.to_lower())
+		var path: String = base_path.path_join(unit_name).path_join(anim_name.to_lower())
+		sprite_frames = Utility.add_animation_to_sprite_frames(
+				sprite_frames, path, anim_name.to_lower()
+		)
 
 	return sprite_frames
 
@@ -174,38 +167,45 @@ func _add_actor_groups(instance: Actor, team: String) -> Actor:
 
 func _add_actor_actions(instance: Actor, unit_data: Dictionary) -> Actor:
 	var actions : ActorActions = ActorActions.new()
-
+	
 	for action_type in Constants.ActionType.values():
-
+		
 		# attacks are Dictionary[ActionType, Array[String]]
 		if action_type == Constants.ActionType.ATTACK:
 			for action_name in unit_data["actions"][action_type]:
-				var script_path : String = Utility.get_action_type_script_path(action_type) + action_name + ".gd"
-				var script : BaseAction = load(script_path).new(instance)
+				var script := _get_action(instance, action_type, action_name)
 				actions.add_attack(script)
 				script.set_name(script.friendly_name)
 				actions.add_child(script)
-
+			
 		# reactions are Dictionary[ActionType, Dictionary[ActionTrigger, Array[String]]
 		elif action_type == Constants.ActionType.REACTION:
 			for trigger in unit_data["actions"][action_type]:
 				for action_name in unit_data["actions"][action_type][trigger]:
-					var script_path : String = Utility.get_action_type_script_path(action_type) + action_name + ".gd"
-					var script : BaseAction = load(script_path).new(instance)
+					var script := _get_action(instance, action_type, action_name)
 					actions.add_reaction(script, trigger)
 					script.set_name(script.friendly_name)
 					actions.add_child(script)
-
+			
 		else:
 			# we only add attacks and reactions, ignore everything else
 			continue
-
+	
 	# add actions to instance
 	instance.actions = actions
 	actions.set_name("Actions")
 	instance.add_child(actions)
-
+	
 	return instance
+
+
+func _get_action(
+		instance: Actor, action_type: Constants.ActionType, action_name: String
+) -> BaseAction:
+	var script_path : String = \
+			Utility.get_action_type_script_path(action_type).path_join(action_name + ".gd")
+	var script : BaseAction = load(script_path).new(instance)
+	return script
 
 
 func _add_cast_timer(instance: Actor) -> Timer:
@@ -228,6 +228,19 @@ func _create_actor_state_machine(actor: Actor) -> StateMachine:
 	
 	var state_machine : StateMachine = StateMachine.new(actor, states)
 	
+	return state_machine
+
+
+func _create_player_actor_state_machine(actor: Actor) -> StateMachine:
+	var states : Array[Constants.ActorState] = [
+		Constants.ActorState.IDLING,
+		Constants.ActorState.CASTING,
+		Constants.ActorState.ATTACKING,
+		Constants.ActorState.MOVING,
+		Constants.ActorState.DEAD,
+	]
+	
+	var state_machine : StateMachine = StateMachine.new(actor, states, "player_actor")
 	return state_machine
 
 ############ PROJECTILES ################
@@ -359,11 +372,12 @@ func add_target_finder(creator: Actor, radius: int, is_visible: bool = false, co
 	return target_finder
 
 
-func add_state(creator: Actor, state: Constants.ActorState) -> BaseState:
+func add_state(creator: Actor, state: Constants.ActorState, base_folder: String) -> BaseState:
 	# assumes constant name matches state scripts name
 	var state_name : String = Constants.ActorState.keys()[state]
+	
 	var path : String = Constants.PATH_STATES\
-			.path_join("actor")\
+			.path_join(base_folder)\
 			.path_join("%s.gd"%[state_name.to_lower()])
 	var state_: BaseState = load(path).new(creator)
 	state_.set_name(state_name.to_pascal_case())
