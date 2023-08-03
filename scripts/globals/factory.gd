@@ -52,7 +52,8 @@ func create_actor(creator: Unit, name_: String, team: String) -> Actor:
 
 ## create actor, pulling base data from RefData
 func create_player_actor(creator: Unit, name_: String, team: String) -> Actor:
-	var instance := _get_base_actor_instance(creator, name_, team)
+	const PLAYER_ACTOR := preload("res://scenes/entities/actor/player_actor.gd")
+	var instance := _get_base_actor_instance(creator, name_, team, PLAYER_ACTOR)
 	
 	instance.state_machine = _create_player_actor_state_machine(instance)
 	instance.state_machine.set_name("StateMachine")
@@ -69,9 +70,12 @@ func create_player_actor(creator: Unit, name_: String, team: String) -> Actor:
 func _get_base_actor_instance(
 		creator: Unit, 
 		name_ : String, 
-		team : String
+		team : String,
+		custom_script: Script = null
 ) -> Actor:
 	var instance = _Actor.instantiate()
+	if custom_script:
+		instance.set_script(custom_script)
 	instance.name = name_
 	creator.add_child(instance, true)
 	
@@ -142,13 +146,13 @@ func _create_actor_stats(unit_data: Dictionary) -> ActorStats:
 func _create_actor_sprite_frame(unit_name: String, base_path: String) -> SpriteFrames:
 	var anim_names : Array = Constants.ActorAnimationType.keys()
 	var sprite_frames : SpriteFrames = SpriteFrames.new()
-
+	
 	for anim_name in anim_names:
 		var path: String = base_path.path_join(unit_name).path_join(anim_name.to_lower())
 		sprite_frames = Utility.add_animation_to_sprite_frames(
 				sprite_frames, path, anim_name.to_lower()
 		)
-
+	
 	return sprite_frames
 
 
