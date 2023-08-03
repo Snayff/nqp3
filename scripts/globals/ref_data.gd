@@ -30,7 +30,8 @@ const unit_data: Dictionary = {
 					"spiky_shell",
 				]
 			},
-		}
+		},
+		"path_base_sprites": Constants.PATH_SPRITES_ACTORS,
 	},
 	"conjurer": {
 		"max_health": 70,
@@ -55,7 +56,8 @@ const unit_data: Dictionary = {
 				"heal",
 			],
 			Constants.ActionType.REACTION : { }
-		}
+		},
+		"path_base_sprites": Constants.PATH_SPRITES_ACTORS,
 	},
 	"poet": {
 		"max_health": 70,
@@ -79,9 +81,10 @@ const unit_data: Dictionary = {
 				"stanza",
 			],
 			Constants.ActionType.REACTION : { }
-		}
+		},
+		"path_base_sprites": Constants.PATH_SPRITES_ACTORS,
 	},
-	"commander": {
+	"cavalier": {
 		"max_health": 100,
 		"max_stamina": 100,
 		"regen": 100,
@@ -103,7 +106,33 @@ const unit_data: Dictionary = {
 				"smash"
 			],
 			Constants.ActionType.REACTION : { },
-		}
+		},
+		"path_base_sprites": Constants.PATH_SPRITES_COMMANDERS,
+	},
+	"knight": {
+		"max_health": 100,
+		"max_stamina": 100,
+		"regen": 100,
+		"dodge": 100,
+		"magic_defence": 10,
+		"mundane_defence": 10,
+		"attack": 50,
+		"attack_speed": 100,
+		"penetration": 100,
+		"crit_chance": 100,
+		"move_speed": 150,
+		"stamina": 10,
+		"num_units": 1,
+		"faction": "faction1",
+		"gold_cost": 100,
+		"tier": 1,
+		"actions": {  ## must use {Action Type, script name} (NOT class name)
+			Constants.ActionType.ATTACK : [
+				"smash"
+			],
+			Constants.ActionType.REACTION : { },
+		},
+		"path_base_sprites": Constants.PATH_SPRITES_COMMANDERS,
 	},
 
 }
