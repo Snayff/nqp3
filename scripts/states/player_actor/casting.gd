@@ -8,7 +8,7 @@ func enter_state() -> void:
 	_player._cast_timer.timeout.connect(_on_cast_timer_timeout)
 
 
-func physics_process(delta: float) -> void:
+func physics_process(_delta: float) -> void:
 	pass
 
 

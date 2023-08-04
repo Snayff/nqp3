@@ -9,5 +9,5 @@ func _init() -> void:
 func _ready() -> void:
 	connect("area_entered", _on_area_entered)
 
-func _on_area_entered(hitbox: HitBox) -> void:
+func _on_area_entered(_hitbox: HitBox) -> void:
 	pass

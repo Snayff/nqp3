@@ -17,13 +17,13 @@ var duration : float:
 	get:
 		# TODO: mod by creator stats
 		return _base_duration
-	set(value):
+	set(_value):
 		push_warning("Tried to set duration directly. Not allowed.")
 ## amount of time left on cooldown
 var duration_remaining : float:
 	get:
 		return _duration_timer.time_left
-	set(value):
+	set(_value):
 		push_warning("Tried to set duration_remaining directly. Not allowed.")
 ## array of [StatModifier]s. Used if self modified a stat. Applied during application of self to Actor.
 var stat_modifiers: Array[StatModifier] = []

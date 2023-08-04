@@ -12,7 +12,7 @@ const offsets : Array [Vector2] = [
 func _ready():
 	self.process_priority = -4
 
-func _physics_process(delta):
+func _physics_process(_delta):
 	hash_grid.clear()
 	for actor in get_tree().get_nodes_in_group("actor"):
 		var tile = (actor.global_position / tile_size).floor()

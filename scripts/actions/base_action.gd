@@ -143,7 +143,7 @@ func get_description() -> String:
 ## get new target of a type, with a given preference, within a certain range
 func _effect_new_target(
 	target_type:Constants.TargetType,
-	preference: Constants.TargetPreference = Constants.TargetPreference.ANY,
+	_preference: Constants.TargetPreference = Constants.TargetPreference.ANY,
 	range: float = INF
 	) -> void:
 	push_warning("new target: effect not created")
@@ -177,22 +177,22 @@ func _effect_projectile(data: ProjectileData) -> Projectile:
 
 
 ## create a summon
-func _effect_summon(summon) -> void:
+func _effect_summon(_summon) -> void:
 	push_warning("summon: effect not created")
 
 
 ## create terrain
-func _effect_terrain(terrain) -> void:
+func _effect_terrain(_terrain) -> void:
 	push_warning("terrain: effect not created")
 
 
 ## apply force as a vector
-func _effect_apply_force(velocity) -> void:
+func _effect_apply_force(_velocity) -> void:
 	push_warning("apply_force: effect not created")
 
 
 ## teleport to new location
-func _effect_teleport(direction, distance) -> void:
+func _effect_teleport(_direction, _distance) -> void:
 	push_warning("teleport: effect not created")
 
 

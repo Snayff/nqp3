@@ -9,12 +9,12 @@ func _init(creator: Actor) -> void:
 func _ready() -> void:
 	pass
 
-func is_enemy(target : Actor) -> bool:
+func is_enemy(p_target : Actor) -> bool:
 	if _creator.is_in_group(Constants.TEAM_ALLY):
-		if target.is_in_group(Constants.TEAM_ENEMY):
+		if p_target.is_in_group(Constants.TEAM_ENEMY):
 			return true
 	if _creator.is_in_group(Constants.TEAM_ENEMY):
-		if target.is_in_group(Constants.TEAM_ALLY):
+		if p_target.is_in_group(Constants.TEAM_ALLY):
 			return true
 	return false
 

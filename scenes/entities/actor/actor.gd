@@ -32,6 +32,7 @@ signal chose_attack_to_cast(attack: BaseAction)
 @onready var _collision_shape : CollisionShape2D = $CollisionShape2D
 @onready var _target_finder : Area2D = $TargetFinder
 @onready var _target_refresh_timer : Timer = $TargetRefreshTimer
+@warning_ignore("unused_private_class_variable")
 @onready var _cast_timer : Timer = $CastTimer
 
 ############ COMPONENTS ###############
@@ -59,8 +60,6 @@ var unit_name: String:
 		unit_name = value
 		debug_name = unit_name + "(" + str(uid) + ")"
 var debug_name : String = unit_name + "(" + str(uid) + ")"
-var _previous_state : Constants.ActorState = Constants.ActorState.IDLING
-var _state : Constants.ActorState = Constants.ActorState.IDLING
 var _target : Actor
 var _facing : Constants.Direction = Constants.Direction.LEFT
 var is_active : bool:
@@ -89,7 +88,7 @@ var attack_to_cast : BaseAction = null:
 	set(value):
 		attack_to_cast = value
 		if attack_to_cast != null:
-			_update_target_finder_range(attack_to_cast.range)
+			_update_target_finder_range(int(attack_to_cast.range))
 			print(debug_name + " chose to use " + attack_to_cast.friendly_name + ".")
 var neighbours : Array
 
@@ -150,7 +149,7 @@ func _connect_signals() -> void:
 
 ########## MAIN LOOP ##########
 
-func _physics_process(delta) -> void:
+func _physics_process(_delta) -> void:
 	if is_in_group("alive"):
 		state_machine.update_state()
 

@@ -10,7 +10,7 @@ func enter_state() -> void:
 	_creator.animated_sprite.play("death")
 
 
-func physics_process(delta: float) -> void:
+func physics_process(_delta: float) -> void:
 	pass
 
 

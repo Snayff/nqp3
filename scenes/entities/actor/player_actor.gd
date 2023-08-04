@@ -8,8 +8,8 @@ var targets := {}
 
 
 func actor_setup() -> void:
-	for uid in actions.attacks:
-		targets[uid] = null
+	for action_uid in actions.attacks:
+		targets[action_uid] = null
 	
 	super()
 
@@ -31,16 +31,20 @@ func _attempt_all_target_refresh() -> void:
 	if _target_refresh_timer.is_stopped():
 		_target_refresh_timer.start(1)
 		
-		for uid in actions.attacks:
-			var attack := actions.attacks[uid] as BaseAction
-			var current_target := targets[uid] as Actor
-			if not attack.is_ready:
+		for action_uid in actions.attacks:
+			var current_attack := actions.attacks[action_uid] as BaseAction
+			var current_target := targets[action_uid] as Actor
+			if not current_attack.is_ready:
 				continue
 			
-			_update_target_finder_range(attack.range)
+			_update_target_finder_range(int(current_attack.range))
 			await get_tree().process_frame
 			
-			targets[uid] = get_target(current_target, attack.target_type, attack.target_preferences)
+			targets[action_uid] = get_target(
+					current_target, 
+					current_attack.target_type, 
+					current_attack.target_preferences
+			)
 
 
 ## get new target and update ai and nav's target

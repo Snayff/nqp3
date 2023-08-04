@@ -11,7 +11,7 @@ func enter_state() -> void:
 	_player.animated_sprite.play("attack")
 
 
-func physics_process(delta: float) -> void:
+func physics_process(_delta: float) -> void:
 	pass
 
 
