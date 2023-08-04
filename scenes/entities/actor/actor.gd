@@ -271,33 +271,24 @@ func _attempt_target_refresh(
 
 ## get new target and update ai and nav's target
 func refresh_target(
-	target_type: Constants.TargetType = Constants.TargetType.ENEMY,
-	preferences: Array[Constants.TargetPreference] = [Constants.TargetPreference.ANY]
-	) -> void:
+		target_type: Constants.TargetType = Constants.TargetType.ENEMY,
+		preferences: Array[Constants.TargetPreference] = [Constants.TargetPreference.ANY]
+) -> void:
 	# disconnect from current signals on target
 	if _target:
 		if _target.no_longer_targetable.is_connected(refresh_target):
 			_target.no_longer_targetable.disconnect(refresh_target)
-
+	
 	# get new target
 	_target = ai.get_target(target_type, preferences)
-
-	# FIXME: placeholder until Unit AI added
-	if _target == null:
-		var group_to_target : String = Utility.get_target_group(self, Constants.TargetType.ENEMY)
-		_target = get_tree().get_nodes_in_group(group_to_target)[0]   # just pick the first enemy node and move towards them, eventually will be in range
-		print(debug_name + " randomly picked " + _target.debug_name + " to run towards.")
-
-	# relisten to target changes
-	if not _target.is_connected("no_longer_targetable", refresh_target):
-		_target.no_longer_targetable.connect(refresh_target)
-
-	# update nav agent's target
-	_navigation_agent.set_target_position(_target.global_position)
-
-	var timer_min : float = 0.9
-	var timer_max : float = 1.1
-	_target_refresh_timer.start(randf_range(timer_min, timer_max))
+	
+	if _target:
+		# relisten to target changes
+		if not _target.is_connected("no_longer_targetable", refresh_target):
+			_target.no_longer_targetable.connect(refresh_target)
+		
+		# update nav agent's target
+		_navigation_agent.set_target_position(_target.global_position)
 
 
 func _refresh_facing() -> void:
