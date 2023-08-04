@@ -103,7 +103,8 @@ const unit_data: Dictionary = {
 		"tier": 1,
 		"actions": {  ## must use {Action Type, script name} (NOT class name)
 			Constants.ActionType.ATTACK : [
-				"smash"
+				"smash",
+				"wand_blast",
 			],
 			Constants.ActionType.REACTION : { },
 		},
@@ -128,7 +129,8 @@ const unit_data: Dictionary = {
 		"tier": 1,
 		"actions": {  ## must use {Action Type, script name} (NOT class name)
 			Constants.ActionType.ATTACK : [
-				"smash"
+				"smash",
+				"wand_blast",
 			],
 			Constants.ActionType.REACTION : { },
 		},
