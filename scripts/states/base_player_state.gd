@@ -37,3 +37,11 @@ func update_state() -> void:
 func exit_state() -> void:
 	pass
 
+
+func _get_current_target() -> Actor:
+	var current_target: Actor = null
+	
+	if _player.attack_to_cast != null:
+		current_target = _player.targets[_player.attack_to_cast.uid] as Actor
+	
+	return current_target

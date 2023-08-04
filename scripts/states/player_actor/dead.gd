@@ -1,4 +1,4 @@
-extends BaseState
+extends BasePlayerState
 
 
 ## actions on entering state

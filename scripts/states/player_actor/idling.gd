@@ -1,9 +1,12 @@
-extends BaseState
-
+extends MoveableState
 
 ## actions on entering state
 func enter_state():
-	_creator.animated_sprite.play("idle")
+	_player.animated_sprite.play("idle")
+
+
+func unhandled_input(event: InputEvent) -> void:
+	super(event)
 
 
 func physics_process(_delta):
@@ -12,12 +15,12 @@ func physics_process(_delta):
 
 ## take action based on current state
 func update_state():
-	_creator.move_direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
-	if _creator.move_direction != Vector2.ZERO:
-		_creator.state_machine.change_state(Constants.ActorState.MOVING)
+	super()
+	if _player.move_direction != Vector2.ZERO:
+		_player.state_machine.change_state(Constants.ActorState.MOVING)
+		return
 
 
 ## actions on exiting state
 func exit_state():
 	pass
-
