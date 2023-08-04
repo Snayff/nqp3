@@ -27,6 +27,7 @@ func _init(actor: Actor, states: Array[Constants.ActorState], states_base_folder
 	if not _current_state_name in states:
 		_current_state_name = states[0]
 
+
 func change_state(state_name: Constants.ActorState) -> void:
 	if state_name in _states:
 		current_state.exit_state()
@@ -35,6 +36,10 @@ func change_state(state_name: Constants.ActorState) -> void:
 
 		_current_state_name = state_name
 		current_state.enter_state()
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	current_state.unhandled_input(event)
 
 
 func _physics_process(delta: float) -> void:

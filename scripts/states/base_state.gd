@@ -14,6 +14,10 @@ func enter_state() -> void:
 	pass
 
 
+## @tag virtual function
+func unhandled_input(event: InputEvent) -> void:
+	pass
+
 
 ## @tag virtual function
 func physics_process(delta: float) -> void:
