@@ -120,13 +120,25 @@ func _get_base_actor_instance(
 func _create_actor_stats(unit_data: UnitData) -> ActorStats:
 	var stats = ActorStats.new()
 	
-	for property_dict in stats.get_property_list():
-		if property_dict.name == "script":
-			continue
-		elif property_dict.name in unit_data:
-			# Left this here as it helps debugging, just remove the comment when needed.
-#			print("name: %s"%[property_dict.name])
-			stats.set(property_dict.name, unit_data.get(property_dict.name))
+	stats.max_health = unit_data.max_health
+	stats.health = unit_data.max_health
+	stats.max_stamina = unit_data.max_stamina
+	stats.stamina = unit_data.max_stamina
+	
+	stats.base_regen = unit_data.regen
+	stats.base_dodge = unit_data.dodge
+	stats.base_magic_defence = unit_data.magic_defence
+	stats.base_mundane_defence = unit_data.mundane_defence
+	stats.base_attack = unit_data.attack
+	stats.base_attack_speed = unit_data.attack_speed
+	stats.base_crit_chance = unit_data.crit_chance
+	stats.base_penetration = unit_data.penetration
+	stats.base_move_speed = unit_data.move_speed
+	
+	stats.num_units = unit_data.num_units
+	stats.faction = unit_data.faction
+	stats.gold_cost = unit_data.gold_cost
+	stats.tier = unit_data.tier
 	
 	return stats
 
