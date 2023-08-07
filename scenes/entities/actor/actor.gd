@@ -32,6 +32,7 @@ signal chose_attack_to_cast(attack: BaseAction)
 @onready var _collision_shape : CollisionShape2D = $CollisionShape2D
 @onready var _target_finder : Area2D = $TargetFinder
 @onready var _target_refresh_timer : Timer = $TargetRefreshTimer
+@warning_ignore("unused_private_class_variable")
 @onready var _cast_timer : Timer = $CastTimer
 
 ############ COMPONENTS ###############
@@ -59,8 +60,6 @@ var unit_name: String:
 		unit_name = value
 		debug_name = unit_name + "(" + str(uid) + ")"
 var debug_name : String = unit_name + "(" + str(uid) + ")"
-var _previous_state : Constants.ActorState = Constants.ActorState.IDLING
-var _state : Constants.ActorState = Constants.ActorState.IDLING
 var _target : Actor
 var _facing : Constants.Direction = Constants.Direction.LEFT
 var is_active : bool:
@@ -89,7 +88,7 @@ var attack_to_cast : BaseAction = null:
 	set(value):
 		attack_to_cast = value
 		if attack_to_cast != null:
-			_update_target_finder_range(attack_to_cast.range)
+			_update_target_finder_range(int(attack_to_cast.range))
 			print(debug_name + " chose to use " + attack_to_cast.friendly_name + ".")
 var neighbours : Array
 
@@ -115,15 +114,17 @@ func _ready() -> void:
 
 ## post _ready setup
 func actor_setup() -> void:
-
 	_connect_signals()
-
+	
 	# Wait for the first physics frame so the NavigationServer can sync.
 	await get_tree().physics_frame
-
+	
+	# Trigger enter function on initial state
+	state_machine.change_state(state_machine._current_state_name)
+	
 	# with actions fully initialised lets force the attack_range_updated signal to fire
 	actions._recalculate_attack_range()
-
+	
 	# Now that the navigation map is no longer empty, set the movement target.
 	_attempt_target_refresh()
 
@@ -148,7 +149,7 @@ func _connect_signals() -> void:
 
 ########## MAIN LOOP ##########
 
-func _physics_process(delta) -> void:
+func _physics_process(_delta) -> void:
 	if is_in_group("alive"):
 		state_machine.update_state()
 
@@ -269,33 +270,24 @@ func _attempt_target_refresh(
 
 ## get new target and update ai and nav's target
 func refresh_target(
-	target_type: Constants.TargetType = Constants.TargetType.ENEMY,
-	preferences: Array[Constants.TargetPreference] = [Constants.TargetPreference.ANY]
-	) -> void:
+		target_type: Constants.TargetType = Constants.TargetType.ENEMY,
+		preferences: Array[Constants.TargetPreference] = [Constants.TargetPreference.ANY]
+) -> void:
 	# disconnect from current signals on target
 	if _target:
 		if _target.no_longer_targetable.is_connected(refresh_target):
 			_target.no_longer_targetable.disconnect(refresh_target)
-
+	
 	# get new target
 	_target = ai.get_target(target_type, preferences)
-
-	# FIXME: placeholder until Unit AI added
-	if _target == null:
-		var group_to_target : String = Utility.get_target_group(self, Constants.TargetType.ENEMY)
-		_target = get_tree().get_nodes_in_group(group_to_target)[0]   # just pick the first enemy node and move towards them, eventually will be in range
-		print(debug_name + " randomly picked " + _target.debug_name + " to run towards.")
-
-	# relisten to target changes
-	if not _target.is_connected("no_longer_targetable", refresh_target):
-		_target.no_longer_targetable.connect(refresh_target)
-
-	# update nav agent's target
-	_navigation_agent.set_target_position(_target.global_position)
-
-	var timer_min : float = 0.9
-	var timer_max : float = 1.1
-	_target_refresh_timer.start(randf_range(timer_min, timer_max))
+	
+	if _target:
+		# relisten to target changes
+		if not _target.is_connected("no_longer_targetable", refresh_target):
+			_target.no_longer_targetable.connect(refresh_target)
+		
+		# update nav agent's target
+		_navigation_agent.set_target_position(_target.global_position)
 
 
 func _refresh_facing() -> void:

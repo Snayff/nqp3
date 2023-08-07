@@ -10,7 +10,8 @@ func enter_state() -> void:
 	_creator.animated_sprite.animation_looped.connect(_on_animated_sprite_animation_looped)
 	_creator.animated_sprite.play("attack")
 
-func physics_process(delta: float) -> void:
+
+func physics_process(_delta: float) -> void:
 	pass
 
 

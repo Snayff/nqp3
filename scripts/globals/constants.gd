@@ -111,6 +111,7 @@ const PATH_ATTACKS : String = "res://scripts/actions/attacks/"  ## the path atta
 const PATH_REACTIONS : String = "res://scripts/actions/reactions/"  ## the path reaction scripts are stored in
 const PATH_STATUS_EFFECTS : String = "res://scripts/actions/status_effects/" ## the path reaction scripts are stored in
 const PATH_SPRITES_ACTORS : String = "res://sprites/units/"  ## the path unit's actor sprites are held
+const PATH_SPRITES_COMMANDERS : String = "res://sprites/commanders/" ## the path commander's actor sprites are held
 const PATH_SPRITES_PROJECTILES : String = "res://sprites/projectiles/"
 const PATH_SPRITES_EFFECTS : String = "res://sprites/effects/"
 

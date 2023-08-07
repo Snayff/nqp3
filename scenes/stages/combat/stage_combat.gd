@@ -54,8 +54,8 @@ func _place_units() -> void:
 		var spawner_y : float = spawner.global_position.y  - abs(spawner_rect.position.y)
 
 		# get an offset amount that is within an inner margin of the edges
-		var x_offset = randi_range(width_margin, spawner_width - width_margin)
-		var y_offset = randi_range(height_margin, spawner_height - height_margin)
+		var x_offset = randi_range(int(width_margin), int(spawner_width - width_margin))
+		var y_offset = randi_range(int(height_margin), int(spawner_height - height_margin))
 
 		# determine min, max and placement
 		var x_pos = spawner_x + x_offset

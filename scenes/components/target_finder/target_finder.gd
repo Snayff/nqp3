@@ -28,7 +28,7 @@ func _draw() -> void:
 ##
 ## helper function that uses get_overlapping_bodies but recasts to correct type and
 func get_actors_in_range() -> Array[Actor]:
-	var overlapping : Array[Actor]
+	var overlapping : Array[Actor] = []
 	overlapping.assign(get_overlapping_bodies())
 	return overlapping
 

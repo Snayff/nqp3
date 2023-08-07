@@ -7,7 +7,7 @@ func enter_state() -> void:
 
 
 
-func physics_process(delta: float) -> void:
+func physics_process(_delta: float) -> void:
 	_creator.move_towards_target()
 	_creator._refresh_facing()
 

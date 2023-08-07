@@ -11,20 +11,22 @@ var current_state : BaseState:  ## can return null if no current state
 		return null
 	set(_value):
 		push_error("Tried to set current state manually. Not allowed.")
+
 var _current_state_name := Constants.ActorState.IDLING
 var _states : Dictionary = {}   ## {Constants.ActorState, BaseState}
 
 
-func _init(actor: Actor, states: Array[Constants.ActorState]) -> void:
+func _init(actor: Actor, states: Array[Constants.ActorState], states_base_folder := "actor") -> void:
 	uid = Utility.generate_id()
 	
 	for state_name in states:
-		var _state = Factory.add_state(actor, state_name)
+		var _state = Factory.add_state(actor, state_name, states_base_folder)
 		add_child(_state)
 		_states[state_name] = _state	
 	
 	if not _current_state_name in states:
 		_current_state_name = states[0]
+
 
 func change_state(state_name: Constants.ActorState) -> void:
 	if state_name in _states:
@@ -34,6 +36,10 @@ func change_state(state_name: Constants.ActorState) -> void:
 
 		_current_state_name = state_name
 		current_state.enter_state()
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	current_state.unhandled_input(event)
 
 
 func _physics_process(delta: float) -> void:
