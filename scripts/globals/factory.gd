@@ -81,9 +81,9 @@ func _get_base_actor_instance(
 	
 	# dont do anything until we're ready
 	instance.set_physics_process(false)
-	
-	var unit_data = RefData.unit_data[name_]
-	
+
+	var unit_data := RefData.get_unit_data(name_) as UnitData
+
 	instance.uid = Utility.generate_id()
 	instance.unit_name = name_
 	instance.set_name(instance.debug_name.to_pascal_case())
@@ -117,29 +117,17 @@ func _get_base_actor_instance(
 	return instance
 
 
-func _create_actor_stats(unit_data: Dictionary) -> ActorStats:
+func _create_actor_stats(unit_data: UnitData) -> ActorStats:
 	var stats = ActorStats.new()
-
-	stats.max_health = unit_data["max_health"]
-	stats.health = unit_data["max_health"]
-	stats.max_stamina = unit_data["max_stamina"]
-	stats.stamina = unit_data["max_stamina"]
-
-	stats.base_regen = unit_data["regen"]
-	stats.base_dodge = unit_data["dodge"]
-	stats.base_magic_defence = unit_data["magic_defence"]
-	stats.base_mundane_defence = unit_data["mundane_defence"]
-	stats.base_attack = unit_data["attack"]
-	stats.base_attack_speed = unit_data["attack_speed"]
-	stats.base_crit_chance = unit_data["crit_chance"]
-	stats.base_penetration = unit_data["penetration"]
-	stats.base_move_speed = unit_data["move_speed"]
-
-	stats.num_units = unit_data["num_units"]
-	stats.faction = unit_data["faction"]
-	stats.gold_cost = unit_data["gold_cost"]
-	stats.tier = unit_data["tier"]
-
+	
+	for property_dict in stats.get_property_list():
+		if property_dict.name == "script":
+			continue
+		elif property_dict.name in unit_data:
+			# Left this here as it helps debugging, just remove the comment when needed.
+#			print("name: %s"%[property_dict.name])
+			stats.set(property_dict.name, unit_data.get(property_dict.name))
+	
 	return stats
 
 
@@ -169,14 +157,17 @@ func _add_actor_groups(instance: Actor, team: String) -> Actor:
 	return instance
 
 
-func _add_actor_actions(instance: Actor, unit_data: Dictionary) -> Actor:
+func _add_actor_actions(instance: Actor, unit_data: UnitData) -> Actor:
+	if unit_data.actions.is_empty():
+		return instance
+	
 	var actions : ActorActions = ActorActions.new()
 	
 	for action_type in Constants.ActionType.values():
 		
 		# attacks are Dictionary[ActionType, Array[String]]
 		if action_type == Constants.ActionType.ATTACK:
-			for action_name in unit_data["actions"][action_type]:
+			for action_name in unit_data.actions[action_type]:
 				var script := _get_action(instance, action_type, action_name)
 				actions.add_attack(script)
 				script.set_name(script.friendly_name)
@@ -184,7 +175,7 @@ func _add_actor_actions(instance: Actor, unit_data: Dictionary) -> Actor:
 			
 		# reactions are Dictionary[ActionType, Dictionary[ActionTrigger, Array[String]]
 		elif action_type == Constants.ActionType.REACTION:
-			for trigger in unit_data["actions"][action_type]:
+			for trigger in unit_data.actions[action_type]:
 				for action_name in unit_data["actions"][action_type][trigger]:
 					var script := _get_action(instance, action_type, action_name)
 					actions.add_reaction(script, trigger)
