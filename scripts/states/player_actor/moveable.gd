@@ -1,4 +1,3 @@
-class_name MoveableState
 extends BasePlayerState
 
 const EVENTS_ACTIONS = [

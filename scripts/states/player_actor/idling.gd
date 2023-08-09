@@ -1,4 +1,4 @@
-extends MoveableState
+extends "moveable.gd"
 
 ## actions on entering state
 func enter_state():
@@ -17,7 +17,7 @@ func physics_process(_delta):
 func update_state():
 	super()
 	if _player.move_direction != Vector2.ZERO:
-		_player.state_machine.change_state(Constants.ActorState.MOVING)
+		_player.state_machine.change_state(Constants.ActorState.PLAYER_MOVING)
 		return
 
 

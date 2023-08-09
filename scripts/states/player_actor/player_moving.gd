@@ -1,4 +1,4 @@
-extends MoveableState
+extends "moveable.gd"
 
 
 ## actions on entering state

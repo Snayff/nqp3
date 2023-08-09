@@ -229,7 +229,7 @@ func _create_actor_state_machine(actor: Actor) -> StateMachine:
 		Constants.ActorState.IDLING,
 		Constants.ActorState.CASTING,
 		Constants.ActorState.ATTACKING,
-		Constants.ActorState.MOVING,
+		Constants.ActorState.PURSUING,
 		Constants.ActorState.DEAD,
 	]
 	
@@ -243,7 +243,7 @@ func _create_player_actor_state_machine(actor: Actor) -> StateMachine:
 		Constants.ActorState.IDLING,
 		Constants.ActorState.CASTING,
 		Constants.ActorState.ATTACKING,
-		Constants.ActorState.MOVING,
+		Constants.ActorState.PLAYER_MOVING,
 		Constants.ActorState.DEAD,
 	]
 	

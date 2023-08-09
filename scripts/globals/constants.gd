@@ -8,8 +8,10 @@ enum ActorState {
 	IDLING,
 	CASTING,
 	ATTACKING,
-	MOVING,
-	DEAD
+	PURSUING,
+	FLEEING,
+	DEAD,
+	PLAYER_MOVING,
 }
 
 enum Direction {
@@ -119,6 +121,9 @@ const PATH_SPRITES_EFFECTS : String = "res://sprites/effects/"
 ############ VALUES ############
 
 const MELEE_RANGE : int = 20  ## the range at which a unit is determined to be melee.
+## distance that triggers fleeing. This is squared so that we can use the cheaper method
+## `distance_squared_to` for comparissons
+const MIN_SAFE_DISTANCE_SQUARED := pow(100, 2) 
 
 ############# TEAMS ##############
 

@@ -258,9 +258,6 @@ func refresh_target(
 		# relisten to target changes
 		if not _target.is_connected("no_longer_targetable", refresh_target):
 			_target.no_longer_targetable.connect(refresh_target)
-		
-		# update nav agent's target
-		_navigation_agent.set_target_position(_target.global_position)
 
 
 func _refresh_facing() -> void:

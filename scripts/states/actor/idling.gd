@@ -40,7 +40,7 @@ func update_state() -> void:
 		_creator._navigation_agent.target_position = _creator.global_position
 		_creator.state_machine.change_state(Constants.ActorState.CASTING)
 	elif not in_attack_range and _creator.has_ready_attack:
-		_creator.state_machine.change_state(Constants.ActorState.MOVING)
+		_creator.state_machine.change_state(Constants.ActorState.PURSUING)
 
 
 ## actions on exiting state
