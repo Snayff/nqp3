@@ -22,7 +22,7 @@ func _init(actor: Actor, states: Array[Constants.ActorState], states_base_folder
 	for state_name in states:
 		var _state = Factory.add_state(actor, state_name, states_base_folder)
 		add_child(_state)
-		_states[state_name] = _state	
+		_states[state_name] = _state
 	
 	if not _current_state_name in states:
 		_current_state_name = states[0]

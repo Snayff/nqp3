@@ -67,6 +67,22 @@ func create_player_actor(creator: Unit, name_: String, team: String) -> Actor:
 	return instance
 
 
+## create actor, pulling base data from RefData
+func create_ai_commander(creator: Unit, name_: String, team: String) -> Actor:
+	var instance := _get_base_actor_instance(creator, name_, team)
+	
+	instance.state_machine = _create_ai_commander_state_machine(instance)
+	instance.state_machine.set_name("StateMachine")
+	instance.add_child(instance.state_machine)
+	
+	instance.actor_setup()
+	
+	# now we're ready to react to the world
+	instance.set_physics_process(true)
+	
+	return instance
+
+
 func _get_base_actor_instance(
 		creator: Unit, 
 		name_ : String, 
@@ -234,6 +250,21 @@ func _create_actor_state_machine(actor: Actor) -> StateMachine:
 	]
 	
 	var state_machine : StateMachine = StateMachine.new(actor, states)
+	
+	return state_machine
+
+
+func _create_ai_commander_state_machine(actor: Actor) -> StateMachine:
+	var states : Array[Constants.ActorState] = [
+		Constants.ActorState.IDLING,
+		Constants.ActorState.CASTING,
+		Constants.ActorState.ATTACKING,
+		Constants.ActorState.PURSUING,
+		Constants.ActorState.FLEEING,
+		Constants.ActorState.DEAD,
+	]
+	
+	var state_machine : StateMachine = StateMachine.new(actor, states, "ai_commander")
 	
 	return state_machine
 
