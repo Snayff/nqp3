@@ -14,19 +14,16 @@ func unhandled_input(event: InputEvent) -> void:
 
 
 func physics_process(delta: float) -> void:
-	pass
-
-
-## take action based on current state
-func update_state() -> void:
-	if _creator._target == null or _creator._navigation_agent.is_navigation_finished():
-		_creator._navigation_agent.target_position = _creator.global_position
-		_creator.state_machine.change_state(Constants.ActorState.IDLING)
-		return
-	
 	var flee_position := _get_flee_position()
 	if _creator._navigation_agent.target_position != flee_position:
 		_creator._navigation_agent.target_position = flee_position
+
+
+## take action based on current state
+func decide_next_state() -> void:
+	if _creator._target == null or _creator._navigation_agent.is_navigation_finished():
+		_creator._navigation_agent.target_position = _creator.global_position
+		_creator.state_machine.change_state(Constants.ActorState.IDLING)
 
 
 ## actions on exiting state

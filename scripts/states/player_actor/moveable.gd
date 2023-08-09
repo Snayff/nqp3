@@ -24,7 +24,6 @@ func unhandled_input(event: InputEvent) -> void:
 				print_debug("%s has no attack for input event %s"%[_player.debug_name, action_name])
 
 
-## take action based on current state
-func update_state():
-	_player._attempt_all_target_refresh()
+func physics_process(_delta):
 	_player.move_direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
+	_player._attempt_all_target_refresh()

@@ -9,7 +9,7 @@ func enter_state() -> void:
 
 
 ## take action based on current state
-func update_state() -> void:
+func decide_next_state() -> void:
 	if _creator.stats.is_low_health():
 		if _creator.attack_to_cast.range <= Constants.MELEE_RANGE:
 			_creator.state_machine.change_state(Constants.ActorState.FLEEING)

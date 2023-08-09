@@ -12,7 +12,7 @@ func _ready() -> void:
 			min_range = attack.range
 
 
-func update_state() -> void:
+func decide_next_state() -> void:
 	if _creator._target != null and _creator.stats.is_low_health():
 		var distance_to_target = \
 				_creator.global_position.distance_squared_to(_creator._target.global_position)

@@ -150,8 +150,7 @@ func _connect_signals() -> void:
 ########## MAIN LOOP ##########
 
 func _physics_process(_delta) -> void:
-	if is_in_group("alive"):
-		state_machine.update_state()
+	pass
 
 ######### ACTIONS ############
 

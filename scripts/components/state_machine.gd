@@ -44,9 +44,4 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _physics_process(delta: float) -> void:
 	current_state.physics_process(delta)
-
-
-func update_state() -> void:
-	current_state.update_state()
-
-
+	current_state.decide_next_state()

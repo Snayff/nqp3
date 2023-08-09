@@ -3,7 +3,7 @@ extends "res://scripts/states/actor/attacking.gd"
 
 
 ## take action based on current state
-func update_state() -> void:
+func decide_next_state() -> void:
 	if _creator._target == null:
 		_go_to_next_state()
 
