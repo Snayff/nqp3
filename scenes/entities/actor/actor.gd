@@ -215,7 +215,7 @@ func attack() -> void:
 		actions.use_random_attack(_target)
 	else:
 		actions.use_attack(attack_to_cast.uid, _target)
-	
+
 	attack_to_cast = null
 
 

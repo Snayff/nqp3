@@ -17,12 +17,12 @@ var _states : Dictionary = {}   ## {Constants.ActorState, BaseState}
 
 func _init(actor: Actor, states: Array[Constants.ActorState]) -> void:
 	uid = Utility.generate_id()
-	
+
 	for state_name in states:
 		var _state = Factory.add_state(actor, state_name)
 		add_child(_state)
-		_states[state_name] = _state	
-	
+		_states[state_name] = _state
+
 	if not _current_state_name in states:
 		_current_state_name = states[0]
 

@@ -225,9 +225,9 @@ func _create_actor_state_machine(actor: Actor) -> StateMachine:
 		Constants.ActorState.MOVING,
 		Constants.ActorState.DEAD,
 	]
-	
+
 	var state_machine : StateMachine = StateMachine.new(actor, states)
-	
+
 	return state_machine
 
 ############ PROJECTILES ################
