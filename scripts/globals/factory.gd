@@ -18,13 +18,19 @@ const _VisualSimple : PackedScene = preload("res://scenes/visual_effects/simple_
 ########### UNIT ###############
 
 ## create unit, pulling base data from RefData
-func create_unit(creator, unit_name: String, team_name: String) -> Unit:
+func create_unit(
+		creator, 
+		unit_name: String, 
+		team_name: String, 
+		unit_type := Constants.UnitType.AI_NORMAL
+) -> Unit:
 	var unit = _Unit.instantiate()
-	if unit_name in ["knight", "cavalier"]:
+	if Constants.is_commander(unit_type):
 		var script := load(Constants.PATH_COMMANDER)
 		unit.set_script(script)
 
 	unit.name = "%s_%s"%[unit_name, "unit"]
+	unit.unit_type = unit_type
 	creator.add_child(unit, true)
 
 	unit.unit_name = unit_name
@@ -35,70 +41,25 @@ func create_unit(creator, unit_name: String, team_name: String) -> Unit:
 ############ ACTOR ##############
 
 ## create actor, pulling base data from RefData
-func create_actor(creator: Unit, name_: String, team: String) -> Actor:
-	var instance := _get_base_actor_instance(creator, name_, team)
-	
-	instance.state_machine = _create_actor_state_machine(instance)
-	instance.state_machine.set_name("StateMachine")
-	instance.add_child(instance.state_machine)
-	
-	instance.actor_setup()
-	
-	# now we're ready to react to the world
-	instance.set_physics_process(true)
-	
-	return instance
-
-
-## create actor, pulling base data from RefData
-func create_player_actor(creator: Unit, name_: String, team: String) -> Actor:
-	const PLAYER_ACTOR := preload("res://scenes/entities/actor/player_actor.gd")
-	var instance := _get_base_actor_instance(creator, name_, team, PLAYER_ACTOR)
-	
-	instance.state_machine = _create_player_actor_state_machine(instance)
-	instance.state_machine.set_name("StateMachine")
-	instance.add_child(instance.state_machine)
-	
-	instance.actor_setup()
-	
-	# now we're ready to react to the world
-	instance.set_physics_process(true)
-	
-	return instance
-
-
-## create actor, pulling base data from RefData
-func create_ai_commander(creator: Unit, name_: String, team: String) -> Actor:
-	var instance := _get_base_actor_instance(creator, name_, team)
-	
-	instance.state_machine = _create_ai_commander_state_machine(instance)
-	instance.state_machine.set_name("StateMachine")
-	instance.add_child(instance.state_machine)
-	
-	instance.actor_setup()
-	
-	# now we're ready to react to the world
-	instance.set_physics_process(true)
-	
-	return instance
-
-
-func _get_base_actor_instance(
+func create_actor(
 		creator: Unit, 
-		name_ : String, 
-		team : String,
-		custom_script: Script = null
+		name_: String, 
+		team: String,
+		unit_type := Constants.UnitType.AI_NORMAL 
 ) -> Actor:
+	const PLAYER_ACTOR := preload("res://scenes/entities/actor/player_actor.gd")
+	
 	var instance = _Actor.instantiate()
-	if custom_script:
-		instance.set_script(custom_script)
+	if unit_type == Constants.UnitType.PLAYER_ACTOR:
+		instance.set_script(PLAYER_ACTOR)
+	
 	instance.name = name_
 	creator.add_child(instance, true)
 	
 	# dont do anything until we're ready
 	instance.set_physics_process(false)
 
-	var unit_data := RefData.get_unit_data(name_) as UnitData
+	var unit_data := RefData.get_unit_data(name_, unit_type) as UnitData
 
 	instance.uid = Utility.generate_id()
 	instance.unit_name = name_
@@ -122,6 +83,10 @@ func _get_base_actor_instance(
 	
 	instance = _add_actor_actions(instance, unit_data)
 	
+	instance.state_machine = StateMachine.new(instance, unit_data.states, unit_data.states_base_folder)
+	instance.state_machine.set_name("StateMachine")
+	instance.add_child(instance.state_machine)
+	
 	# shuffle starting pos so they dont start on top of one another
 	var pos_offset := Vector2(randf_range(-5, 5), randf_range(-5, 5))
 	var pos := Vector2(creator.global_position.x + pos_offset.x, creator.global_position.y + pos_offset.y)
@@ -129,6 +94,11 @@ func _get_base_actor_instance(
 	# TODO: ensure shuffling to empty spot
 	
 	instance = _add_actor_groups(instance, team)
+	
+	instance.actor_setup()
+	
+	# now we're ready to react to the world
+	instance.set_physics_process(true)
 	
 	return instance
 
@@ -238,48 +208,6 @@ func _add_cast_timer(instance: Actor) -> Timer:
 	instance.add_child(cast_timer, true)
 	cast_timer.set_one_shot(true)
 	return cast_timer
-
-
-func _create_actor_state_machine(actor: Actor) -> StateMachine:
-	var states : Array[Constants.ActorState] = [
-		Constants.ActorState.IDLING,
-		Constants.ActorState.CASTING,
-		Constants.ActorState.ATTACKING,
-		Constants.ActorState.PURSUING,
-		Constants.ActorState.DEAD,
-	]
-	
-	var state_machine : StateMachine = StateMachine.new(actor, states)
-	
-	return state_machine
-
-
-func _create_ai_commander_state_machine(actor: Actor) -> StateMachine:
-	var states : Array[Constants.ActorState] = [
-		Constants.ActorState.IDLING,
-		Constants.ActorState.CASTING,
-		Constants.ActorState.ATTACKING,
-		Constants.ActorState.PURSUING,
-		Constants.ActorState.FLEEING,
-		Constants.ActorState.DEAD,
-	]
-	
-	var state_machine : StateMachine = StateMachine.new(actor, states, "ai_commander")
-	
-	return state_machine
-
-
-func _create_player_actor_state_machine(actor: Actor) -> StateMachine:
-	var states : Array[Constants.ActorState] = [
-		Constants.ActorState.IDLING,
-		Constants.ActorState.CASTING,
-		Constants.ActorState.ATTACKING,
-		Constants.ActorState.PLAYER_MOVING,
-		Constants.ActorState.DEAD,
-	]
-	
-	var state_machine : StateMachine = StateMachine.new(actor, states, "player_actor")
-	return state_machine
 
 ############ PROJECTILES ################
 

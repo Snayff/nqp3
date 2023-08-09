@@ -18,7 +18,10 @@ func _get_units_from_troupe() -> void:
 	for key in _units.keys():
 		for i in range(num_unit_per_team):
 			unit_name = unit_choices[key][0]
-			var unit = Factory.create_unit(self, unit_name, key)
+			var unit_type := Constants.UnitType.AI_COMMANDER
+			if key == Constants.TEAM_ALLY:
+				unit_type = Constants.UnitType.PLAYER_ACTOR
+			var unit = Factory.create_unit(self, unit_name, key, unit_type)
 			unit.set_name(unit_name.to_pascal_case() + "_Unit")
 			_units[key].append(unit)
 

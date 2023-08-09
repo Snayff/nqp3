@@ -3,8 +3,10 @@ extends Node
 ##
 ## Read Only.
 
-func get_unit_data(unit_name: String) -> UnitData:
+func get_unit_data(unit_name: String, unit_type := Constants.UnitType.AI_NORMAL) -> UnitData:
 	var value: UnitData = null
+	
+	var states := _get_states_for(unit_type)
 	
 	match unit_name:
 		"copper_golem":
@@ -20,6 +22,7 @@ func get_unit_data(unit_name: String) -> UnitData:
 			}
 			value = UnitData.new({
 				"actions": actions,
+				"states": states,
 			})
 		"conjurer":
 			var actions := {  ## must use Action Type, script name (NOT class name)
@@ -37,6 +40,7 @@ func get_unit_data(unit_name: String) -> UnitData:
 				"move_speed": 200,
 				"num_units": 3,
 				"actions": actions,
+				"states": states,
 			})
 		"poet":
 			var actions := {  ## must use Action Type, script name (NOT class name)
@@ -53,6 +57,7 @@ func get_unit_data(unit_name: String) -> UnitData:
 				"move_speed": 200,
 				"num_units": 2,
 				"actions": actions,
+				"states": states,
 			})
 		"cavalier":
 			var actions := {  ## must use {Action Type, script name} (NOT class name)
@@ -62,12 +67,15 @@ func get_unit_data(unit_name: String) -> UnitData:
 				],
 				Constants.ActionType.REACTION : { },
 			}
+			
 			value = UnitData.new({
 				"max_health": 500,
 				"attack": 25,
 				"num_units": 1,
 				"actions": actions,
-				"path_base_sprites": Constants.PATH_SPRITES_COMMANDERS
+				"path_base_sprites": Constants.PATH_SPRITES_COMMANDERS,
+				"states": states,
+				"states_base_folder": "player_actor",
 			})
 		"knight":
 			var actions := {  ## must use {Action Type, script name} (NOT class name)
@@ -77,12 +85,50 @@ func get_unit_data(unit_name: String) -> UnitData:
 				],
 				Constants.ActionType.REACTION : { },
 			}
+			
 			value = UnitData.new({
 				"max_health": 100,
 				"attack": 25,
 				"num_units": 1,
 				"actions": actions,
-				"path_base_sprites": Constants.PATH_SPRITES_COMMANDERS
+				"path_base_sprites": Constants.PATH_SPRITES_COMMANDERS,
+				"states": states,
+				"states_base_folder": "ai_commander",
 			})
 	
 	return value
+
+
+func _get_states_for(unit_type: Constants.UnitType) -> Array[Constants.ActorState]:
+	var states : Array[Constants.ActorState] = []
+	
+	match unit_type:
+		Constants.UnitType.AI_NORMAL:
+			states = [
+				Constants.ActorState.IDLING,
+				Constants.ActorState.CASTING,
+				Constants.ActorState.ATTACKING,
+				Constants.ActorState.PURSUING,
+				Constants.ActorState.DEAD,
+			]
+		Constants.UnitType.PLAYER_ACTOR:
+			states = [
+				Constants.ActorState.IDLING,
+				Constants.ActorState.CASTING,
+				Constants.ActorState.ATTACKING,
+				Constants.ActorState.PLAYER_MOVING,
+				Constants.ActorState.DEAD,
+			]
+		Constants.UnitType.AI_COMMANDER:
+			states = [
+				Constants.ActorState.IDLING,
+				Constants.ActorState.CASTING,
+				Constants.ActorState.ATTACKING,
+				Constants.ActorState.PURSUING,
+				Constants.ActorState.FLEEING,
+				Constants.ActorState.DEAD,
+			]
+		_:
+			push_error("Undefined unit_type: %s"%[Constants.UnitType.keys()[unit_type]])
+	
+	return states

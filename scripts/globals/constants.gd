@@ -102,6 +102,13 @@ enum ActionTrigger {
 }
 
 
+enum UnitType {
+	AI_NORMAL,
+	AI_COMMANDER,
+	PLAYER_ACTOR,
+}
+
+
 ############# PATHS ##############
 
 const PATH_ENTITIES : String = "res://scenes/entities/"
@@ -129,3 +136,7 @@ const MIN_SAFE_DISTANCE_SQUARED := pow(100, 2)
 
 const TEAM_ALLY = "ally"
 const TEAM_ENEMY = "enemy"
+
+
+static func is_commander(unit_type: UnitType) -> bool:
+	return unit_type == UnitType.AI_COMMANDER or unit_type == UnitType.PLAYER_ACTOR
