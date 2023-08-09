@@ -55,18 +55,15 @@ func get_target(
 ) -> Actor:
 	# disconnect from current signals on target
 	if current_target:
-		if current_target.no_longer_targetable.is_connected(refresh_target):
-			current_target.no_longer_targetable.disconnect(refresh_target)
+		if current_target.no_longer_targetable.is_connected(_attempt_all_target_refresh):
+			current_target.no_longer_targetable.disconnect(_attempt_all_target_refresh)
 	
 	# get new target
 	var new_target := ai.get_target(target_type, preferences)
 	
 	if new_target != null:
 		# relisten to target changes
-		if not new_target.is_connected("no_longer_targetable", refresh_target):
-			new_target.no_longer_targetable.connect(refresh_target)
-		
-		# update nav agent's target
-		_navigation_agent.set_target_position(new_target.global_position)
+		if not new_target.is_connected("no_longer_targetable", _attempt_all_target_refresh):
+			new_target.no_longer_targetable.connect(_attempt_all_target_refresh)
 	
 	return new_target
