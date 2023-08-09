@@ -63,6 +63,8 @@ func get_unit_data(unit_name: String) -> UnitData:
 				Constants.ActionType.REACTION : { },
 			}
 			value = UnitData.new({
+				"max_health": 500,
+				"attack": 25,
 				"num_units": 1,
 				"actions": actions,
 				"path_base_sprites": Constants.PATH_SPRITES_COMMANDERS
@@ -76,6 +78,8 @@ func get_unit_data(unit_name: String) -> UnitData:
 				Constants.ActionType.REACTION : { },
 			}
 			value = UnitData.new({
+				"max_health": 100,
+				"attack": 25,
 				"num_units": 1,
 				"actions": actions,
 				"path_base_sprites": Constants.PATH_SPRITES_COMMANDERS
