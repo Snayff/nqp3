@@ -262,10 +262,10 @@ func refresh_target(
 
 func _refresh_facing() -> void:
 	if velocity.x < 0:
-		self._facing = Constants.Direction.LEFT
+		_facing = Constants.Direction.LEFT
 		animated_sprite.flip_h = true
 	elif velocity.x > 0:
-		self._facing = Constants.Direction.RIGHT
+		_facing = Constants.Direction.RIGHT
 		animated_sprite.flip_h = false
 
 ## update the size of the target finder
