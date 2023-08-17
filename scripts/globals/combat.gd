@@ -65,14 +65,10 @@ func kill(attacker: Actor, target: Actor) -> void:
 ## restore health and signal interactions
 func heal(healer: Actor, target: Actor, heal_amount: int) -> void:
 	healer.emit_signal("healed_someone", heal_amount)
-
-	var max_heal = 0
-	if target.stats.max_health - target.stats.health > heal_amount:
-		max_heal = heal_amount
-	else:
-		max_heal = max(0, target.stats.max_health - target.stats.health)
-
-	target.stats.health += max_heal
+	
+	var new_health = min(target.stats.health + heal_amount, target.stats.max_health)
+	heal_amount = (new_health - target.stats.health) as int
+	target.stats.health = new_health
 	target.emit_signal("was_healed", heal_amount)
-
-	print(healer.debug_name + " healed " + str(max_heal) + " to " + target.debug_name + ". Health is now " + str(target.stats.health) + ".")
+	
+	print(healer.debug_name + " healed " + str(heal_amount) + " to " + target.debug_name + ". Health is now " + str(target.stats.health) + ".")
