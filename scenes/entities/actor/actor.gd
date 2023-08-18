@@ -124,9 +124,6 @@ func actor_setup() -> void:
 	
 	# with actions fully initialised lets force the attack_range_updated signal to fire
 	actions._recalculate_attack_range()
-	
-	# Now that the navigation map is no longer empty, set the movement target.
-	_attempt_target_refresh()
 
 
 ## connect up all relevant signals for actor
@@ -226,27 +223,21 @@ func _on_stamina_depleted() -> void:
 ########### REFRESHES #############
 
 ## checks conditions for refresh and if they pass will refresh target
-func _attempt_target_refresh(
-		target_type: Constants.TargetType = Constants.TargetType.ENEMY,
-		preferences: Array[Constants.TargetPreference] = [Constants.TargetPreference.ANY],
-) -> void:
+func _attempt_target_refresh(p_action: BaseAction) -> void:
 	if _target_refresh_timer.is_stopped():
-		refresh_target(target_type, preferences)
+		refresh_target(p_action)
 		_target_refresh_timer.start(1)
 
 
 ## get new target and update ai and nav's target
-func refresh_target(
-		target_type: Constants.TargetType = Constants.TargetType.ENEMY,
-		preferences: Array[Constants.TargetPreference] = [Constants.TargetPreference.ANY],
-) -> void:
+func refresh_target(p_action: BaseAction) -> void:
 	# disconnect from current signals on target
 	if _target:
 		if _target.no_longer_targetable.is_connected(_on_target_no_longer_targetable):
 			_target.no_longer_targetable.disconnect(_on_target_no_longer_targetable)
 	
 	# get new target
-	_target = ai.get_target(target_type, preferences)
+	_target = ai.get_target(p_action)
 	
 	if _target:
 		# relisten to target changes
@@ -256,7 +247,7 @@ func refresh_target(
 
 func _on_target_no_longer_targetable() -> void:
 	if attack_to_cast != null:
-		refresh_target(attack_to_cast.target_type, attack_to_cast.target_preferences)
+		refresh_target(attack_to_cast)
 
 
 func _refresh_facing() -> void:

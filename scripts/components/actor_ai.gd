@@ -20,16 +20,13 @@ func is_enemy(p_target : Actor) -> bool:
 ## get a new target on the opposing team.
 ##
 ## Can return null
-func get_target(
-		target_type: Constants.TargetType, 
-		preferences: Array[Constants.TargetPreference] = [Constants.TargetPreference.ANY]
-) -> Actor:
+func get_target(p_action: BaseAction) -> Actor:
 	var msg := ""
 	var new_target: Actor = null
-	var group_to_target : String = Utility.get_target_group(_creator, target_type)
+	var group_to_target : String = Utility.get_target_group(_creator, p_action.target_type)
 	
 	# ignore prefs and return seld if targeting self
-	if target_type == Constants.TargetType.SELF:
+	if p_action.target_type == Constants.TargetType.SELF:
 		return _creator
 	
 	# get all targets in range
@@ -44,7 +41,9 @@ func get_target(
 		if valid_targets.size() > 0:
 			# filter by preferences
 			var pref_targets: Array[Actor] = []
-			pref_targets = Utility.filter_for_preferences(_creator, preferences, valid_targets)
+			pref_targets = Utility.filter_for_preferences(
+					_creator, p_action.target_preferences, valid_targets
+			)
 			new_target = pref_targets.pop_front() as Actor
 			
 			# check we have a target
@@ -56,7 +55,7 @@ func get_target(
 			else:
 				# debug couldnt find anyone
 				msg = "%s couldnt find target with preferences %s in range (%s)."%[
-					_creator.debug_name, preferences, _creator._target_finder.radius
+					_creator.debug_name, p_action.target_preferences, _creator._target_finder.radius
 				]
 		else:
 			# debug couldnt find anyone of the right type

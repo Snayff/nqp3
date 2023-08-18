@@ -40,26 +40,18 @@ func _attempt_all_target_refresh() -> void:
 			_update_target_finder_range(int(current_attack.range))
 			await get_tree().process_frame
 			
-			targets[action_uid] = get_target(
-					current_target, 
-					current_attack.target_type, 
-					current_attack.target_preferences
-			)
+			targets[action_uid] = get_target(current_target, current_attack)
 
 
 ## get new target and update ai and nav's target
-func get_target(
-		current_target: Actor,
-		target_type: Constants.TargetType = Constants.TargetType.ENEMY,
-		preferences: Array[Constants.TargetPreference] = [Constants.TargetPreference.ANY]
-) -> Actor:
+func get_target(current_target: Actor, p_action: BaseAction) -> Actor:
 	# disconnect from current signals on target
 	if current_target:
 		if current_target.no_longer_targetable.is_connected(_attempt_all_target_refresh):
 			current_target.no_longer_targetable.disconnect(_attempt_all_target_refresh)
 	
 	# get new target
-	var new_target := ai.get_target(target_type, preferences)
+	var new_target := ai.get_target(p_action)
 	
 	if new_target != null:
 		# relisten to target changes
