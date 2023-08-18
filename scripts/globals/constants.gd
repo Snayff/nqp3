@@ -8,8 +8,10 @@ enum ActorState {
 	IDLING,
 	CASTING,
 	ATTACKING,
-	MOVING,
-	DEAD
+	PURSUING,
+	FLEEING,
+	DEAD,
+	PLAYER_MOVING,
 }
 
 enum Direction {
@@ -100,6 +102,13 @@ enum ActionTrigger {
 }
 
 
+enum UnitType {
+	AI_NORMAL,
+	AI_COMMANDER,
+	PLAYER_ACTOR,
+}
+
+
 ############# PATHS ##############
 
 const PATH_ENTITIES : String = "res://scenes/entities/"
@@ -119,8 +128,15 @@ const PATH_SPRITES_EFFECTS : String = "res://sprites/effects/"
 ############ VALUES ############
 
 const MELEE_RANGE : int = 20  ## the range at which a unit is determined to be melee.
+## distance that triggers fleeing. This is squared so that we can use the cheaper method
+## `distance_squared_to` for comparissons
+const MIN_SAFE_DISTANCE_SQUARED := pow(100, 2) 
 
 ############# TEAMS ##############
 
 const TEAM_ALLY = "ally"
 const TEAM_ENEMY = "enemy"
+
+
+static func is_commander(unit_type: UnitType) -> bool:
+	return unit_type == UnitType.AI_COMMANDER or unit_type == UnitType.PLAYER_ACTOR

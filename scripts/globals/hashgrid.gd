@@ -21,7 +21,7 @@ func _physics_process(_delta):
 		hash_grid[tile].append(actor)
 	
 	for tile in hash_grid.keys():
-		var supa_list : Array
+		var supa_list : Array[Actor]
 		for offset in offsets:
 			var t_tile = tile + offset
 			if hash_grid.has(t_tile):

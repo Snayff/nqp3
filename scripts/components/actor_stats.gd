@@ -1,6 +1,8 @@
 class_name ActorStats extends Node
 ## The stats that define an actor, such as attack and defence
 
+const THRESHOLD_LOW_HEALTH = 0.25
+
 const MODIFIABLE_STATS : Array[String] = [
 	"max_health",
 	"regen",
@@ -192,3 +194,7 @@ func remove_modifier(stat_name: String, id: int) -> void:
 
 	print("Stat modifier removed from " + get_parent().debug_name + ". " + stat_name + " is now " + str(get(stat_name)))
 
+
+func is_low_health() -> bool:
+	var health_percentage := health / float(max_health)
+	return health_percentage <= THRESHOLD_LOW_HEALTH

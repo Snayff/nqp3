@@ -1,4 +1,4 @@
-extends MoveableState
+extends "moveable.gd"
 
 
 ## actions on entering state
@@ -10,14 +10,13 @@ func unhandled_input(event: InputEvent) -> void:
 	super(event)
 
 
-func physics_process(_delta):
+func physics_process(delta):
+	super(delta)
 	_move()
 	_player._refresh_facing()
 
 
-## take action based on current state
-func update_state():
-	super()
+func decide_next_state() -> void:
 	if _player.velocity == Vector2.ZERO:
 		_player.state_machine.change_state(Constants.ActorState.IDLING)
 

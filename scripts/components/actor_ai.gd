@@ -1,7 +1,6 @@
 class_name ActorAI extends Node
 
 var _creator : Actor
-var target : Actor
 
 func _init(creator: Actor) -> void:
 	_creator = creator
@@ -80,6 +79,45 @@ func get_target(target_type: Constants.TargetType, preferences: Array[Constants.
 	print(msg)
 	return new_target
 
+
+func get_social_distancing_force(p_target: Actor, neighbours: Array[Actor]) -> Vector2:
+	var social_distancing_force : Vector2
+	
+	var social_loop_limit : int = 7
+	var distance_to_target : float = p_target.global_position.distance_to(_creator.global_position)
+	
+	for i in mini(neighbours.size(), social_loop_limit):
+		var neighbour = neighbours[i]
+		var p1 : Vector2 = _creator.global_position
+		var p2 : Vector2 = neighbour.global_position
+		var distance : float = p1.distance_to(p2)
+		if distance < distance_to_target and is_enemy(neighbour):
+			p_target = neighbour
+			distance_to_target = distance
+		var p3 : Vector2 = p1.direction_to(p2) * maxf((100 - distance * 2), 0)
+		social_distancing_force -= p3
+	
+	if neighbours.size() > social_loop_limit:
+		# Approximate the remaining social distancing force that we didn't
+		# bother calculating
+		social_distancing_force *= neighbours.size() / float(social_loop_limit)
+	
+	return social_distancing_force
+
+
+func get_steered_velocity(
+		velocity: Vector2, 
+		target_pos: Vector2, 
+		social_distancing_force := Vector2.ZERO
+) -> Vector2:
+	# determine route
+	var direction : Vector2 = _creator.global_position.direction_to(target_pos)
+	var desired_velocity : Vector2 = direction * _creator.stats.move_speed
+	var steering : Vector2 = (desired_velocity - velocity)
+	
+	# update velocity
+	velocity += steering + social_distancing_force
+	return velocity
 
 
 func _is_valid_target(candidate: Actor, group_to_target: String) -> bool:

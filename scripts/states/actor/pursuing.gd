@@ -4,6 +4,7 @@ extends BaseState
 ## actions on entering state
 func enter_state() -> void:
 	_creator.animated_sprite.play("walk")
+	_creator._navigation_agent.target_position = _creator._target.global_position
 
 
 
@@ -13,12 +14,13 @@ func physics_process(_delta: float) -> void:
 
 
 ## take action based on current state
-func update_state() -> void:
+func decide_next_state() -> void:
 	if _creator._target == null or _creator.attack_to_cast == null:
 		_creator.state_machine.change_state(Constants.ActorState.IDLING)
 		return
 	
 	_creator._navigation_agent.target_position = _creator._target.global_position
+	
 	var in_attack_range : bool = \
 			_creator._navigation_agent.distance_to_target() <= _creator.attack_to_cast.range
 	if in_attack_range and _creator.has_ready_attack:
@@ -30,4 +32,3 @@ func update_state() -> void:
 ## actions on exiting state
 func exit_state() -> void:
 	pass
-

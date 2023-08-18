@@ -6,6 +6,7 @@ class_name Unit extends Node2D
 # defintions
 @export var team: String
 @export var unit_name: String
+@export var unit_type := Constants.UnitType.AI_NORMAL
 
 # functional
 
@@ -13,6 +14,6 @@ var _actors : Array[Actor] = []
 
 ## spawn actors onto the combat map
 func spawn_actors():
-	var unit_data := RefData.get_unit_data(unit_name) as UnitData
+	var unit_data := RefData.get_unit_data(unit_name, unit_type) as UnitData
 	for i in unit_data.num_units:
 		_actors.append(Factory.create_actor(self, unit_name, team))

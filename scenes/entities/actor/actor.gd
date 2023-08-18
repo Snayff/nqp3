@@ -90,7 +90,7 @@ var attack_to_cast : BaseAction = null:
 		if attack_to_cast != null:
 			_update_target_finder_range(int(attack_to_cast.range))
 			print(debug_name + " chose to use " + attack_to_cast.friendly_name + ".")
-var neighbours : Array
+var neighbours : Array[Actor]
 
 ######### UI ATTRIBUTES ###############
 
@@ -150,8 +150,7 @@ func _connect_signals() -> void:
 ########## MAIN LOOP ##########
 
 func _physics_process(_delta) -> void:
-	if is_in_group("alive"):
-		state_machine.update_state()
+	pass
 
 ######### ACTIONS ############
 
@@ -159,36 +158,9 @@ func _physics_process(_delta) -> void:
 func move_towards_target() -> void:
 	# get next destination
 	var target_pos : Vector2 = _navigation_agent.get_next_path_position()
-
-	var social_distancing_force : Vector2
-
-	var social_loop_limit : int = 7
-	var distance_to_target : float = _target.global_position.distance_to(self.global_position)
-
-	for i in mini(neighbours.size(), social_loop_limit):
-		var neighbour = neighbours[i]
-		var p1 : Vector2 = self.global_position
-		var p2 : Vector2 = neighbour.global_position
-		var distance : float = p1.distance_to(p2)
-		if distance < distance_to_target and ai.is_enemy(neighbour):
-			_target = neighbour
-			distance_to_target = distance
-		var p3 : Vector2 = p1.direction_to(p2) * maxf((100 - distance * 2), 0)
-		social_distancing_force -= p3
-
-	if neighbours.size() > social_loop_limit:
-		# Approximate the remaining social distancing force that we didn't
-		# bother calculating
-		social_distancing_force *= neighbours.size() / float(social_loop_limit)
-
-	# determine route
-	var direction : Vector2 = global_position.direction_to(target_pos)
-	var desired_velocity : Vector2 = direction * stats.move_speed
-	var steering : Vector2 = (desired_velocity - velocity)
-
-	# update velocity
-	velocity += steering + social_distancing_force
-
+	var social_distancing_force := ai.get_social_distancing_force(_target, neighbours)
+	
+	velocity = ai.get_steered_velocity(velocity, target_pos, social_distancing_force)
 	move_and_slide()
 
 
@@ -285,17 +257,14 @@ func refresh_target(
 		# relisten to target changes
 		if not _target.is_connected("no_longer_targetable", refresh_target):
 			_target.no_longer_targetable.connect(refresh_target)
-		
-		# update nav agent's target
-		_navigation_agent.set_target_position(_target.global_position)
 
 
 func _refresh_facing() -> void:
 	if velocity.x < 0:
-		self._facing = Constants.Direction.LEFT
+		_facing = Constants.Direction.LEFT
 		animated_sprite.flip_h = true
 	elif velocity.x > 0:
-		self._facing = Constants.Direction.RIGHT
+		_facing = Constants.Direction.RIGHT
 		animated_sprite.flip_h = false
 
 ## update the size of the target finder

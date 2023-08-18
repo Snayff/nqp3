@@ -9,11 +9,6 @@ func enter_state() -> void:
 
 
 func physics_process(_delta: float) -> void:
-	pass
-
-
-## take action based on current state
-func update_state() -> void:
 	if _creator.attack_to_cast == null:
 		_creator.attack_to_cast = _creator.actions.get_random_attack()
 		
@@ -25,7 +20,10 @@ func update_state() -> void:
 			)
 		else:
 			_creator._attempt_target_refresh()
-	
+
+
+## take action based on current state
+func decide_next_state() -> void:
 	# has no target, go idle
 	if _creator._target == null or _creator.attack_to_cast == null:
 		return
@@ -40,7 +38,7 @@ func update_state() -> void:
 		_creator._navigation_agent.target_position = _creator.global_position
 		_creator.state_machine.change_state(Constants.ActorState.CASTING)
 	elif not in_attack_range and _creator.has_ready_attack:
-		_creator.state_machine.change_state(Constants.ActorState.MOVING)
+		_creator.state_machine.change_state(Constants.ActorState.PURSUING)
 
 
 ## actions on exiting state

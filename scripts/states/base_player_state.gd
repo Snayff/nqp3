@@ -28,7 +28,7 @@ func physics_process(_delta: float) -> void:
 
 ## take action based on current state
 ## @tag virtual function
-func update_state() -> void:
+func decide_next_state() -> void:
 	pass
 
 
