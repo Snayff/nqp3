@@ -166,11 +166,6 @@ func move_towards_target() -> void:
 
 ## enact actor's death
 func die() -> void:
-	add_to_group("dead")
-	remove_from_group("alive")
-
-	stats.health = 0
-
 	_collision_shape.call_deferred("set_disabled", true)  # need to call deferred as otherwise locked
 
 	animated_sprite.stop()  # its already looped back to 0 so pause == stop
@@ -232,9 +227,9 @@ func _on_stamina_depleted() -> void:
 
 ## checks conditions for refresh and if they pass will refresh target
 func _attempt_target_refresh(
-	target_type: Constants.TargetType = Constants.TargetType.ENEMY,
-	preferences: Array[Constants.TargetPreference] = [Constants.TargetPreference.ANY]
-	) -> void:
+		target_type: Constants.TargetType = Constants.TargetType.ENEMY,
+		preferences: Array[Constants.TargetPreference] = [Constants.TargetPreference.ANY],
+) -> void:
 	if _target_refresh_timer.is_stopped():
 		refresh_target(target_type, preferences)
 		_target_refresh_timer.start(1)
@@ -243,20 +238,25 @@ func _attempt_target_refresh(
 ## get new target and update ai and nav's target
 func refresh_target(
 		target_type: Constants.TargetType = Constants.TargetType.ENEMY,
-		preferences: Array[Constants.TargetPreference] = [Constants.TargetPreference.ANY]
+		preferences: Array[Constants.TargetPreference] = [Constants.TargetPreference.ANY],
 ) -> void:
 	# disconnect from current signals on target
 	if _target:
-		if _target.no_longer_targetable.is_connected(refresh_target):
-			_target.no_longer_targetable.disconnect(refresh_target)
+		if _target.no_longer_targetable.is_connected(_on_target_no_longer_targetable):
+			_target.no_longer_targetable.disconnect(_on_target_no_longer_targetable)
 	
 	# get new target
 	_target = ai.get_target(target_type, preferences)
 	
 	if _target:
 		# relisten to target changes
-		if not _target.is_connected("no_longer_targetable", refresh_target):
-			_target.no_longer_targetable.connect(refresh_target)
+		if not _target.no_longer_targetable.is_connected(_on_target_no_longer_targetable):
+			_target.no_longer_targetable.connect(_on_target_no_longer_targetable)
+
+
+func _on_target_no_longer_targetable() -> void:
+	if attack_to_cast != null:
+		refresh_target(attack_to_cast.target_type, attack_to_cast.target_preferences)
 
 
 func _refresh_facing() -> void:

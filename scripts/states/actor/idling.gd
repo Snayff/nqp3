@@ -11,15 +11,12 @@ func enter_state() -> void:
 func physics_process(_delta: float) -> void:
 	if _creator.attack_to_cast == null:
 		_creator.attack_to_cast = _creator.actions.get_random_attack()
-		
 		# get new target
 		if _creator.attack_to_cast != null:
 			_creator._attempt_target_refresh(
 					_creator.attack_to_cast.target_type, 
-					_creator.attack_to_cast.target_preferences
+					_creator.attack_to_cast.target_preferences,
 			)
-		else:
-			_creator._attempt_target_refresh()
 
 
 ## take action based on current state

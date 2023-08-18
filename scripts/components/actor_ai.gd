@@ -20,7 +20,10 @@ func is_enemy(p_target : Actor) -> bool:
 ## get a new target on the opposing team.
 ##
 ## Can return null
-func get_target(target_type: Constants.TargetType, preferences: Array[Constants.TargetPreference] = [Constants.TargetPreference.ANY]) -> Actor:
+func get_target(
+		target_type: Constants.TargetType, 
+		preferences: Array[Constants.TargetPreference] = [Constants.TargetPreference.ANY]
+) -> Actor:
 	var msg := ""
 	var new_target: Actor = null
 	var group_to_target : String = Utility.get_target_group(_creator, target_type)
