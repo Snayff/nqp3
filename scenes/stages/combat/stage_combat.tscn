@@ -4,9 +4,9 @@
 [ext_resource type="Script" path="res://scenes/stages/combat/fps_counter.gd" id="2_5twv8"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_qkf04"]
-vertices = PackedVector2Array(1, 21, -2, -3, 1151, -1, 690, 210, 451, 210, 1144, 650, 680, 648, 0, 646, 451, 647)
-polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3, 4), PackedInt32Array(5, 6, 3, 2), PackedInt32Array(7, 0, 4, 8)])
-outlines = Array[PackedVector2Array]([PackedVector2Array(1, 21, 0, 646, 451, 647, 451, 210, 690, 210, 680, 648, 1144, 650, 1151, -1, -2, -3)])
+vertices = PackedVector2Array(416, 240, -1, 28, -2, -3, 1158, 8, 696, 239, 407, 669, -4, 675, 1164, 653, 699, 651)
+polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3, 4), PackedInt32Array(5, 6, 1, 0), PackedInt32Array(4, 3, 7, 8)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(1158, 8, 1164, 653, 699, 651, 696, 239, 416, 240, 407, 669, -4, 675, -1, 28, -2, -3)])
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vjhue"]
 size = Vector2(267, 272)

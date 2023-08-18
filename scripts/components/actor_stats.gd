@@ -28,6 +28,8 @@ signal health_changed(old_value, new_value)
 signal stamina_changed(old_value, new_value)
 ## Emitted when  `stamina` = 0.
 signal stamina_depleted
+## Emitted when move_speed changes
+signal move_speed_changed
 
 ######### ATTRIBUTES ###########
 
@@ -112,7 +114,12 @@ var _modifiers : Dictionary = {}
 	set(value):
 		base_move_speed = value
 		_recalculate("move_speed")
-@export var move_speed : int
+@export var move_speed : int:
+	set(value):
+		var has_changed := move_speed != value
+		move_speed = value
+		if has_changed:
+			move_speed_changed.emit()
 @export var base_num_units : int:
 	set(value):
 		base_num_units = value

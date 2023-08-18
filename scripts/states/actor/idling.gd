@@ -5,21 +5,19 @@ extends BaseState
 ## actions on entering state
 func enter_state() -> void:
 	_creator.animated_sprite.play("idle")
+	_creator.attack_to_cast = null
+	_creator._target = null
 
 
 
 func physics_process(_delta: float) -> void:
 	if _creator.attack_to_cast == null:
 		_creator.attack_to_cast = _creator.actions.get_random_attack()
-		
 		# get new target
 		if _creator.attack_to_cast != null:
-			_creator._attempt_target_refresh(
-					_creator.attack_to_cast.target_type, 
-					_creator.attack_to_cast.target_preferences
-			)
-		else:
-			_creator._attempt_target_refresh()
+			_creator._attempt_target_refresh(_creator.attack_to_cast)
+	elif _creator._target == null:
+		_creator._attempt_target_refresh(_creator.attack_to_cast)
 
 
 ## take action based on current state

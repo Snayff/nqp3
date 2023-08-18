@@ -119,14 +119,12 @@ func actor_setup() -> void:
 	# Wait for the first physics frame so the NavigationServer can sync.
 	await get_tree().physics_frame
 	
+	_on_move_speed_changed()
 	# Trigger enter function on initial state
 	state_machine.change_state(state_machine._current_state_name)
 	
 	# with actions fully initialised lets force the attack_range_updated signal to fire
 	actions._recalculate_attack_range()
-	
-	# Now that the navigation map is no longer empty, set the movement target.
-	_attempt_target_refresh()
 
 
 ## connect up all relevant signals for actor
@@ -140,6 +138,7 @@ func _connect_signals() -> void:
 	# connect to (script) component signals
 	stats.health_depleted.connect(_on_health_depleted)
 	stats.stamina_depleted.connect(_on_stamina_depleted)
+	stats.move_speed_changed.connect(_on_move_speed_changed)
 
 	actions.attacked.connect(_on_attack)
 
@@ -158,19 +157,12 @@ func _physics_process(_delta) -> void:
 func move_towards_target() -> void:
 	# get next destination
 	var target_pos : Vector2 = _navigation_agent.get_next_path_position()
-	var social_distancing_force := ai.get_social_distancing_force(_target, neighbours)
 	
-	velocity = ai.get_steered_velocity(velocity, target_pos, social_distancing_force)
-	move_and_slide()
+	_navigation_agent.velocity = ai.get_steered_velocity(velocity, target_pos)
 
 
 ## enact actor's death
 func die() -> void:
-	add_to_group("dead")
-	remove_from_group("alive")
-
-	stats.health = 0
-
 	_collision_shape.call_deferred("set_disabled", true)  # need to call deferred as otherwise locked
 
 	animated_sprite.stop()  # its already looped back to 0 so pause == stop
@@ -185,6 +177,7 @@ func die() -> void:
 ## this is a random attack if attack_to_cast is null.
 func attack() -> void:
 	if attack_to_cast == null:
+		# it seems like code is never reaching here anymore, should we remove it?
 		actions.use_random_attack(_target)
 	else:
 		actions.use_attack(attack_to_cast.uid, _target)
@@ -231,32 +224,31 @@ func _on_stamina_depleted() -> void:
 ########### REFRESHES #############
 
 ## checks conditions for refresh and if they pass will refresh target
-func _attempt_target_refresh(
-	target_type: Constants.TargetType = Constants.TargetType.ENEMY,
-	preferences: Array[Constants.TargetPreference] = [Constants.TargetPreference.ANY]
-	) -> void:
+func _attempt_target_refresh(p_action: BaseAction) -> void:
 	if _target_refresh_timer.is_stopped():
-		refresh_target(target_type, preferences)
+		refresh_target(p_action)
 		_target_refresh_timer.start(1)
 
 
 ## get new target and update ai and nav's target
-func refresh_target(
-		target_type: Constants.TargetType = Constants.TargetType.ENEMY,
-		preferences: Array[Constants.TargetPreference] = [Constants.TargetPreference.ANY]
-) -> void:
+func refresh_target(p_action: BaseAction) -> void:
 	# disconnect from current signals on target
 	if _target:
-		if _target.no_longer_targetable.is_connected(refresh_target):
-			_target.no_longer_targetable.disconnect(refresh_target)
+		if _target.no_longer_targetable.is_connected(_on_target_no_longer_targetable):
+			_target.no_longer_targetable.disconnect(_on_target_no_longer_targetable)
 	
 	# get new target
-	_target = ai.get_target(target_type, preferences)
+	_target = ai.get_target(p_action)
 	
 	if _target:
 		# relisten to target changes
-		if not _target.is_connected("no_longer_targetable", refresh_target):
-			_target.no_longer_targetable.connect(refresh_target)
+		if not _target.no_longer_targetable.is_connected(_on_target_no_longer_targetable):
+			_target.no_longer_targetable.connect(_on_target_no_longer_targetable)
+
+
+func _on_target_no_longer_targetable() -> void:
+	if attack_to_cast != null:
+		refresh_target(attack_to_cast)
 
 
 func _refresh_facing() -> void:
@@ -269,5 +261,17 @@ func _refresh_facing() -> void:
 
 ## update the size of the target finder
 func _update_target_finder_range(new_range: int) -> void:
-	_target_finder.radius =  new_range
+	_target_finder.radius = new_range
+	_navigation_agent.target_desired_distance = new_range * 0.9
 	print(debug_name + " set target finder's range to " + str(_target_finder.radius) + ".")
+
+
+### Navigation Signal callbacks
+
+func _on_move_speed_changed() -> void:
+	_navigation_agent.max_speed = stats.move_speed
+
+
+func _on_navigation_agent_velocity_computed(safe_velocity: Vector2):
+	velocity = safe_velocity
+	move_and_slide()

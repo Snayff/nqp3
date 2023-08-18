@@ -31,12 +31,13 @@ position = Vector2(0, 2)
 shape = SubResource("CapsuleShape2D_pdl0k")
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
-path_desired_distance = 8.0
-target_desired_distance = 8.0
-path_max_distance = 16.0
+path_max_distance = 200.0
 avoidance_enabled = true
-neighbor_distance = 8.0
-max_speed = 8.0
+radius = 6.0
+neighbor_distance = 80.0
+debug_use_custom = true
+debug_path_custom_color = Color(0.521569, 0.690196, 0, 0.482353)
+debug_path_custom_line_width = 2.0
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_rlvhe")
