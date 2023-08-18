@@ -161,18 +161,13 @@ func get_nearest(caller: Actor, actors: Array[Actor]) -> Actor:
 
 	var creator_pos : Vector2 = caller.global_position
 	var nearest_target : Actor = null
-	var nearest_distance = 9999
+	var nearest_distance = INF
 
 	# look through nodes to see which is closest
 	for _target in poss_targets:
-		var distance = _target.global_position.distance_to(creator_pos)
-
-		## if we have a nearest target, check their distance
-		if nearest_target != null:
-			nearest_distance = nearest_target.global_position.distance_to(creator_pos)
-
-		# if new target closer than current target, update target
+		var distance = _target.global_position.distance_squared_to(creator_pos)
 		if distance < nearest_distance:
+			nearest_distance = distance
 			nearest_target = _target
 
 	return nearest_target
