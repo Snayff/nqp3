@@ -194,6 +194,7 @@ func _get_action(
 	var script_path : String = \
 			Utility.get_action_type_script_path(action_type).path_join(action_name + ".gd")
 	var script : BaseAction = load(script_path).new(instance)
+	script.setup()
 	return script
 
 

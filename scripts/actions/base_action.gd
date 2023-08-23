@@ -7,8 +7,11 @@ class_name BaseAction extends RefCounted
 var friendly_name : String = "":  ## name of the action, shown in the ui
 	set(value):
 		friendly_name = value
-		_cooldown_timer.set_name("CooldownTimer_" + friendly_name)
-		target_finder.set_name("TargetFinder_" + friendly_name)
+		if is_instance_valid(_cooldown_timer):
+			_cooldown_timer.set_name("CooldownTimer_" + friendly_name)
+		
+		if is_instance_valid(target_finder):
+			target_finder.set_name("TargetFinder_" + friendly_name)
 var tags : Array[Constants.ActionTag] = []  ## property tags describing the action
 var target_type : Constants.TargetType = Constants.TargetType.ENEMY  ## what target the action can effect
 var target_preferences : Array[Constants.TargetPreference] = [Constants.TargetPreference.ANY]  ## what kind of target to find, within the target type
@@ -71,20 +74,10 @@ var icon : Texture
 
 func _init(creator: Actor) -> void:
 	_creator = creator
-
+	
 	uid = Utility.generate_id()
-
-	# TODO: move components to sit under actions. They need the parents, which doesnt exist at init.
-	target_finder = Factory.add_target_finder(_creator, range)
-	target_finder.set_name("TargetFinder_" + friendly_name)
-
-	_cooldown_timer = Timer.new()
-	_cooldown_timer.set_name("CooldownTimer_" + friendly_name)
-	_creator.add_child(_cooldown_timer)
-	_cooldown_timer.set_one_shot(true)
-
+	
 	_configure()
-	_setup()
 
 
 ## configure the action's base data
@@ -94,8 +87,18 @@ func _configure() -> void:
 	assert(false, "Virtual method not overriden.")
 
 
-## last step of setup, post config
-func _setup() -> void:
+## last step of setup, post config. Should not be called on _init, causes errors because of
+## target finder being an Area and _init being a busy time for some of what it needs to do.
+func setup() -> void:
+	# TODO: move components to sit under actions. They need the parents, which doesnt exist at init.
+	target_finder = Factory.add_target_finder(_creator, range)
+	target_finder.set_name("TargetFinder_" + friendly_name)
+	
+	_cooldown_timer = Timer.new()
+	_cooldown_timer.set_name("CooldownTimer_" + friendly_name)
+	_creator.add_child(_cooldown_timer)
+	_cooldown_timer.set_one_shot(true)
+	
 	set_cooldown(cooldown)
 
 
@@ -164,7 +167,9 @@ func _effect_status(status_effect_name: String) -> void:
 	# FIXME: status not being applied
 	var action_type_ = Constants.ActionType.STATUS_EFFECT
 	var script_path : String = Utility.get_action_type_script_path(action_type_) + status_effect_name + ".gd"
-	var status_effect = load(script_path).new(_target)
+	var status_effect = load(script_path).new(_creator) as BaseStatusEffect
+	status_effect.setup()
+	status_effect._target = _target
 	_target.status_effects.add_status_effect(status_effect)
 
 

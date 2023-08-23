@@ -31,16 +31,30 @@ var stat_modifiers: Array[StatModifier] = []
 func _init(creator: Actor) -> void:
 	super(creator)
 
+
+func setup() -> void:
+	super()
 	# setup new timer for duration
 	_duration_timer = Timer.new()
 	_duration_timer.set_name("DurationTimer")
 	_duration_timer.timeout.connect(on_duration_expiry)
+	_creator.add_child(_duration_timer)
+	set_duration(_base_duration)
 
 	# override core functionality to make the action work as a recurring effect
 	_cooldown_timer.set_one_shot(false)
 
 	# trigger action on cooldown
 	_cooldown_timer.timeout.connect(apply_status_effect)
+
+
+func destroy() -> void:
+	print("destroying %s from %s %s"%[friendly_name, _target, uid])
+	_duration_timer.stop()
+	_duration_timer.queue_free()
+	_cooldown_timer.stop()
+	_cooldown_timer.queue_free()
+	target_finder.queue_free()
 
 
 ## wrapper for use()
@@ -58,8 +72,4 @@ func set_duration(duration_time: float) -> void:
 
 
 func on_duration_expiry() -> void:
-	emit_signal("expired")
-	# TODO: remove stat mods and self
-
-
-
+	expired.emit()
