@@ -168,8 +168,6 @@ func _add_actor_actions(instance: Actor, unit_data: UnitData) -> Actor:
 			for action_name in unit_data.actions[action_type]:
 				var script := _get_action(instance, action_type, action_name)
 				actions.add_attack(script)
-				script.set_name(script.friendly_name)
-				actions.add_child(script)
 			
 		# reactions are Dictionary[ActionType, Dictionary[ActionTrigger, Array[String]]
 		elif action_type == Constants.ActionType.REACTION:
@@ -177,8 +175,6 @@ func _add_actor_actions(instance: Actor, unit_data: UnitData) -> Actor:
 				for action_name in unit_data["actions"][action_type][trigger]:
 					var script := _get_action(instance, action_type, action_name)
 					actions.add_reaction(script, trigger)
-					script.set_name(script.friendly_name)
-					actions.add_child(script)
 			
 		else:
 			# we only add attacks and reactions, ignore everything else

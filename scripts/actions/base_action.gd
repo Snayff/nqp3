@@ -1,30 +1,27 @@
-class_name BaseAction extends Node
+class_name BaseAction extends RefCounted
 ## base class for a combat action for actors
 
 
 ########### CONFIG #############
 
-@export_group("config")
-@export var friendly_name : String = "":  ## name of the action, shown in the ui
+var friendly_name : String = "":  ## name of the action, shown in the ui
 	set(value):
 		friendly_name = value
 		_cooldown_timer.set_name("CooldownTimer_" + friendly_name)
 		target_finder.set_name("TargetFinder_" + friendly_name)
-@export var tags : Array[Constants.ActionTag] = []  ## property tags describing the action
-@export var target_type : Constants.TargetType = Constants.TargetType.ENEMY  ## what target the action can effect
-@export var target_preferences : Array[Constants.TargetPreference] = [Constants.TargetPreference.ANY]  ## what kind of target to find, within the target type
-@export var trigger : Constants.ActionTrigger = Constants.ActionTrigger.ATTACK  ## what triggers the action
-@export var action_type : Constants.ActionType = Constants.ActionType.ATTACK
-@export var target_selection : Constants.ActionTargetSelection = Constants.ActionTargetSelection.ACTOR  ## what thing is selected to cast the action
+var tags : Array[Constants.ActionTag] = []  ## property tags describing the action
+var target_type : Constants.TargetType = Constants.TargetType.ENEMY  ## what target the action can effect
+var target_preferences : Array[Constants.TargetPreference] = [Constants.TargetPreference.ANY]  ## what kind of target to find, within the target type
+var trigger : Constants.ActionTrigger = Constants.ActionTrigger.ATTACK  ## what triggers the action
+var action_type : Constants.ActionType = Constants.ActionType.ATTACK
+var target_selection : Constants.ActionTargetSelection = Constants.ActionTargetSelection.ACTOR  ## what thing is selected to cast the action
 
-@export var _base_stamina_cost : int = 0
-@export var _base_cooldown : float = 0.0
-@export var _base_damage : int = 0
-@export var _base_damage_type : Constants.DamageType = Constants.DamageType.MUNDANE
-@export var _base_range : int = 0
-@export var _base_cast_time : float = 0.0
-
-@export_group("", "")  # end grouping
+var _base_stamina_cost : int = 0
+var _base_cooldown : float = 0.0
+var _base_damage : int = 0
+var _base_damage_type : Constants.DamageType = Constants.DamageType.MUNDANE
+var _base_range : int = 0
+var _base_cast_time : float = 0.0
 
 ######### ATTRIBUTES ##########
 
