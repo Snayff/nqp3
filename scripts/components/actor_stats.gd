@@ -56,11 +56,11 @@ var _modifiers : Dictionary = {}
 	set(value):
 		var previous_stamina : int = stamina
 		stamina = clamp(value, 0, max_stamina)
-		emit_signal("stamina_changed", previous_stamina, stamina)
+		stamina_changed.emit(previous_stamina, stamina)
 
 		# inform of death
 		if stamina == 0:
-			emit_signal("stamina_depleted")
+			stamina_depleted.emit()
 
 # defence stats
 @export_group("Defence")
