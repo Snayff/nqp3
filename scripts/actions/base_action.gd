@@ -96,7 +96,7 @@ func setup() -> void:
 	
 	_cooldown_timer = Timer.new()
 	_cooldown_timer.set_name("CooldownTimer_" + friendly_name)
-	_creator.add_child(_cooldown_timer)
+	_creator.add_child(_cooldown_timer, true)
 	_cooldown_timer.set_one_shot(true)
 	
 	set_cooldown(cooldown)
@@ -168,6 +168,7 @@ func _effect_status(status_effect_name: String) -> void:
 	var action_type_ = Constants.ActionType.STATUS_EFFECT
 	var script_path : String = Utility.get_action_type_script_path(action_type_) + status_effect_name + ".gd"
 	var status_effect = load(script_path).new(_creator) as BaseStatusEffect
+	await Engine.get_main_loop().root.get_tree().process_frame
 	status_effect.setup()
 	status_effect._target = _target
 	_target.status_effects.add_status_effect(status_effect)

@@ -36,9 +36,9 @@ func setup() -> void:
 	super()
 	# setup new timer for duration
 	_duration_timer = Timer.new()
-	_duration_timer.set_name("DurationTimer")
+	_duration_timer.set_name("DurationTimer_%s"%[friendly_name])
 	_duration_timer.timeout.connect(on_duration_expiry)
-	_creator.add_child(_duration_timer)
+	_creator.add_child(_duration_timer, true)
 	set_duration(_base_duration)
 
 	# override core functionality to make the action work as a recurring effect

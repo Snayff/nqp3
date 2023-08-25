@@ -18,6 +18,7 @@ var _effects : Dictionary = {}  ## Dict[int, BaseStatusEffect]   {uid, BaseStatu
 func add_status_effect(status_effect: BaseStatusEffect) -> void:
 	# dont add more than 1 of same status effect
 	if _has_effect_already(status_effect):
+		status_effect.destroy()
 		return
 	
 	_effects[status_effect.uid] = status_effect
