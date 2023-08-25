@@ -89,7 +89,9 @@ func _configure() -> void:
 
 ## last step of setup, post config. Should not be called on _init, causes errors because of
 ## target finder being an Area and _init being a busy time for some of what it needs to do.
-func setup() -> void:
+func setup(p_target: Actor) -> void:
+	_target = p_target
+	
 	# TODO: move components to sit under actions. They need the parents, which doesnt exist at init.
 	target_finder = Factory.add_target_finder(_creator, range)
 	target_finder.set_name("TargetFinder_" + friendly_name)
@@ -168,9 +170,10 @@ func _effect_status(status_effect_name: String) -> void:
 	var action_type_ = Constants.ActionType.STATUS_EFFECT
 	var script_path : String = Utility.get_action_type_script_path(action_type_) + status_effect_name + ".gd"
 	var status_effect = load(script_path).new(_creator) as BaseStatusEffect
+	
 	await Engine.get_main_loop().root.get_tree().process_frame
-	status_effect.setup()
-	status_effect._target = _target
+	
+	status_effect.setup(_target)
 	_target.status_effects.add_status_effect(status_effect)
 
 

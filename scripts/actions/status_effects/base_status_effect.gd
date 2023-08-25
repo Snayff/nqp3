@@ -32,8 +32,9 @@ func _init(creator: Actor) -> void:
 	super(creator)
 
 
-func setup() -> void:
-	super()
+func setup(p_target: Actor) -> void:
+	super(p_target)
+	
 	# setup new timer for duration
 	_duration_timer = Timer.new()
 	_duration_timer.set_name("DurationTimer_%s"%[friendly_name])

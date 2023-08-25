@@ -216,7 +216,7 @@ func _on_attack() -> void:
 ## signal emitted by stats
 func _on_stamina_depleted() -> void:
 	var exhaustion = Exhaustion.new(self)
-	exhaustion.setup()
+	exhaustion.setup(self)
 	status_effects.add_status_effect(exhaustion)
 
 
