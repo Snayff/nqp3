@@ -168,8 +168,6 @@ func _add_actor_actions(instance: Actor, unit_data: UnitData) -> Actor:
 			for action_name in unit_data.actions[action_type]:
 				var script := _get_action(instance, action_type, action_name)
 				actions.add_attack(script)
-				script.set_name(script.friendly_name)
-				actions.add_child(script)
 			
 		# reactions are Dictionary[ActionType, Dictionary[ActionTrigger, Array[String]]
 		elif action_type == Constants.ActionType.REACTION:
@@ -177,8 +175,6 @@ func _add_actor_actions(instance: Actor, unit_data: UnitData) -> Actor:
 				for action_name in unit_data["actions"][action_type][trigger]:
 					var script := _get_action(instance, action_type, action_name)
 					actions.add_reaction(script, trigger)
-					script.set_name(script.friendly_name)
-					actions.add_child(script)
 			
 		else:
 			# we only add attacks and reactions, ignore everything else
@@ -198,6 +194,7 @@ func _get_action(
 	var script_path : String = \
 			Utility.get_action_type_script_path(action_type).path_join(action_name + ".gd")
 	var script : BaseAction = load(script_path).new(instance)
+	script.setup(null)
 	return script
 
 
@@ -327,7 +324,7 @@ func create_simple_animation(animation_name: String) -> SimpleAnimation:
 func add_target_finder(creator: Actor, radius: int, is_visible: bool = false, colour: Color = Color(0, 0, 0, 0)) -> TargetFinder:
 	#print("Creating new target finder for " + creator.debug_name + " ===========>")
 	var target_finder : TargetFinder = _TargetFinder.instantiate()
-	creator.add_child(target_finder)  # need to add child to trigger the onready stuff
+	creator.add_child(target_finder, true)  # need to add child to trigger the onready stuff
 	target_finder.radius = radius
 	target_finder.is_visible = is_visible
 	target_finder.global_position = creator.global_position

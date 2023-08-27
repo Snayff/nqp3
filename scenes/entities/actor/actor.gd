@@ -164,7 +164,8 @@ func move_towards_target() -> void:
 ## enact actor's death
 func die() -> void:
 	_collision_shape.call_deferred("set_disabled", true)  # need to call deferred as otherwise locked
-
+	_navigation_agent.avoidance_enabled = false
+	
 	animated_sprite.stop()  # its already looped back to 0 so pause == stop
 	animated_sprite.frame = animated_sprite.sprite_frames.get_frame_count("death")
 
@@ -191,9 +192,6 @@ func attack() -> void:
 ##
 ## signal emitted by stats
 func _on_health_depleted() -> void:
-	# immediately remove targetable, dont wait for animation to finish
-	is_active = false
-	is_targetable = false
 	state_machine.change_state(Constants.ActorState.DEAD)
 
 
@@ -218,6 +216,7 @@ func _on_attack() -> void:
 ## signal emitted by stats
 func _on_stamina_depleted() -> void:
 	var exhaustion = Exhaustion.new(self)
+	exhaustion.setup(self)
 	status_effects.add_status_effect(exhaustion)
 
 
