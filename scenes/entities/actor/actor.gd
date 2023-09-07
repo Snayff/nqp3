@@ -105,10 +105,14 @@ var is_selectable : bool = true:
 		if not is_selectable:
 			is_selected = false
 
+######### ON_MOVE properties ###############
+
+var _previous_position := Vector2.ZERO
 
 ######### SETUP #############
 
 func _ready() -> void:
+	_previous_position = global_position
 	pass
 
 
@@ -149,7 +153,11 @@ func _connect_signals() -> void:
 ########## MAIN LOOP ##########
 
 func _physics_process(_delta) -> void:
-	pass
+	var moved_by := global_position - _previous_position
+	_previous_position = global_position
+	if moved_by != Vector2.ZERO:
+		actions.trigger_reactions(
+				Constants.ActionTrigger.ON_MOVE, self, {"movement_delta": moved_by})
 
 ######### ACTIONS ############
 
