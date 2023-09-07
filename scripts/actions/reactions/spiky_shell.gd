@@ -4,6 +4,7 @@ func _configure() -> void:
 	friendly_name = "Spiky Shell"
 	tags = [Constants.ActionTag.DAMAGE]
 	target_type = Constants.TargetType.ATTACKER
+	should_trigger_reactions = false
 	_base_cooldown = 0
 	_base_damage = 5
 	_base_stamina_cost = 0
@@ -11,7 +12,6 @@ func _configure() -> void:
 
 func use(initial_target: Actor) -> void:
 	super(initial_target)
-
 	_effect_damage(_base_damage + (_creator.stats.mundane_defence * 0.1) , Constants.DamageType.MUNDANE)
 
 

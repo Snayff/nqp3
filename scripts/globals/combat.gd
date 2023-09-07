@@ -2,26 +2,36 @@ extends Node
 ## Combat functionality.
 
 ## allocate damage and signal interactions
-func deal_damage(attacker: Actor, defender: Actor, damage: int, damage_type: Constants.DamageType) -> void:
-	attacker.emit_signal("dealt_damage", [damage, damage_type])
-
+func deal_damage(
+		attacker: Actor, 
+		defender: Actor, 
+		damage: int, 
+		damage_type: Constants.DamageType,
+		should_trigger_reactions := true
+) -> void:
+	attacker.dealt_damage.emit(damage, damage_type)
+	
 	defender.stats.health -= damage
-	defender.emit_signal("took_damage", [damage, damage_type])
-	defender.emit_signal("hit_received", attacker)
-
+	defender.took_damage.emit(damage, damage_type)
+	
+	if should_trigger_reactions:
+		attacker.actions.trigger_reactions(Constants.ActionTrigger.ON_DEAL_DAMAGE, defender)
+		defender.actions.trigger_reactions(Constants.ActionTrigger.ON_RECEIVE_DAMAGE, attacker)
+	
 	# debug gubbins
 	var team : String = ""
 	if attacker.is_in_group(Constants.TEAM_ALLY):
 		team = Constants.TEAM_ALLY
 	else:
 		team = Constants.TEAM_ENEMY
-
+	
 	var team2 : String = ""
 	if defender.is_in_group(Constants.TEAM_ALLY):
 		team2 = Constants.TEAM_ALLY
 	else:
 		team2 = Constants.TEAM_ENEMY
-
+	
+	
 	print(attacker.debug_name + " dealt " + str(damage) + " to " + defender.debug_name + ". Remaining health is " + str(defender.stats.health) + ".")
 
 

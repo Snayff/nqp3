@@ -18,6 +18,7 @@ var target_preferences : Array[Constants.TargetPreference] = [Constants.TargetPr
 var trigger : Constants.ActionTrigger = Constants.ActionTrigger.ATTACK  ## what triggers the action
 var action_type : Constants.ActionType = Constants.ActionType.ATTACK
 var target_selection : Constants.ActionTargetSelection = Constants.ActionTargetSelection.ACTOR  ## what thing is selected to cast the action
+var should_trigger_reactions := true
 
 var _base_stamina_cost : int = 0
 var _base_cooldown : float = 0.0
@@ -154,7 +155,7 @@ func _effect_new_target(
 ## apply amount of damage to current target. returns damage dealth
 func _effect_damage(amount: int, damage_type: Constants.DamageType) -> int:
 	var damage = Combat.calculate_damage(_creator, _target, amount, damage_type)
-	Combat.deal_damage(_creator, _target, damage, damage_type)
+	Combat.deal_damage(_creator, _target, damage, damage_type, should_trigger_reactions)
 
 	return damage
 
