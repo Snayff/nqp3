@@ -4,7 +4,7 @@ func _configure() -> void:
 	friendly_name = "Spiky Shell"
 	tags = [Constants.ActionTag.DAMAGE]
 	target_type = Constants.TargetType.ATTACKER
-	should_trigger_reactions = false
+	should_trigger_damage_reactions = false
 	_base_cooldown = 0
 	_base_damage = 5
 	_base_stamina_cost = 0

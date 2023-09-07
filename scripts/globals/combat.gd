@@ -7,16 +7,19 @@ func deal_damage(
 		defender: Actor, 
 		damage: int, 
 		damage_type: Constants.DamageType,
-		should_trigger_reactions := true
+		should_trigger_damage_reactions := true
 ) -> void:
 	attacker.dealt_damage.emit(damage, damage_type)
 	
 	defender.stats.health -= damage
 	defender.took_damage.emit(damage, damage_type)
 	
-	if should_trigger_reactions:
+	if should_trigger_damage_reactions:
 		attacker.actions.trigger_reactions(Constants.ActionTrigger.ON_DEAL_DAMAGE, defender)
 		defender.actions.trigger_reactions(Constants.ActionTrigger.ON_RECEIVE_DAMAGE, attacker)
+	
+	if defender.stats.health == 0:
+		attacker.actions.trigger_reactions(Constants.ActionTrigger.ON_KILL, defender)
 	
 	# debug gubbins
 	var team : String = ""
@@ -74,11 +77,12 @@ func kill(attacker: Actor, target: Actor) -> void:
 
 ## restore health and signal interactions
 func heal(healer: Actor, target: Actor, heal_amount: int) -> void:
-	healer.emit_signal("healed_someone", heal_amount)
+	healer.healed_someone.emit(heal_amount)
+	healer.actions.trigger_reactions(Constants.ActionTrigger.ON_HEAL, target)
 	
 	var new_health = min(target.stats.health + heal_amount, target.stats.max_health)
 	heal_amount = (new_health - target.stats.health) as int
 	target.stats.health = new_health
-	target.emit_signal("was_healed", heal_amount)
+	target.was_healed.emit(heal_amount)
 	
 	print(healer.debug_name + " healed " + str(heal_amount) + " to " + target.debug_name + ". Health is now " + str(target.stats.health) + ".")
