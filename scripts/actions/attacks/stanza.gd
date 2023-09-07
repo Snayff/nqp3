@@ -17,7 +17,7 @@ func _configure() -> void:
 	_base_range = 500.0
 
 
-func use(initial_target: Actor) -> void:
+func use(initial_target: Actor, optional_parameters := {}) -> void:
 	super(initial_target)
 
 	# get all targets in range

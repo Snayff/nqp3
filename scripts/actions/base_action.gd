@@ -110,7 +110,7 @@ func setup(p_target: Actor) -> void:
 ## use action on a target
 ##
 ## must call super in subclass; this updates _target and charges stamina cost
-func use(initial_target: Actor) -> void:
+func use(initial_target: Actor, optional_parameters := {}) -> void:
 	_target = initial_target
 	Combat.reduce_stamina(_creator, _base_stamina_cost)
 
