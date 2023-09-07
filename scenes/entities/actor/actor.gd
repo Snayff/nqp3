@@ -198,7 +198,8 @@ func _on_health_depleted() -> void:
 func _on_took_damage(_amount: int, _damage_type: Constants.DamageType) -> void:
 	# flash damage indicator
 	var tween = get_tree().create_tween()
-	tween.tween_property(animated_sprite, "modulate", Color.RED, 0.1)  # FIXME: never goes back to normal colour
+	tween.tween_property(animated_sprite, "modulate", Color.RED, 0.1)
+	tween.tween_property(animated_sprite, "modulate", Color.WHITE, 0.2)
 
 
 func _on_death() -> void:
