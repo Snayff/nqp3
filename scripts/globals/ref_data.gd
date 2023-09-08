@@ -15,7 +15,7 @@ func get_unit_data(unit_name: String, unit_type := Constants.UnitType.AI_NORMAL)
 					"smash",
 				],
 				Constants.ActionType.REACTION : {
-					Constants.ActionTrigger.ON_DEAL_DAMAGE : [
+					Constants.ActionTrigger.ON_RECEIVE_DAMAGE : [
 						"spiky_shell",
 					]
 				}

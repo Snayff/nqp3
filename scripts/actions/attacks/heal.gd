@@ -12,7 +12,7 @@ func _configure() -> void:
 	_base_range = 100
 
 
-func use(initial_target: Actor) -> void:
+func use(initial_target: Actor, optional_parameters := {}) -> void:
 	super(initial_target)
 	
 	var visual = Factory.create_simple_animation("heal")

@@ -105,10 +105,14 @@ var is_selectable : bool = true:
 		if not is_selectable:
 			is_selected = false
 
+######### ON_MOVE properties ###############
+
+var _previous_position := Vector2.ZERO
 
 ######### SETUP #############
 
 func _ready() -> void:
+	_previous_position = global_position
 	pass
 
 
@@ -133,7 +137,7 @@ func actor_setup() -> void:
 func _connect_signals() -> void:
 	# conect to own signals
 	died.connect(_on_death)
-	hit_received.connect(_on_hit_received)
+	took_damage.connect(_on_took_damage)
 
 	# connect to (script) component signals
 	stats.health_depleted.connect(_on_health_depleted)
@@ -149,7 +153,11 @@ func _connect_signals() -> void:
 ########## MAIN LOOP ##########
 
 func _physics_process(_delta) -> void:
-	pass
+	var moved_by := global_position - _previous_position
+	_previous_position = global_position
+	if moved_by != Vector2.ZERO:
+		actions.trigger_reactions(
+				Constants.ActionTrigger.ON_MOVE, self, {"movement_delta": moved_by})
 
 ######### ACTIONS ############
 
@@ -195,12 +203,11 @@ func _on_health_depleted() -> void:
 	state_machine.change_state(Constants.ActorState.DEAD)
 
 
-func _on_hit_received(attacker: Actor) -> void:
+func _on_took_damage(_amount: int, _damage_type: Constants.DamageType) -> void:
 	# flash damage indicator
 	var tween = get_tree().create_tween()
-	tween.tween_property(animated_sprite, "modulate", Color.RED, 0.1)  # FIXME: never goes back to normal colour
-
-	actions.trigger_reactions(Constants.ActionTrigger.ON_RECEIVE_DAMAGE, attacker)
+	tween.tween_property(animated_sprite, "modulate", Color.RED, 0.1)
+	tween.tween_property(animated_sprite, "modulate", Color.WHITE, 0.2)
 
 
 func _on_death() -> void:

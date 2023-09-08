@@ -47,7 +47,7 @@ var _modifiers : Dictionary = {}
 		health = clamp(value, 0, max_health)
 		if previous_health != health:
 			emit_signal("health_changed", previous_health, health)
-		
+			
 			# inform of death
 			if health == 0:
 				emit_signal("health_depleted")
