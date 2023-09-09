@@ -28,15 +28,21 @@ func create_unit(
 	if Constants.is_commander(unit_type):
 		var script := load(Constants.PATH_COMMANDER)
 		unit.set_script(script)
-
+	
 	unit.name = "%s_%s"%[unit_name, "unit"]
 	unit.unit_type = unit_type
 	creator.add_child(unit, true)
-
+	
 	unit.unit_name = unit_name
 	unit.team = team_name
-
+	
+	_add_unit_groups(unit, team_name)
+	
 	return unit
+
+
+func _add_unit_groups(unit: Unit, team: String) -> void:
+	unit.add_to_group("%s_unit"%[team])
 
 ############ ACTOR ##############
 
@@ -54,6 +60,7 @@ func create_actor(
 		instance.set_script(PLAYER_ACTOR)
 	
 	instance.name = name_
+	instance.top_level = true
 	creator.add_child(instance, true)
 	
 	# dont do anything until we're ready

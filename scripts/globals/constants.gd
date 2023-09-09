@@ -14,6 +14,11 @@ enum ActorState {
 	PLAYER_MOVING,
 }
 
+enum UnitState {
+	SEARCH_DESTROY,
+	DEAD,
+}
+
 enum Direction {
 	LEFT = -1,
 	RIGHT = 1
