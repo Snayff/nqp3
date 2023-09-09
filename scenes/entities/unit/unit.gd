@@ -3,6 +3,8 @@ class_name Unit extends Node2D
 ##
 ## Used to create and manage groups of Units.
 
+signal unit_defeated
+
 # defintions
 @export var team: String:
 	set(value):
@@ -22,7 +24,7 @@ var target_unit: Unit = null
 
 var _actors : Array[Actor] = []
 
-
+@onready var _state_machine := $StateMachine as StateMachineUnit
 @onready var _debug_visuals := $DebugVisuals as DebugVisualsUnit
 
 
@@ -40,9 +42,7 @@ func spawn_actors():
 func _on_actor_died() -> void:
 	var is_unit_alive := _actors.any(_is_actor_alive)
 	if not is_unit_alive:
-		add_to_group("dead_unit")
-		remove_from_group("alive_unit")
-		target_unit = null
+		_state_machine.change_state(Constants.UnitState.DEAD)
 
 
 func _is_actor_alive(actor: Actor) -> bool:
