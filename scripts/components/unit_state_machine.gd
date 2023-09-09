@@ -29,11 +29,16 @@ func _init(_unit: Unit = null, _states: Array[Constants.ActorState] = [], _state
 
 
 func _ready() -> void:
-	var new_state := load("res://scenes/entities/unit/search_destroy.gd").new(owner) as BaseStateUnit
-	add_child(new_state)
-	_states[Constants.UnitState.SEARCH_DESTROY] = new_state
+	const STATE_PATHS = {
+		Constants.UnitState.SEARCH_DESTROY: "res://scenes/entities/unit/search_destroy.gd",
+		Constants.UnitState.DEAD: "res://scenes/entities/unit/dead.gd",
+	}
+	for key in STATE_PATHS:
+		var new_state := load(STATE_PATHS[key]).new(owner) as BaseStateUnit
+		add_child(new_state)
+		_states[key] = new_state
+	
 	_current_state_name = Constants.UnitState.SEARCH_DESTROY
-	change_state(_current_state_name)
 
 
 func change_state(state_name: Constants.UnitState) -> void:

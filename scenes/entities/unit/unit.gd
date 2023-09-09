@@ -28,6 +28,9 @@ var _actors : Array[Actor] = []
 @onready var _debug_visuals := $DebugVisuals as DebugVisualsUnit
 
 
+func _ready() -> void:
+	SignalBus.stage_started.connect(_on_SignalBus_stage_started)
+
 ## spawn actors onto the combat map
 func spawn_actors():
 	var unit_data := RefData.get_unit_data(unit_name, unit_type) as UnitData
@@ -47,3 +50,7 @@ func _on_actor_died() -> void:
 
 func _is_actor_alive(actor: Actor) -> bool:
 	return actor.is_in_group("alive")
+
+
+func _on_SignalBus_stage_started() -> void:
+	_state_machine.change_state(_state_machine._current_state_name)

@@ -10,6 +10,7 @@ func _ready() -> void:
 	_get_units_from_troupe()
 	_place_units()
 	_spawn_actors()
+	SignalBus.stage_started.emit()
 
 
 ## load units from the troupes involved in the combat
