@@ -16,11 +16,15 @@ var _current_state_name := Constants.ActorState.IDLING
 var _states : Dictionary = {}   ## {Constants.ActorState, BaseState}
 
 
-func _init(actor: Actor, states: Array[Constants.ActorState], states_base_folder := "actor") -> void:
+func _init(
+		actor: Actor, 
+		states: Array[Constants.ActorState], 
+		unit_type: Constants.UnitType = Constants.UnitType.AI_NORMAL
+) -> void:
 	uid = Utility.generate_id()
 	
 	for state_name in states:
-		var _state = Factory.add_state(actor, state_name, states_base_folder)
+		var _state = Factory.add_actor_state(actor, state_name, unit_type)
 		add_child(_state)
 		_states[state_name] = _state
 	

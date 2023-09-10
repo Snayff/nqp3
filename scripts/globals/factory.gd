@@ -65,9 +65,9 @@ func create_actor(
 	
 	# dont do anything until we're ready
 	instance.set_physics_process(false)
-
+	
 	var unit_data := RefData.get_unit_data(name_, unit_type) as UnitData
-
+	
 	instance.uid = Utility.generate_id()
 	instance.unit_name = name_
 	instance.set_name(instance.debug_name.to_pascal_case())
@@ -90,7 +90,7 @@ func create_actor(
 	
 	instance = _add_actor_actions(instance, unit_data)
 	
-	instance.state_machine = StateMachine.new(instance, unit_data.states, unit_data.states_base_folder)
+	instance.state_machine = StateMachine.new(instance, unit_data.states_actor, unit_type)
 	instance.state_machine.set_name("StateMachine")
 	instance.add_child(instance.state_machine)
 	
@@ -342,13 +342,18 @@ func add_target_finder(creator: Actor, radius: int, is_visible: bool = false, co
 	return target_finder
 
 
-func add_state(creator: Actor, state: Constants.ActorState, base_folder: String) -> BaseState:
+func add_actor_state(
+		creator: Actor, 
+		state: Constants.ActorState, 
+		unit_type: Constants.UnitType
+) -> BaseState:
 	# assumes constant name matches state scripts name
-	var state_name : String = Constants.ActorState.keys()[state]
+	var state_name := (Constants.ActorState.keys()[state] as String).to_snake_case()
+	var base_folder := (Constants.UnitType.keys()[unit_type] as String).to_snake_case()
 	
 	var path : String = Constants.PATH_STATES_ACTOR\
 			.path_join(base_folder)\
-			.path_join("%s.gd"%[state_name.to_lower()])
+			.path_join("%s.gd"%[state_name])
 	var state_: BaseState = load(path).new(creator)
 	state_.set_name(state_name.to_pascal_case())
 	return state_

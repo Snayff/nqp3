@@ -19,8 +19,7 @@ var gold_cost := 100
 var tier := 1
 var path_base_sprites := Constants.PATH_SPRITES_ACTORS
 var actions := {}
-var states: Array[Constants.ActorState] = []
-var states_base_folder := "actor"
+var states_actor: Array[Constants.ActorState] = []
 
 func _init(overrides := {}):
 	for key in overrides:
