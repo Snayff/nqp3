@@ -1,4 +1,4 @@
-extends "res://scripts/states/actor/attacking.gd"
+extends "../actor/attacking.gd"
 
 
 

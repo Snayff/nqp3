@@ -1,4 +1,4 @@
-extends "res://scripts/states/actor/casting.gd"
+extends "../actor/casting.gd"
 
 var attack_range_squared := INF
 

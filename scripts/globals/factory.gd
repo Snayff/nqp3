@@ -346,7 +346,7 @@ func add_state(creator: Actor, state: Constants.ActorState, base_folder: String)
 	# assumes constant name matches state scripts name
 	var state_name : String = Constants.ActorState.keys()[state]
 	
-	var path : String = Constants.PATH_STATES\
+	var path : String = Constants.PATH_STATES_ACTOR\
 			.path_join(base_folder)\
 			.path_join("%s.gd"%[state_name.to_lower()])
 	var state_: BaseState = load(path).new(creator)
