@@ -18,13 +18,15 @@ signal unit_defeated
 @export var unit_name: String
 @export var unit_type := Constants.UnitType.AI_NORMAL
 
+# Injected by factory
+var state_machine : StateMachineUnit = null
+
 # functional
 
 var target_unit: Unit = null
 
 var _actors : Array[Actor] = []
 
-@onready var _state_machine := $StateMachine as StateMachineUnit
 @onready var _debug_visuals := $DebugVisuals as DebugVisualsUnit
 
 
@@ -45,7 +47,7 @@ func spawn_actors():
 func _on_actor_died() -> void:
 	var is_unit_alive := _actors.any(_is_actor_alive)
 	if not is_unit_alive:
-		_state_machine.change_state(Constants.UnitState.DEAD)
+		state_machine.change_state(Constants.UnitState.DEAD)
 
 
 func _is_actor_alive(actor: Actor) -> bool:
@@ -53,4 +55,4 @@ func _is_actor_alive(actor: Actor) -> bool:
 
 
 func _on_SignalBus_stage_started() -> void:
-	_state_machine.change_state(_state_machine._current_state_name)
+	state_machine.change_state(state_machine._current_state_name)

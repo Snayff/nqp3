@@ -32,11 +32,15 @@ func create_unit(
 	unit.name = "%s_%s"%[unit_name, "unit"]
 	unit.unit_type = unit_type
 	creator.add_child(unit, true)
+	_add_unit_groups(unit, team_name)
 	
 	unit.unit_name = unit_name
 	unit.team = team_name
 	
-	_add_unit_groups(unit, team_name)
+	var unit_data := RefData.get_unit_data(unit_name, unit_type) as UnitData
+	unit.state_machine = StateMachineUnit.new(unit, unit_data.states_unit, unit_type)
+	unit.state_machine.set_name("StateMachine")
+	unit.add_child(unit.state_machine)
 	
 	return unit
 
@@ -358,3 +362,19 @@ func add_actor_state(
 	state_.set_name(state_name.to_pascal_case())
 	return state_
 
+
+func add_unit_state(
+		creator: Unit, 
+		state: Constants.UnitState, 
+		unit_type: Constants.UnitType
+) -> BaseStateUnit:
+	# assumes constant name matches state scripts name
+	var state_name := (Constants.UnitState.keys()[state] as String).to_snake_case()
+	var base_folder := (Constants.UnitType.keys()[unit_type] as String).to_snake_case()
+	
+	var path : String = Constants.PATH_STATES_UNIT\
+			.path_join(base_folder)\
+			.path_join("%s.gd"%[state_name])
+	var state_: BaseStateUnit = load(path).new(creator)
+	state_.set_name(state_name.to_pascal_case())
+	return state_

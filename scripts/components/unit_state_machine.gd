@@ -13,32 +13,30 @@ var current_state : BaseStateUnit:  ## can return null if no current state
 		push_error("Tried to set current state manually. Not allowed.")
 
 var _current_state_name := Constants.UnitState.SEARCH_DESTROY
-var _states : Dictionary = {}   ## {Constants.ActorState, BaseState}
+var _states : Dictionary = {}   ## {Constants.UnitState: BaseStateUnit }
 
 
-func _init(_unit: Unit = null, _states: Array[Constants.ActorState] = [], _states_base_folder := "actor") -> void:
+func _init(
+		unit: Unit = null, 
+		p_states: Array[Constants.UnitState] = [], 
+		unit_type: Constants.UnitType = Constants.UnitType.AI_NORMAL
+) -> void:
 	uid = Utility.generate_id()
 	
-#	for state_name in states:
-#		var _state = Factory.add_state(actor, state_name, states_base_folder)
-#		add_child(_state)
-#		_states[state_name] = _state
+	for state_name in p_states:
+		var state = Factory.add_unit_state(unit, state_name, unit_type)
+		add_child(state)
+		_states[state_name] = state
 #
-#	if not _current_state_name in states:
-#		_current_state_name = states[0]
+	if not _current_state_name in _states:
+		_current_state_name = _states[0]
 
 
 func _ready() -> void:
-	const STATE_PATHS = {
-		Constants.UnitState.SEARCH_DESTROY: "res://scenes/entities/unit/search_destroy.gd",
-		Constants.UnitState.DEAD: "res://scenes/entities/unit/dead.gd",
-	}
-	for key in STATE_PATHS:
-		var new_state := load(STATE_PATHS[key]).new(owner) as BaseStateUnit
-		add_child(new_state)
-		_states[key] = new_state
-	
-	_current_state_name = Constants.UnitState.SEARCH_DESTROY
+	if get_parent().owner == null:
+		owner = get_parent()
+	else:
+		owner = get_parent().owner
 
 
 func change_state(state_name: Constants.UnitState) -> void:

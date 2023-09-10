@@ -20,6 +20,7 @@ var tier := 1
 var path_base_sprites := Constants.PATH_SPRITES_ACTORS
 var actions := {}
 var states_actor: Array[Constants.ActorState] = []
+var states_unit : Array[Constants.UnitState] = []
 
 func _init(overrides := {}):
 	for key in overrides:
