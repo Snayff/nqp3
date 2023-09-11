@@ -51,7 +51,7 @@ func get_target(current_target: Actor, p_action: BaseAction) -> Actor:
 			current_target.no_longer_targetable.disconnect(_attempt_all_target_refresh)
 	
 	# get new target
-	var new_target := ai.get_target(p_action)
+	var new_target := ai.get_target(p_action, targeted_unit, parent_unit)
 	
 	if new_target != null:
 		# relisten to target changes

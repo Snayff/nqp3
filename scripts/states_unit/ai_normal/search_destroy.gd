@@ -28,6 +28,8 @@ func _select_target_unit() -> void:
 	
 	_creator.target_unit = _get_closest_unit_from(target_pool)
 	if _creator.target_unit != null:
+		for actor in _creator._actors:
+			actor.targeted_unit = _creator.target_unit
 		_creator.target_unit.unit_defeated.connect(_on_target_unit_defeated)
 	else:
 		get_tree().create_timer(SEARCH_AGAIN_DELAY).timeout.connect(

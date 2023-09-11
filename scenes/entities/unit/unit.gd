@@ -39,6 +39,7 @@ func spawn_actors():
 	for i in unit_data.num_units:
 		var actor := Factory.create_actor(self, unit_name, team) as Actor
 		_actors.append(actor)
+		actor.parent_unit = self
 		actor.died.connect(_on_actor_died)
 	
 	add_to_group("alive_unit")
