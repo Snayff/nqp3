@@ -9,3 +9,4 @@ script = ExtResource("1_054a8")
 [node name="DebugVisuals" type="Node2D" parent="."]
 z_index = 100
 script = ExtResource("2_t1wl2")
+draw_unit_target = false

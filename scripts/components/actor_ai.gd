@@ -55,6 +55,14 @@ func get_target(p_action: BaseAction, target_unit: Unit, actor_unit: Unit) -> Ac
 			
 			# check we have a target
 			if new_target != null:
+				# TODO: I'm not sure this is the best place for this, because we are filtering
+				# actors by preference and then asking the target's unit for a valid actor so that
+				# they don't end up all targeting the same actor. I think ideally, we should 
+				# refactor the preference filter to find a valid unit, not a valid actor.
+				# So it should be the "nearest" unit, or attacking "unit", or most damaged "unit"
+				# and then ask the unit for a valid actor. But it was a bigger refactor so I left
+				# it for later.
+				new_target = new_target.parent_unit.get_next_available_actor_target()
 				msg = "%s's selected target in %s is %s at %s."%[
 					_creator.debug_name, group_to_target, 
 					new_target.debug_name, new_target.global_position
@@ -85,6 +93,14 @@ func get_target(p_action: BaseAction, target_unit: Unit, actor_unit: Unit) -> Ac
 		if not existing_targets.is_empty():
 			# just pick the first enemy node and move towards them, eventually will be in range
 			new_target = existing_targets.pop_front() as Actor
+			# TODO: I'm not sure this is the best place for this, because we are filtering
+			# actors by preference and then asking the target's unit for a valid actor so that
+			# they don't end up all targeting the same actor. I think ideally, we should 
+			# refactor the preference filter to find a valid unit, not a valid actor.
+			# So it should be the "nearest" unit, or attacking "unit", or most damaged "unit"
+			# and then ask the unit for a valid actor. But it was a bigger refactor so I left
+			# it for later.
+			new_target = new_target.parent_unit.get_next_available_actor_target()
 			msg = "%s randomly picked %s to run towards."%[_creator.debug_name, new_target.debug_name]
 		else:
 			msg = "No remaining valid target in scene."

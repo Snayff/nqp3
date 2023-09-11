@@ -26,6 +26,7 @@ var state_machine : StateMachineUnit = null
 var target_unit: Unit = null
 
 var _actors : Array[Actor] = []
+var _targeted_count := {}
 
 @onready var _debug_visuals := $DebugVisuals as DebugVisualsUnit
 
@@ -40,19 +41,42 @@ func spawn_actors():
 		var actor := Factory.create_actor(self, unit_name, team) as Actor
 		_actors.append(actor)
 		actor.parent_unit = self
+		_targeted_count[actor] = 0
 		actor.died.connect(_on_actor_died)
 	
 	add_to_group("alive_unit")
 
 
+func get_next_available_actor_target() -> Actor:
+	var value: Actor = null
+	var min_count := INF
+	
+	if _targeted_count.is_empty():
+		return value
+	
+	for actor in _targeted_count.keys():
+		actor = actor as Actor
+		if actor.is_in_group("alive"):
+			if _targeted_count[actor] < min_count:
+				value = actor
+				min_count = _targeted_count[actor]
+	
+	_targeted_count[value] += 1
+	
+	return value
+
+
 func _on_actor_died() -> void:
-	var is_unit_alive := _actors.any(_is_actor_alive)
-	if not is_unit_alive:
+	var live_actors: Array[Actor] = []
+	for actor in _actors:
+		if actor.is_in_group("alive"):
+			live_actors.append(actor)
+		elif actor in _targeted_count:
+			_targeted_count.erase(actor)
+	
+	if live_actors.is_empty():
+		_targeted_count.clear()
 		state_machine.change_state(Constants.UnitState.DEAD)
-
-
-func _is_actor_alive(actor: Actor) -> bool:
-	return actor.is_in_group("alive")
 
 
 func _on_SignalBus_stage_started() -> void:

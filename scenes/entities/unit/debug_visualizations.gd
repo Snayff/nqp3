@@ -20,12 +20,21 @@ static var team_count = {
 	Color.DARK_RED
 ]
 
-@export var marker_radius := 5.0:
+@export_range(1,2,1,"or_greater") var marker_radius := 5.0:
 	set(value):
 		marker_radius = value
 		
 		if is_inside_tree():
 			_marker_radius_squared = pow(marker_radius*2, 2.0)
+
+@export_range(1,2,1,"or_greater") var unit_target_thickness := 3.0
+@export_range(1,2,1,"or_greater") var actor_target_thickness := 1.0
+
+@export_category("Draw Options")
+@export var draw_unit_position := true
+@export var draw_unit_range := true
+@export var draw_unit_target := true
+@export var draw_actors_targets := true
 
 var color = Color.WHITE
 var unit_team := "":
@@ -61,12 +70,23 @@ func _ready() -> void:
 func _draw() -> void:
 	var radius_squared = _unit._actors.reduce(get_farthest_actor, 0.0)
 	var radius = sqrt(radius_squared)
-	draw_circle(Vector2.ZERO, marker_radius, color)
-	draw_arc(Vector2.ZERO, radius, 0, TAU, 16, color)
+	if draw_unit_position:
+		draw_circle(Vector2.ZERO, marker_radius, color)
+	
+	if draw_unit_range:
+		draw_arc(Vector2.ZERO, radius, 0, TAU, 16, color)
 	
 	if is_instance_valid(_unit.target_unit) and _unit.target_unit.is_in_group("alive_unit"):
 		var target_position = to_local(_unit.target_unit.global_position)
-		draw_line(Vector2.ZERO, target_position, color)
+		if draw_unit_target:
+			draw_line(Vector2.ZERO, target_position, color, 3.0)
+		
+		for actor in _unit._actors:
+			if actor._target != null:
+				var origin = to_local(actor.global_position)
+				target_position = to_local(actor._target.global_position)
+				if draw_actors_targets:
+					draw_line(origin, target_position, color, 1.0)
 
 
 func _process(delta: float) -> void:
