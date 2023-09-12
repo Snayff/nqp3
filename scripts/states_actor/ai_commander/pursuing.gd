@@ -1,4 +1,4 @@
-extends "res://scripts/states/actor/pursuing.gd"
+extends "../actor/pursuing.gd"
 
 
 ## take action based on current state

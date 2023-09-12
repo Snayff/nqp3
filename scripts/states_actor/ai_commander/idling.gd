@@ -1,4 +1,4 @@
-extends "res://scripts/states/actor/idling.gd"
+extends "../actor/idling.gd"
 
 
 var highest_range_attack: BaseAction = null

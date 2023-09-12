@@ -31,6 +31,7 @@ position = Vector2(0, 2)
 shape = SubResource("CapsuleShape2D_pdl0k")
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+target_desired_distance = 5.0
 path_max_distance = 200.0
 avoidance_enabled = true
 radius = 6.0

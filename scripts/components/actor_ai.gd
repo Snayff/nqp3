@@ -20,7 +20,7 @@ func is_enemy(p_target : Actor) -> bool:
 ## get a new target on the opposing team.
 ##
 ## Can return null
-func get_target(p_action: BaseAction) -> Actor:
+func get_target(p_action: BaseAction, target_unit: Unit, actor_unit: Unit) -> Actor:
 	var msg := ""
 	var new_target: Actor = null
 	var group_to_target : String = Utility.get_target_group(_creator, p_action.target_type)
@@ -30,14 +30,21 @@ func get_target(p_action: BaseAction) -> Actor:
 		return _creator
 	
 	# get all targets in range
-	var poss_targets: Array[Actor] = []
-	poss_targets.assign(_creator._target_finder.get_overlapping_bodies())
+	var poss_targets: Array = _creator._target_finder.get_overlapping_bodies()
 	
 	# check we found any possible target
 	if poss_targets.size() > 0:
 		# parse which group to look for
 		# run initial checks to filter out ineligible targets
-		var valid_targets : Array[Actor] = poss_targets.filter(_is_valid_target.bind(group_to_target))
+		var valid_targets : Array[Actor] = []
+		valid_targets.assign(
+				poss_targets.filter(_is_valid_target.bind(
+						group_to_target,
+						target_unit,
+						actor_unit
+				))
+		)
+		
 		if valid_targets.size() > 0:
 			# filter by preferences
 			var pref_targets: Array[Actor] = []
@@ -48,6 +55,14 @@ func get_target(p_action: BaseAction) -> Actor:
 			
 			# check we have a target
 			if new_target != null:
+				# TODO: I'm not sure this is the best place for this, because we are filtering
+				# actors by preference and then asking the target's unit for a valid actor so that
+				# they don't end up all targeting the same actor. I think ideally, we should 
+				# refactor the preference filter to find a valid unit, not a valid actor.
+				# So it should be the "nearest" unit, or attacking "unit", or most damaged "unit"
+				# and then ask the unit for a valid actor. But it was a bigger refactor so I left
+				# it for later.
+				new_target = new_target.parent_unit.get_next_available_actor_target()
 				msg = "%s's selected target in %s is %s at %s."%[
 					_creator.debug_name, group_to_target, 
 					new_target.debug_name, new_target.global_position
@@ -70,10 +85,22 @@ func get_target(p_action: BaseAction) -> Actor:
 	
 	if new_target == null:
 		var existing_targets := get_tree().get_nodes_in_group(group_to_target)
-		existing_targets = existing_targets.filter(_is_valid_target.bind(group_to_target))
+		existing_targets = existing_targets.filter(_is_valid_target.bind(
+				group_to_target,
+				target_unit,
+				actor_unit
+		))
 		if not existing_targets.is_empty():
 			# just pick the first enemy node and move towards them, eventually will be in range
 			new_target = existing_targets.pop_front() as Actor
+			# TODO: I'm not sure this is the best place for this, because we are filtering
+			# actors by preference and then asking the target's unit for a valid actor so that
+			# they don't end up all targeting the same actor. I think ideally, we should 
+			# refactor the preference filter to find a valid unit, not a valid actor.
+			# So it should be the "nearest" unit, or attacking "unit", or most damaged "unit"
+			# and then ask the unit for a valid actor. But it was a bigger refactor so I left
+			# it for later.
+			new_target = new_target.parent_unit.get_next_available_actor_target()
 			msg = "%s randomly picked %s to run towards."%[_creator.debug_name, new_target.debug_name]
 		else:
 			msg = "No remaining valid target in scene."
@@ -96,7 +123,15 @@ func get_steered_velocity(
 	return velocity
 
 
-func _is_valid_target(candidate: Actor, group_to_target: String) -> bool:
-	var is_alive = candidate.is_in_group("alive")
-	var is_correct_type = candidate.is_in_group(group_to_target)
-	return is_alive and is_correct_type
+func _is_valid_target(
+		candidate: Actor, 
+		group_to_target: String, 
+		target_unit: Unit, 
+		ally_unit: Unit
+) -> bool:
+	var is_alive: bool = candidate.is_in_group("alive")
+	var is_correct_type: bool = candidate.is_in_group(group_to_target)
+	var is_on_target_unit: bool = candidate.parent_unit == target_unit
+	var is_an_ally: bool = candidate.parent_unit.team == ally_unit.team
+	
+	return is_alive and is_correct_type and (is_on_target_unit or is_an_ally)

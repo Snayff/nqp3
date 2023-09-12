@@ -91,6 +91,8 @@ var attack_to_cast : BaseAction = null:
 			_update_target_finder_range(int(attack_to_cast.range))
 			print(debug_name + " chose to use " + attack_to_cast.friendly_name + ".")
 var neighbours : Array[Actor]
+var parent_unit: Unit = null
+var targeted_unit: Unit = null
 
 ######### UI ATTRIBUTES ###############
 
@@ -244,7 +246,7 @@ func refresh_target(p_action: BaseAction) -> void:
 			_target.no_longer_targetable.disconnect(_on_target_no_longer_targetable)
 	
 	# get new target
-	_target = ai.get_target(p_action)
+	_target = ai.get_target(p_action, targeted_unit, parent_unit)
 	
 	if _target:
 		# relisten to target changes

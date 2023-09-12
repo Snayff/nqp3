@@ -14,6 +14,11 @@ enum ActorState {
 	PLAYER_MOVING,
 }
 
+enum UnitState {
+	SEARCH_DESTROY,
+	DEAD,
+}
+
 enum Direction {
 	LEFT = -1,
 	RIGHT = 1
@@ -114,7 +119,8 @@ enum UnitType {
 const PATH_ENTITIES : String = "res://scenes/entities/"
 const PATH_COMMANDER : String = "res://scenes/entities/commander/commander.gd"
 const PATH_COMPONENTS : String = "res://scenes/components/"
-const PATH_STATES : String = "res://scripts/states/"
+const PATH_STATES_ACTOR : String = "res://scripts/states_actor/"
+const PATH_STATES_UNIT : String = "res://scripts/states_unit/"
 const PATH_VISUAL_EFFECTS : String = "res://scenes/visual_effects/"
 const PATH_ATTACKS : String = "res://scripts/actions/attacks/"  ## the path attack scripts are stored in
 const PATH_REACTIONS : String = "res://scripts/actions/reactions/"  ## the path reaction scripts are stored in
